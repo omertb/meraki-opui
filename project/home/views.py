@@ -1,7 +1,9 @@
 from project import db
 from project.models import User
-from flask import render_template, Blueprint
+from flask import render_template, Blueprint, request
 from flask_login import login_required
+from project.home.forms import NetworkDeviceForm
+from project.home.functions import get_templates
 
 # home blueprint definition
 home_blueprint = Blueprint('home', __name__, template_folder='templates')
@@ -10,9 +12,11 @@ home_blueprint = Blueprint('home', __name__, template_folder='templates')
 @home_blueprint.route('/')
 @login_required
 def home():
-    # return "Hello, World!"  # return a string
-    posts = db.session.query(User).all()
-    return render_template('home.html', posts=posts)  # render a template
+    error = None
+    templates_names = get_templates().keys()
+    form = NetworkDeviceForm(request.form)
+    form.template_name.choices = list(templates_names)
+    return render_template('home.html', form=form, error=error)
 
 
 @home_blueprint.route('/welcome')
