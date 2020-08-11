@@ -12,32 +12,37 @@ class Device(db.Model):
     __tablename__ = "devices"
 
     id = db.Column(db.Integer, primary_key=True)
-    device_name = db.Column(db.String(50), nullable=False, unique=True)
-    device_serial = db.Column(db.String(20), nullable=False)
-    net_id = db.Column(db.Integer, db.ForeignKey('networks.id'))
+    name = db.Column(db.String(50), nullable=False, unique=True)
+    serial = db.Column(db.String(20), nullable=False)
+    n_id = db.Column(db.Integer, db.ForeignKey('networks.n_id'))
 
-    def __init__(self, device_name, device_serial):
-        self.device_name = device_name
-        self.device_serial = device_serial
+    def __init__(self, device_name, device_serial, n_id):
+        self.name = device_name
+        self.serial = device_serial
+        self.n_id = n_id
 
     def __repr__(self):
-        return '<device_name {}'.format(self.device_name)
+        return '<device_name: {}>'.format(self.name)
+
 
 class Network(db.Model):
 
     __tablename__ = "networks"
 
     id = db.Column(db.Integer, primary_key=True)
-    net_name = db.Column(db.String(50), nullable=False, unique=True)
-    net_type = db.Column(db.String(30), nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    name = db.Column(db.String(50), nullable=False, unique=True)
+    type = db.Column(db.String(30), nullable=False)
+    n_id = db.Column(db.String(32), unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     devices = db.relationship("Device", backref="network", lazy=True)
 
-    def __init__(self, net_name):
-        self.net_name = net_name
+    def __init__(self, net_name, net_type, n_id):
+        self.name = net_name
+        self.type = net_type
+        self.n_id = n_id
 
     def __repr__(self):
-        return '<net_name {}'.format(self.net_name)
+        return '<net_name: {}>'.format(self.name)
 
 
 class User(db.Model):
@@ -87,7 +92,22 @@ class User(db.Model):
         return True
 
     def __repr__(self):
-        return '<name {}'.format(self.username)
+        return '<username: {}>'.format(self.username)
 
 
+class Template(db.Model):
 
+    __tablename__ = "templates"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=True)
+    n_id = db.Column(db.String(32), unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __init__(self, template_name, n_id, user_id):
+        self.name = template_name
+        self.n_id = n_id
+        self.user_id = user_id
+
+    def __repr__(self):
+        return '<template_name: {}>'.format(self.name)
