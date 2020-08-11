@@ -7,44 +7,6 @@ LDAP_SERVER = os.environ['USERDNSDOMAIN']
 LDAP_PORT = "389"
 
 
-class Device(db.Model):
-
-    __tablename__ = "devices"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False, unique=True)
-    serial = db.Column(db.String(20), nullable=False)
-    n_id = db.Column(db.Integer, db.ForeignKey('networks.n_id'))
-
-    def __init__(self, device_name, device_serial, n_id):
-        self.name = device_name
-        self.serial = device_serial
-        self.n_id = n_id
-
-    def __repr__(self):
-        return '<device_name: {}>'.format(self.name)
-
-
-class Network(db.Model):
-
-    __tablename__ = "networks"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False, unique=True)
-    type = db.Column(db.String(30), nullable=False)
-    n_id = db.Column(db.String(32), unique=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    devices = db.relationship("Device", backref="network", lazy=True)
-
-    def __init__(self, net_name, net_type, n_id):
-        self.name = net_name
-        self.type = net_type
-        self.n_id = n_id
-
-    def __repr__(self):
-        return '<net_name: {}>'.format(self.name)
-
-
 class User(db.Model):
 
     __tablename__ = "users"
@@ -56,6 +18,7 @@ class User(db.Model):
     email = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     networks = db.relationship("Network", backref="user", lazy=True)
+    templates = db.relationship("Template", backref="user", lazy=True)
     reg_date = db.Column(db.DateTime, nullable=False)
     verified = db.Column(db.Boolean, nullable=False, default=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
@@ -95,6 +58,55 @@ class User(db.Model):
         return '<username: {}>'.format(self.username)
 
 
+class Network(db.Model):
+
+    __tablename__ = "networks"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=True)
+    type = db.Column(db.String(30), nullable=False)
+    n_id = db.Column(db.String(32), unique=True)
+    committed = db.Column(db.Boolean, nullable=False)
+    reg_date = db.Column(db.DateTime, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    devices = db.relationship("Device", backref="network", lazy=True)
+
+    def __init__(self, net_name, net_type, n_id, user_id, committed=False):
+        self.name = net_name
+        self.type = net_type
+        self.n_id = n_id
+        self.committed = committed
+        self.reg_date = datetime.datetime.now()
+        self.user_id = user_id
+
+    def __repr__(self):
+        return '<net_name: {}>'.format(self.name)
+
+
+class Device(db.Model):
+
+    __tablename__ = "devices"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=True)
+    serial = db.Column(db.String(20), nullable=False)
+    n_id = db.Column(db.String(32), unique=True)
+    reg_date = db.Column(db.DateTime, nullable=False)
+    committed = db.Column(db.Boolean, nullable=False)
+    network_id = db.Column(db.Integer, db.ForeignKey('networks.id'))
+
+    def __init__(self, device_name, device_serial, n_id, network_id, committed=False):
+        self.name = device_name
+        self.serial = device_serial
+        self.n_id = n_id
+        self.reg_date = datetime.datetime.now()
+        self.committed = committed
+        self.network_id = network_id
+
+    def __repr__(self):
+        return '<device_name: {}>'.format(self.name)
+
+
 class Template(db.Model):
 
     __tablename__ = "templates"
@@ -102,6 +114,7 @@ class Template(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False, unique=True)
     n_id = db.Column(db.String(32), unique=True)
+    reg_date = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __init__(self, template_name, n_id, user_id):

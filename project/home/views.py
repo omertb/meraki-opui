@@ -13,9 +13,11 @@ home_blueprint = Blueprint('home', __name__, template_folder='templates')
 @login_required
 def home():
     error = None
-    templates_names = get_templates().keys()
+    templates_are_not_new = True
+    if templates_are_not_new:
+        templates_names = get_templates().keys()
     form = NetworkDeviceForm(request.form)
-    form.template_name.choices = list(templates_names)
+    form.net_template.choices = list(templates_names)
     return render_template('home.html', form=form, error=error)
 
 

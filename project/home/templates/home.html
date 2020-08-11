@@ -73,22 +73,31 @@
 
               <div class="form-group">
                 <label for="netNameInput">Network: </label>
-                <input type="text" class="form-control" id="netNameInput" placeholder="Type a Network Name">
+                  {{ form.net_name(class_="form-control", id="netNameInput", placeholder="Type a Network Name") }}
+                  <!--
+                  <input type="text" class="form-control" id="netNameInput" placeholder="Type a Network Name">
+                  -->
               </div>
 
               <div class="form-group">
                 <label for="netTypeSelect">Select Network Type: </label>
+                  {{ form.net_type(class_="form-control", id="netTypeSelect") }}
+                <!--
                 <select class="form-control" id="netTypeSelect">
                   <option>appliance</option>
                   <option>switch</option>
                   <option>wireless</option>
                 </select>
+                -->
               </div>
 
               <div class="form-group">
-                <label for="netTemplateSelect2">Select Network Template: </label>
+                <label for="netTemplateSelect">Select Network Template: </label>
+                  {{ form.net_template(class_="form-control", id="netTemplateSelect") }}
+                  <!--
                 <select class="form-control" id="netTemplateSelect">
                 </select>
+                -->
               </div>
                 </div>
 
@@ -96,15 +105,21 @@
 
                   <div class="form-group">
                     <label for="existingNetSelect">Select Network: </label>
+                      {{ form.reg_nets(class_="form-control", id="existingNetSelect") }}
+                      <!--
                     <select class="form-control" id="existingNetSelect">
                     </select>
+                    -->
                   </div>
 
                 </div>
 
               <div class="form-group">
-                <label for="exampleFormControlTextarea1">Enter Devices as serials and one for each line;</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="5"></textarea>
+                <label for="devicesTextarea">Enter Devices as serials and one for each line;</label>
+                  {{ form.serial_nos(class_="form-control", id="devicesTextarea", rows="5") }}
+                  <!--
+                <textarea class="form-control" id="devicesTextarea" rows="5"></textarea>
+                -->
               </div>
                 <div class="form-group">
                     <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
