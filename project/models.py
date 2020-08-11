@@ -18,7 +18,6 @@ class User(db.Model):
     email = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     networks = db.relationship("Network", backref="user", lazy=True)
-    templates = db.relationship("Template", backref="user", lazy=True)
     reg_date = db.Column(db.DateTime, nullable=False)
     verified = db.Column(db.Boolean, nullable=False, default=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
@@ -115,12 +114,11 @@ class Template(db.Model):
     name = db.Column(db.String(50), nullable=False, unique=True)
     n_id = db.Column(db.String(32), unique=True)
     reg_date = db.Column(db.DateTime, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, template_name, n_id, user_id):
+    def __init__(self, template_name, n_id):
         self.name = template_name
         self.n_id = n_id
-        self.user_id = user_id
+        self.reg_date = datetime.datetime.now()
 
     def __repr__(self):
         return '<template_name: {}>'.format(self.name)
