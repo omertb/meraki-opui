@@ -70,10 +70,9 @@ class Network(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     devices = db.relationship("Device", backref="network", lazy=True)
 
-    def __init__(self, net_name, net_type, n_id, user_id, committed=False):
+    def __init__(self, net_name, net_type, user_id, committed=False):
         self.name = net_name
         self.type = net_type
-        self.n_id = n_id
         self.committed = committed
         self.reg_date = datetime.datetime.now()
         self.user_id = user_id
@@ -94,10 +93,9 @@ class Device(db.Model):
     committed = db.Column(db.Boolean, nullable=False)
     network_id = db.Column(db.Integer, db.ForeignKey('networks.id'))
 
-    def __init__(self, device_name, device_serial, n_id, network_id, committed=False):
+    def __init__(self, device_name, device_serial, network_id, committed=False):
         self.name = device_name
         self.serial = device_serial
-        self.n_id = n_id
         self.reg_date = datetime.datetime.now()
         self.committed = committed
         self.network_id = network_id

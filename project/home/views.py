@@ -1,7 +1,7 @@
 from project import db
 from project.models import User, Template
 from flask import render_template, Blueprint, request
-from flask_login import login_required
+from flask_login import login_required, current_user
 from project.home.forms import NetworkDeviceForm
 from project.home.functions import get_templates
 
@@ -15,6 +15,7 @@ def home():
     error = None
     templates_are_not_new = False
     templates_names = []
+    print(current_user.id)
 
     if templates_are_not_new:
         Template.query.delete()  # delete existing templates in db

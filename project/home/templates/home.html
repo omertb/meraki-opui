@@ -91,6 +91,8 @@
                 -->
               </div>
 
+                    <div id="templateFormArea">
+
               <div class="form-group">
                 <label for="netTemplateSelect">Select Network Template: </label>
                   {{ form.net_template(class_="form-control", id="netTemplateSelect") }}
@@ -99,6 +101,7 @@
                 </select>
                 -->
               </div>
+                        </div>
                 </div>
 
                 <div id="existingNetForm">
@@ -115,8 +118,8 @@
                 </div>
 
               <div class="form-group">
-                <label for="devicesTextarea">Enter Devices as serials and one for each line;</label>
-                  {{ form.serial_nos(class_="form-control", id="devicesTextarea", rows="5") }}
+                <label for="devicesTextArea">Enter Devices as serials and one for each line;</label>
+                  {{ form.serial_nos(class_="form-control", id="devicesTextArea", rows="5") }}
                   <!--
                 <textarea class="form-control" id="devicesTextarea" rows="5"></textarea>
                 -->
@@ -156,6 +159,18 @@
         }).change();
     });
 
+     $(document).ready(function(){
+    $("#netTypeSelect").change(function(){
+        $(this).find("option:selected").each(function(){
+            var optionValue = $(this).attr("value");
+            if(optionValue=='firewall'){
+                $("#templateFormArea").show();
+            } else{
+                $("#templateFormArea").hide();
+                }
+            });
+        }).change();
+    });
       </script>
 
   </body>
