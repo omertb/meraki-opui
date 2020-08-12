@@ -62,11 +62,14 @@
             <form action="" method="post">
 
                 <div class="form-group">
-                    <label for="hideShowForm">Select:</label>
-                    <select class="form-control" id="hideShowForm">
+                    <label for="selectNewExistingForm">Select:</label>
+                    {{ form.new_or_existing(class_="form-control", id="selectNewExistingForm") }}
+                    <!--
+                    <select class="form-control" id="selectNewExistingForm">
                       <option value="new">New Network</option>
                       <option value="existing">Existing Network</option>
                     </select>
+                    -->
                 </div>
 
                 <div id="newNetForm">
@@ -108,7 +111,7 @@
 
                   <div class="form-group">
                     <label for="existingNetSelect">Select Network: </label>
-                      {{ form.reg_nets(class_="form-control", id="existingNetSelect") }}
+                      {{ form.registered_nets(class_="form-control", id="existingNetSelect") }}
                       <!--
                     <select class="form-control" id="existingNetSelect">
                     </select>
@@ -129,6 +132,10 @@
                 </div>
             </form>
 
+            {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}</p>
+      {% endif %}
+
 		</div>
 		<div class="col-md-8">
 		</div>
@@ -145,7 +152,7 @@
        <script type="text/javascript">
 
       $(document).ready(function(){
-    $("#hideShowForm").change(function(){
+    $("#selectNewExistingForm").change(function(){
         $(this).find("option:selected").each(function(){
             var optionValue = $(this).attr("value");
             if(optionValue=='new'){

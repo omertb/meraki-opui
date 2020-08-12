@@ -8,4 +8,5 @@ class NetworkDeviceForm(FlaskForm):
     net_template = SelectField('Template: ', choices=[])
     net_type = SelectField('Network Type: ', choices=["firewall", "switch", "wireless"])
     serial_nos = TextAreaField('Serial Numbers, one per line: ', validators=[DataRequired(), Length(max=2000)])
-    reg_nets = SelectField('Network: ', choices=[])
+    registered_nets = SelectField('Network: ', choices=[])
+    new_or_existing = SelectField("New", choices=[("new", "New Network"), ("existing", "Existing Network")], )
