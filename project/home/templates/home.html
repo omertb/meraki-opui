@@ -138,6 +138,30 @@
 
 		</div>
 		<div class="col-md-8">
+
+            <table class="table table-hover table-sm">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Network Name</th>
+                  <th scope="col">Network Type</th>
+                  <th scope="col">Network Template</th>
+                    <th scope="col">Committed</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for network in user_networks %}
+              <tr>
+                  <th scope="row">{{ loop.index }}</th>
+                  <td>{{ network.name }}</td>
+                  <td>{{ network.type }}</td>
+                  <td>{{ network.template }}</td>
+                  <td>{{ network.committed }}</td>
+                </tr
+                  {% endfor %}
+              </tbody>
+            </table>
+
             <h3>User Networks:</h3>
             {% for network in user_networks %}
             <strong>Network Name: </strong> {{ network.name }} <br>
