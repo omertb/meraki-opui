@@ -16,7 +16,10 @@ def home():
     error = None
     template_age = datetime.datetime.now() - Template.query.first().reg_date
     templates_names = []
-    print(current_user.id)
+    user_networks = Network.query.filter_by(user_id=current_user.id)
+    devices_list = []
+    for network in user_networks:
+        devices_list.extend(Device.query.filter_by(network_id=network.id))
 
     if template_age.days > 7:  # If templates in db are older than a week, then drop templates table and retrieve again
         Template.query.delete()
@@ -60,7 +63,7 @@ def home():
                     db.session.add(device)
                 db.session.commit()
 
-    return render_template('home.html', form=form, error=error)
+    return render_template('home.html', form=form, error=error, user_networks=user_networks, devices_list=devices_list)
 
 
 @home_blueprint.route('/welcome')

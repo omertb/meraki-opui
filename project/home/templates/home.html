@@ -138,6 +138,25 @@
 
 		</div>
 		<div class="col-md-8">
+            <h3>User Networks:</h3>
+            {% for network in user_networks %}
+            <strong>Network Name: </strong> {{ network.name }} <br>
+            <strong>Type: </strong> {{ network.type }} <br>
+            <strong>Template: </strong> {{ network.template }} <br>
+            <strong>Committed: </strong> {{ network.committed }} <br>
+
+            <strong>Devices connected: </strong>
+            {% for device in devices_list %}
+            {% if device.network == network %}<br>
+            <pre>
+            <i><b>Device Name: </b> {{ device.name}}</i>&nbsp;|&nbsp;
+            <i><b>Device Serial: </b> {{ device.serial}}</i>&nbsp;|&nbsp;
+            <i><b>Device committed: </b> {{ device.committed }}</i><br>
+            </pre>
+            {% endif %}
+            {% endfor %}
+            <br>
+            {% endfor %}
 		</div>
 	</div>
 </div>
