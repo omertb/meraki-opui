@@ -4,6 +4,7 @@ from flask import render_template, Blueprint, request
 from flask_login import login_required, current_user
 from project.home.forms import NetworkDeviceForm
 from project.home.functions import get_templates
+import datetime
 
 # home blueprint definition
 home_blueprint = Blueprint('home', __name__, template_folder='templates')
@@ -13,13 +14,13 @@ home_blueprint = Blueprint('home', __name__, template_folder='templates')
 @login_required
 def home():
     error = None
-    templates_are_not_new = False
+    template_age = datetime.datetime.now() - Template.query.first().reg_date
     templates_names = []
     print(current_user.id)
 
-    if templates_are_not_new:
-        Template.query.delete()  # delete existing templates in db
-        templates = get_templates()  # return dictionary
+    if template_age.days > 7:  # If templates in db are older than a week, then drop templates table and retrieve again
+        Template.query.delete()
+        templates = get_templates()  # returns dictionary
         for template in templates.items():
             db_row = Template(*template)
             db.session.add(db_row)
@@ -33,11 +34,14 @@ def home():
 
     form = NetworkDeviceForm(request.form)
     form.net_template.choices = list(templates_names)
+
     if request.method == 'POST':
         device_serials_list = form.serial_nos.data.strip().upper().replace(" ","").split("\r\n")
+
         if form.new_or_existing.data == 'existing':
             pass
         else:
+
             if form.net_type.data == 'firewall':
                 pass
             else:
