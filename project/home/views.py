@@ -37,6 +37,7 @@ def home():
 
     form = NetworkDeviceForm(request.form)
     form.net_template.choices = list(templates_names)
+    form.registered_nets.choices = [value for value, in user_networks.values(Network.name)]
 
     if request.method == 'POST':
         device_serials_list = form.serial_nos.data.strip().upper().replace(" ","").split("\r\n")

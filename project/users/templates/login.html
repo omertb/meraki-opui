@@ -3,13 +3,13 @@
 {% block custom_head %}
 <title>Login</title>
     <!-- Custom styles for this template -->
-    <link href="./static/login.css" rel="stylesheet">
+    <link href="static/login.css" rel="stylesheet">
 
 {% endblock %}
 
 {% block content %}
     <form class="form-signin" action="" method="post">
-  <img class="mb-4" src="./static/logo.jpg" alt="" width="204" height="60">
+  <img class="mb-4" src="static/logo.jpg" alt="" width="204" height="60">
   <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
 
   {{ form.csrf_token }}

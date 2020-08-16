@@ -8,6 +8,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
+<link href="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.css" rel="stylesheet">
+
+
     <title>Register Networks and Devices</title>
 
   </head>
@@ -56,8 +59,8 @@
 		<div class="col-md-8">
 		</div>
 	</div>
-	<div class="row">
 
+	<div class="row">
 		<div class="col-md-4">
             <form action="" method="post">
 
@@ -137,91 +140,91 @@
       {% endif %}
 
 		</div>
-		<div class="col-md-8">
 
-            <table class="table table-hover table-sm">
-              <thead>
+		<div class="col-md-8">
+            <table id="networksTable" class="table table-hover" data-toggle="table" data-click-to-select="true">
+              <thead class="thead-dark">
                 <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Network Name</th>
-                  <th scope="col">Network Type</th>
-                  <th scope="col">Network Template</th>
+                    <th scope="col" data-field="state" data-checkbox="true"></th>
+                    <th scope="col">#</th>
+                    <th scope="col">Network Name</th>
+                    <th scope="col">Network Type</th>
+                    <th scope="col">Network Template</th>
                     <th scope="col">Committed</th>
                 </tr>
               </thead>
+
               <tbody>
               {% for network in user_networks %}
-              <tr>
-                  <th scope="row">{{ loop.index }}</th>
-                  <td>{{ network.name }}</td>
-                  <td>{{ network.type }}</td>
-                  <td>{{ network.template }}</td>
-                  <td>{{ network.committed }}</td>
-                </tr
-                  {% endfor %}
+                <tr>
+                    <th data-field="state"></th>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ network.name }}</td>
+                    <td>{{ network.type }}</td>
+                    <td>{{ network.template }}</td>
+                    <td>{{ network.committed }}</td>
+                </tr>
+
+              {% endfor %}
+
               </tbody>
             </table>
+            <!-- MAIN TABLE END -->
 
-            <h3>User Networks:</h3>
+            <table class="table table-hover table-sm">
+              <thead>
+              <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Device Name</th>
+                  <th scope="col">Device Serial</th>
+                  <th scope="col">Device Committed</th>
+                  <th scope="col">Device Network</th>
+              </tr>
+              </thead>
+
+              <tbody>
+
             {% for network in user_networks %}
-            <strong>Network Name: </strong> {{ network.name }} <br>
-            <strong>Type: </strong> {{ network.type }} <br>
-            <strong>Template: </strong> {{ network.template }} <br>
-            <strong>Committed: </strong> {{ network.committed }} <br>
 
-            <strong>Devices connected: </strong>
-            {% for device in devices_list %}
-            {% if device.network == network %}<br>
-            <pre>
-            <i><b>Device Name: </b> {{ device.name}}</i>&nbsp;|&nbsp;
-            <i><b>Device Serial: </b> {{ device.serial}}</i>&nbsp;|&nbsp;
-            <i><b>Device committed: </b> {{ device.committed }}</i><br>
-            </pre>
-            {% endif %}
+            <div id="devicesInNetworkTable-{{ loop.index }}">
+
+                      {% for device in devices_list %}
+                        {% if device.network == network %}
+
+                      <tr>
+                          <th scope="row">{{ loop.index }}</th>
+                          <td>{{ device.name}}</td>
+                          <td>{{ device.serial}}</td>
+                          <td>{{ device.committed }}</td>
+                          <td>{{ device.network.name }}</td>
+                      </tr>
+                        {% endif %}
+                    {% endfor %}
+            </div>
+
             {% endfor %}
-            <br>
-            {% endfor %}
-		</div>
+              </tbody>
+            </table>
+                <!-- INNER TABLE END -->
+
+        </div>
+
 	</div>
 </div>
 
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.js"></script>
 
-       <script type="text/javascript">
+  <script src="static/jquery.min.js"></script>
+  <script src="static/bootstrap.min.js"></script>
+  <script src="static/scripts.js"></script>
 
-      $(document).ready(function(){
-    $("#selectNewExistingForm").change(function(){
-        $(this).find("option:selected").each(function(){
-            var optionValue = $(this).attr("value");
-            if(optionValue=='new'){
-                $("#newNetForm").show();
-                $("#existingNetForm").hide();
-            } else{
-                $("#newNetForm").hide();
-                $("#existingNetForm").show();
-                }
-            });
-        }).change();
-    });
 
-     $(document).ready(function(){
-    $("#netTypeSelect").change(function(){
-        $(this).find("option:selected").each(function(){
-            var optionValue = $(this).attr("value");
-            if(optionValue=='firewall'){
-                $("#templateFormArea").show();
-            } else{
-                $("#templateFormArea").hide();
-                }
-            });
-        }).change();
-    });
-      </script>
 
   </body>
 </html>
