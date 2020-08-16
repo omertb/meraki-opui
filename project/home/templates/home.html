@@ -10,7 +10,6 @@
 
 <link href="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.css" rel="stylesheet">
 
-
     <title>Register Networks and Devices</title>
 
   </head>
@@ -138,22 +137,25 @@
             {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}</p>
       {% endif %}
-
 		</div>
-
 		<div class="col-md-8">
-            <table id="networksTable" class="table table-hover" data-toggle="table" data-click-to-select="true">
+            <div id="toolbar">
+            <button id="buttonGetSelections" class="btn btn-secondary">getSelections</button>
+            </div>
+            <table
+                    id="networksTable" class="table table-hover"
+                    data-toggle="table" data-search="true"
+                    data-toolbar="#toolbar" data-click-to-select="true">
               <thead class="thead-dark">
                 <tr>
                     <th scope="col" data-field="state" data-checkbox="true"></th>
-                    <th scope="col">#</th>
-                    <th scope="col">Network Name</th>
-                    <th scope="col">Network Type</th>
-                    <th scope="col">Network Template</th>
-                    <th scope="col">Committed</th>
+                    <th scope="col" data-field="rowNumber" data-sortable="true">#</th>
+                    <th scope="col" data-field="networkName" data-sortable="true">Network Name</th>
+                    <th scope="col" data-field="networkType" data-sortable="true">Network Type</th>
+                    <th scope="col" data-field="boundedTemplate">Network Template</th>
+                    <th scope="col" data-field="committed">Committed</th>
                 </tr>
               </thead>
-
               <tbody>
               {% for network in user_networks %}
                 <tr>
@@ -164,15 +166,13 @@
                     <td>{{ network.template }}</td>
                     <td>{{ network.committed }}</td>
                 </tr>
-
               {% endfor %}
-
               </tbody>
             </table>
-            <!-- MAIN TABLE END -->
-
-            <table class="table table-hover table-sm">
-              <thead>
+            <!-- Networks Table End -->
+<br>
+            <table class="table table-hover table-sm" data-toggle="table" data-pagination="true">
+              <thead class="thead-light">
               <tr>
                   <th scope="col">#</th>
                   <th scope="col">Device Name</th>
@@ -181,16 +181,11 @@
                   <th scope="col">Device Network</th>
               </tr>
               </thead>
-
               <tbody>
-
             {% for network in user_networks %}
-
             <div id="devicesInNetworkTable-{{ loop.index }}">
-
-                      {% for device in devices_list %}
-                        {% if device.network == network %}
-
+                {% for device in devices_list %}
+                {% if device.network == network %}
                       <tr>
                           <th scope="row">{{ loop.index }}</th>
                           <td>{{ device.name}}</td>
@@ -198,33 +193,67 @@
                           <td>{{ device.committed }}</td>
                           <td>{{ device.network.name }}</td>
                       </tr>
-                        {% endif %}
-                    {% endfor %}
+                {% endif %}
+                {% endfor %}
             </div>
-
             {% endfor %}
               </tbody>
             </table>
-                <!-- INNER TABLE END -->
-
+            <!-- Devices Table End -->
+            <p id="demo"></p>
         </div>
-
 	</div>
 </div>
-
-
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+  <script src="static/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.js"></script>
 
-  <script src="static/jquery.min.js"></script>
-  <script src="static/bootstrap.min.js"></script>
   <script src="static/scripts.js"></script>
 
+  <script>
+  var $table = $('#networksTable')
+  var $button = $('#buttonGetSelections')
 
+  $(function() {
+    $button.click(function () {
+      alert('getSelections: ' + JSON.stringify($table.bootstrapTable('getSelections').length));
+      var JSON_Selected = $table.bootstrapTable('getSelections');
+      var i;
+      var text = "";
+      for (i=0; i<JSON_Selected.length; i++) {
+          text += "ID Number is: " + JSON_Selected[i]['rowNumber'] + "<br>"
+      }
+      document.getElementById("demo").innerHTML = text;
+    })
+  })
+
+  const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+    $(function() {
+    $table.on('click-row.bs.table', function (e, row, $element) {
+        delayedFunction();
+    })
+    })
+
+
+  async function delayedFunction() {
+      await sleep(1);
+                  $table = $('#networksTable')
+            var JSON_Selected = $table.bootstrapTable('getSelections');
+            var i;
+            var text = "";
+            console.log(JSON.stringify(JSON_Selected));
+            for (i = 0; i < JSON_Selected.length; i++) {
+                text += "ID Number is: " + JSON_Selected[i]['rowNumber'] + "<br>"
+            }
+            document.getElementById("demo").innerHTML = text;
+  }
+</script>
 
   </body>
 </html>
