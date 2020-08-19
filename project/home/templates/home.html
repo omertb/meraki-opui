@@ -140,7 +140,6 @@
 		</div>
 		<div class="col-md-8">
             <div id="toolbar">
-            <button id="buttonGetSelections" class="btn btn-secondary">getSelections</button>
             </div>
             <table
                     id="networksTable" class="table table-hover"
@@ -200,7 +199,6 @@
               </tbody>
             </table>
             <!-- Devices Table End -->
-            <p id="demo"></p>
         </div>
 	</div>
 </div>
@@ -214,25 +212,6 @@
 
   <script src="static/scripts.js"></script>
 
-  <script>
-
-
-
-  $(function() {
-    $button.click(function () {
-      alert('getSelections: ' + JSON.stringify($table.bootstrapTable('getSelections').length));
-      var JSON_Selected = $table.bootstrapTable('getSelections');
-      var i;
-      var text = "";
-      for (i=0; i<JSON_Selected.length; i++) {
-          text += "ID Number is: " + JSON_Selected[i]['rowNumber'] + "<br>"
-      }
-      document.getElementById("demo").innerHTML = text;
-    })
-  })
-
-
-</script>
 
   </body>
 </html>
