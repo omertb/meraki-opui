@@ -33,7 +33,31 @@ var $table = $('#networksTable');
 
 $(function() {
     $table.on('check.bs.table', function (e, row, $element) {
-         var JSON_Selected = $table.bootstrapTable('getSelections');
-         console.log(JSON_Selected);
+        checkUnCheckResult()
     });
 });
+$(function() {
+    $table.on('uncheck.bs.table', function (e, row, $element) {
+        checkUnCheckResult()
+    });
+});
+
+function checkUnCheckResult() {
+    var JSON_Selected = $table.bootstrapTable('getSelections');
+    console.log(JSON_Selected);
+    $.ajax({
+        url: "device.json",
+        data: JSON.stringify(JSON_Selected),
+        type: 'POST',
+        dataType: 'json',
+        success: function(data) {
+            console.log('success');
+            // window.location.href = data; // navigate to the new URL
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
+    // $.post("/device.json", JSON_Selected);
+
+}

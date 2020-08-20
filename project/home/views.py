@@ -4,13 +4,14 @@ from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.home.forms import NetworkDeviceForm
 from project.home.functions import get_templates
-import datetime
+import datetime, json
+
 
 # home blueprint definition
 home_blueprint = Blueprint('home', __name__, template_folder='templates')
 
 
-@home_blueprint.route('/network_table', methods=['GET', 'POST'])
+@home_blueprint.route('/network.json', methods=['GET'])
 @login_required
 def network_table():
     user_networks = Network.query.filter_by(user_id=current_user.id)
@@ -20,7 +21,22 @@ def network_table():
         network['rowNum'] = row + 1
         network_list.append(network)
     return jsonify(network_list)
-    #return jsonify([network.serialize() for network in user_networks.all()])
+    # return jsonify([network.serialize() for network in user_networks.all()])
+
+
+@home_blueprint.route('/device.json', methods=['GET', 'POST'])
+@login_required
+def device_table():
+    if request.method == 'POST':
+        selected_networks = request.form.to_dict()
+        print(selected_networks)
+        with open("selected_networks.json", "w", encoding='utf-8') as f:
+            json.dump(selected_networks, f, ensure_ascii=False, indent=4)
+        return selected_networks
+    else:
+        with open("selected_networks.json") as f:
+            selected_networks = json.load(f)
+        return selected_networks
 
 
 @home_blueprint.route('/', methods=['GET', 'POST'])
