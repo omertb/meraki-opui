@@ -83,6 +83,15 @@ class Network(db.Model):
     def __repr__(self):
         return '<net_name: {}>'.format(self.name)
 
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'name' : self.name,
+            'type' : self.type,
+            'committed' : self.committed,
+            'bound_template' : self.bound_template
+        }
+
 
 class Device(db.Model):
 

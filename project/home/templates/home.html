@@ -142,31 +142,24 @@
             <div id="toolbar">
             </div>
             <table
-                    id="networksTable" class="table table-hover"
-                    data-toggle="table" data-search="true"
-                    data-toolbar="#toolbar" data-click-to-select="true">
+                    id="networksTable"
+                    class="table table-hover"
+                    data-toggle="table"
+                    data-search="true"
+                    data-toolbar="#toolbar"
+                    data-click-to-select="true"
+                    data-url="network_table"
+            >
               <thead class="thead-dark">
                 <tr>
                     <th scope="col" data-field="state" data-checkbox="true"></th>
-                    <th scope="col" data-field="rowNumber" data-sortable="true">#</th>
-                    <th scope="col" data-field="networkName" data-sortable="true">Network Name</th>
-                    <th scope="col" data-field="networkType" data-sortable="true">Network Type</th>
-                    <th scope="col" data-field="boundedTemplate">Network Template</th>
+                    <th scope="col" data-field="rowNum" data-sortable="true">#</th>
+                    <th scope="col" data-field="name" data-sortable="true">Network Name</th>
+                    <th scope="col" data-field="type" data-sortable="true">Network Type</th>
+                    <th scope="col" data-field="bound_template">Network Template</th>
                     <th scope="col" data-field="committed">Committed</th>
                 </tr>
               </thead>
-              <tbody>
-              {% for network in user_networks %}
-                <tr>
-                    <th data-field="state"></th>
-                    <th scope="row">{{ loop.index }}</th>
-                    <td>{{ network.name }}</td>
-                    <td>{{ network.type }}</td>
-                    <td>{{ network.template }}</td>
-                    <td>{{ network.committed }}</td>
-                </tr>
-              {% endfor %}
-              </tbody>
             </table>
             <!-- Networks Table End -->
 <br>

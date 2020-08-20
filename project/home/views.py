@@ -1,6 +1,6 @@
 from project import db
 from project.models import User, Template, Network, Device
-from flask import render_template, Blueprint, request
+from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.home.forms import NetworkDeviceForm
 from project.home.functions import get_templates
@@ -8,6 +8,19 @@ import datetime
 
 # home blueprint definition
 home_blueprint = Blueprint('home', __name__, template_folder='templates')
+
+
+@home_blueprint.route('/network_table', methods=['GET', 'POST'])
+@login_required
+def network_table():
+    user_networks = Network.query.filter_by(user_id=current_user.id)
+    network_list = []
+    for row, network in enumerate(user_networks.all()):
+        network = network.serialize()
+        network['rowNum'] = row + 1
+        network_list.append(network)
+    return jsonify(network_list)
+    #return jsonify([network.serialize() for network in user_networks.all()])
 
 
 @home_blueprint.route('/', methods=['GET', 'POST'])
