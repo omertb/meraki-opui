@@ -30,29 +30,34 @@ $(document).ready(function(){
 
 
 var $table = $('#networksTable');
-
+var $deviceTable = $('#deviceTable');
+var JSON_Selected = $table.bootstrapTable('getSelections');
 $(function() {
     $table.on('check.bs.table', function (e, row, $element) {
-        checkUnCheckResult()
+        console.log('CHECKED');
+        checkUnCheckResult();
     });
 });
 $(function() {
     $table.on('uncheck.bs.table', function (e, row, $element) {
-        checkUnCheckResult()
+        console.log('UNCHECKED');
+        checkUnCheckResult();
     });
 });
 
 function checkUnCheckResult() {
-    var JSON_Selected = $table.bootstrapTable('getSelections');
-    console.log(JSON_Selected);
+    $deviceTable = $('#deviceTable');
+    JSON_Selected = $table.bootstrapTable('getSelections');
+    // console.log(JSON_Selected);
     $.ajax({
         url: "device.json",
         data: JSON.stringify(JSON_Selected),
         type: 'POST',
-        dataType: 'json',
+        contentType: "application/json",
         success: function(data) {
-            console.log('success');
-            // window.location.href = data; // navigate to the new URL
+            console.log(data);
+            $deviceTable.bootstrapTable("destroy")
+            $deviceTable.bootstrapTable({data: data}) // device table source
         },
         error: function(error) {
             console.log(error);

@@ -28,15 +28,18 @@ def network_table():
 @login_required
 def device_table():
     if request.method == 'POST':
-        selected_networks = request.form.to_dict()
-        print(selected_networks)
-        with open("selected_networks.json", "w", encoding='utf-8') as f:
-            json.dump(selected_networks, f, ensure_ascii=False, indent=4)
-        return selected_networks
+        selected_networks = request.get_json()
+        device_list = []
+        for network in selected_networks:
+            network_devices = Device.query.filter_by(network_id=network['id'])
+            for row, device in enumerate(network_devices):
+                device = device.serialize()
+                device['rowNum'] = row + 1
+                device['network'] = network['name']
+                device_list.append(device)
+        return jsonify(device_list)
     else:
-        with open("selected_networks.json") as f:
-            selected_networks = json.load(f)
-        return selected_networks
+        return "Not Found", 404
 
 
 @home_blueprint.route('/', methods=['GET', 'POST'])

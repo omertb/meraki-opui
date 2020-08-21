@@ -115,6 +115,13 @@ class Device(db.Model):
     def __repr__(self):
         return '<device_name: {}>'.format(self.name)
 
+    def serialize(self):
+        return {
+            'name' : self.name,
+            'serial' : self.serial,
+            'committed' : self.committed
+        }
+
 
 class Template(db.Model):
 

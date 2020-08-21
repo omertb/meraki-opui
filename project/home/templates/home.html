@@ -163,33 +163,22 @@
             </table>
             <!-- Networks Table End -->
 <br>
-            <table class="table table-hover table-sm" data-toggle="table" data-pagination="true">
+            <table
+                    id="deviceTable"
+                    class="table table-hover table-sm"
+                    data-pagination="true"
+                    data-click-to-select="true"
+            >
               <thead class="thead-light">
               <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Device Name</th>
-                  <th scope="col">Device Serial</th>
-                  <th scope="col">Device Committed</th>
-                  <th scope="col">Device Network</th>
+                  <th scope="col" data-field="state" data-checkbox="true"></th>
+                  <th scope="col" data-field="rowNum" data-sortable="true">#</th>
+                  <th scope="col" data-field="name" data-sortable="true">Device Name</th>
+                  <th scope="col" data-field="serial" data-sortable="true">Device Serial</th>
+                  <th scope="col" data-field="committed">Device Committed</th>
+                  <th scope="col" data-field="network" data-sortable="true">Device Network</th>
               </tr>
               </thead>
-              <tbody>
-            {% for network in user_networks %}
-            <div id="devicesInNetworkTable-{{ loop.index }}">
-                {% for device in devices_list %}
-                {% if device.network == network %}
-                      <tr>
-                          <th scope="row">{{ loop.index }}</th>
-                          <td>{{ device.name}}</td>
-                          <td>{{ device.serial}}</td>
-                          <td>{{ device.committed }}</td>
-                          <td>{{ device.network.name }}</td>
-                      </tr>
-                {% endif %}
-                {% endfor %}
-            </div>
-            {% endfor %}
-              </tbody>
             </table>
             <!-- Devices Table End -->
         </div>
