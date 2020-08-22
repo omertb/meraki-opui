@@ -48,12 +48,13 @@ class User(db.Model):
     @staticmethod
     def ldap_login(email, password):
         ld = ldap.initialize("ldap://{}:{}".format(LDAP_SERVER, LDAP_PORT))
-        try:
-            ld.simple_bind_s(email, password)
-        except (ldap.INVALID_CREDENTIALS, ldap.SERVER_DOWN) as e:
-            return False
-        return True
-
+        return ld.simple_bind_s(email, password)
+        #try:
+        #    ld.simple_bind_s(email, password)
+        #except (ldap.INVALID_CREDENTIALS, ldap.SERVER_DOWN) as e:
+        #    return False
+        #return True
+#
     def __repr__(self):
         return '<username: {}>'.format(self.username)
 

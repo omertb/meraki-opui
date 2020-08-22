@@ -15,7 +15,8 @@ def get_data(item) -> list:
         response_list = json.loads(response.text)
         return response_list
     else:
-        return None
+        print("Meraki Server Response: {} | Code: {}".format(response, response.status_code))
+        raise requests.exceptions.ConnectionError
 
 
 def get_organization_ids() -> list:

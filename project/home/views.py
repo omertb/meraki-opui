@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 from project.home.forms import NetworkDeviceForm
 from project.home.functions import get_templates
 import datetime, json
+from requests.exceptions import ConnectionError
 
 
 # home blueprint definition
@@ -30,13 +31,15 @@ def device_table():
     if request.method == 'POST':
         selected_networks = request.get_json()
         device_list = []
+        i = 1
         for network in selected_networks:
             network_devices = Device.query.filter_by(network_id=network['id'])
-            for row, device in enumerate(network_devices):
+            for device in network_devices:
                 device = device.serialize()
-                device['rowNum'] = row + 1
+                device['rowNum'] = i
                 device['network'] = network['name']
                 device_list.append(device)
+                i += 1
         return jsonify(device_list)
     else:
         return "Not Found", 404
@@ -54,13 +57,16 @@ def home():
         devices_list.extend(Device.query.filter_by(network_id=network.id))
 
     if template_age.days > 7:  # If templates in db are older than a week, then drop templates table and retrieve again
-        Template.query.delete()
-        templates = get_templates()  # returns dictionary
-        for template in templates.items():
-            db_row = Template(*template)
-            db.session.add(db_row)
-        db.session.commit()
-        templates_names = templates.keys()
+        try:
+            templates = get_templates()  # returns dictionary
+            Template.query.delete()
+            for template in templates.items():
+                db_row = Template(*template)
+                db.session.add(db_row)
+            db.session.commit()
+            templates_names = templates.keys()
+        except ConnectionError:
+            error = "Meraki Server Bad Response"
 
     else:
         templates_db = Template.query.all()
