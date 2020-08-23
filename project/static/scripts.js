@@ -33,7 +33,26 @@ $(document).ready(function(){
         }).change();
 });
 
+// post form
+/*
+$(document).on("submit", "#networkDeviceForm", function(event){
+    event.preventDefault();
+    $.ajax({
+        url: "/",
+        type: "POST",
+        data: new FormData(this),
+        dataType: "json",
+        contentType: false,
+        cache: false,
+        processData: false,
+        success: function(data) {
+            console.log(data);
+        }
+    });
+});
+*/
 
+// device table creation
 var $table = $('#networksTable');
 var $deviceTable = $('#deviceTable');
 $deviceTable.hide();

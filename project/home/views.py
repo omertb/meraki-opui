@@ -25,7 +25,7 @@ def network_table():
     # return jsonify([network.serialize() for network in user_networks.all()])
 
 
-@home_blueprint.route('/device.json', methods=['GET', 'POST'])
+@home_blueprint.route('/device.json', methods=['POST'])
 @login_required
 def device_table():
     if request.method == 'POST':
@@ -68,7 +68,7 @@ def home():
         except ConnectionError:
             error = "Meraki Server Bad Response"
 
-    else:
+    else:  # if templates are not older than the value above, then use the ones in DB
         templates_db = Template.query.all()
         for template in templates_db:
             templates_names.append(template.name)
@@ -78,7 +78,8 @@ def home():
     form.registered_nets.choices = [value for value, in user_networks.values(Network.name)]
 
     if request.method == 'POST':
-        device_serials_list = form.serial_nos.data.strip().upper().replace(" ","").split("\r\n")
+        device_serials_list = form.serial_nos.data.strip().upper().replace(" ", "").split("\r\n")
+        print(form)
 
         if form.new_or_existing.data == 'existing':
             pass
@@ -93,6 +94,7 @@ def home():
             if network:
                 error = "Network already exists, try another unique name"
                 return render_template('home.html', form=form, error=error)
+                # return jsonify(error)
 
             if net_type == 'firewall':
                 pass

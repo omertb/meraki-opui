@@ -61,7 +61,7 @@
 
 	<div class="row">
 		<div class="col-md-4">
-            <form action="" method="post">
+            <form id="networkDeviceForm" action="" method="post">
 
                 <div class="form-group">
                     <label for="selectNewExistingForm">Select:</label>
@@ -129,24 +129,80 @@
                 <textarea class="form-control" id="devicesTextarea" rows="5"></textarea>
                 -->
               </div>
-                <div class="form-group">
-                    <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
+
+                <div id="errorDiv" style="color:red;">
+                    {% if error %}
+                    <p class="error"><strong>Error:</strong> {{ error }}</p>
+                    {% endif %}
                 </div>
+
+                <div class="form-group">
+                    <button id="saveFormButton" class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
+                </div>
+
             </form>
 
-            {% if error %}
-        <p class="error"><strong>Error:</strong> {{ error }}</p>
-      {% endif %}
 		</div>
 		<div class="col-md-8">
-            <div id="toolbar">
+            <div id="netTableToolbar">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteSelectedModal">
+                    Delete Network
+                </button>
+                <!-- Modal -->
+                <div class="modal fade" id="deleteSelectedModal" tabindex="-1" role="dialog" aria-labelledby="deleteSelectedModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteSelectedModalLabel">Delete Selected Network(s)</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        Do you confirm to delete selected network(s)?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="deleteSelectedNetsButton" type="button" class="btn btn-primary">Delete</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#commitSelectedNetsModal">
+                  Commit Network
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="commitSelectedNetsModal" tabindex="-1" role="dialog" aria-labelledby="commitSelectedNetsModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="commitSelectedNetsModalLabel">Commit Selected Network(s)</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        Do you confirm to commit selected network(s) to Meraki Cloud?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="commitSelectedNetsButton" type="button" class="btn btn-primary">Commit</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
             </div>
             <table
                     id="networksTable"
-                    class="table table-hover"
+                    class="table table-hover table-sm"
                     data-toggle="table"
                     data-search="true"
-                    data-toolbar="#toolbar"
+                    data-toolbar="#netTableToolbar"
                     data-click-to-select="true"
                     data-url="network.json"
             >
@@ -162,10 +218,67 @@
               </thead>
             </table>
             <!-- Networks Table End -->
-<br>
+            <br>
+
+            <div id="devTableToolbar">
+                
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteSelectedDevsModal">
+                    Delete Device
+                </button>
+                <!-- Modal -->
+                <div class="modal fade" id="deleteSelectedDevsModal" tabindex="-1" role="dialog" aria-labelledby="deleteSelectedDevsModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteSelectedDevsModalLabel">Delete Selected Device(s)</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        Do you confirm to delete selected device(s)?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="deleteSelectedDevsButton" type="button" class="btn btn-primary">Delete</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#commitSelectedDevsModal">
+                  Commit Device
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="commitSelectedDevsModal" tabindex="-1" role="dialog" aria-labelledby="commitSelectedDevsModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="commitSelectedDevsModalLabel">Commit Selected Device(s)</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        Do you confirm to commit selected device(s) to Meraki Cloud?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="commitSelectedDevsButton" type="button" class="btn btn-primary">Commit</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+            </div>
             <table
                     id="deviceTable"
                     class="table table-hover table-sm"
+                    data-search="true"
+                    data-toolbar="#devTableToolbar"
                     data-pagination="true"
                     data-click-to-select="true"
             >
