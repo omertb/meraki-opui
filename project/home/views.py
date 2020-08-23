@@ -4,7 +4,7 @@ from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.home.forms import NetworkDeviceForm
 from project.home.functions import get_templates
-import datetime, json
+import datetime
 from requests.exceptions import ConnectionError
 
 
@@ -82,14 +82,21 @@ def home():
 
         if form.new_or_existing.data == 'existing':
             pass
-        else:
 
-            if form.net_type.data == 'firewall':
+        elif form.new_or_existing.data == 'new':
+            net_name = form.net_name.data
+            net_type = form.net_type.data
+            user_id = current_user.id
+
+            # ensure network name does not already exists
+            network = Network.query.filter_by(name=net_name).first()
+            if network:
+                error = "Network already exists, try another unique name"
+                return render_template('home.html', form=form, error=error)
+
+            if net_type == 'firewall':
                 pass
             else:
-                net_name = form.net_name.data
-                net_type = form.net_type.data
-                user_id = current_user.id
                 network = Network(net_name, net_type, user_id)
                 db.session.add(network)
                 db.session.commit()
