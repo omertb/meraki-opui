@@ -159,8 +159,9 @@
                           <span aria-hidden="true">&times;</span>
                         </button>
                       </div>
-                      <div class="modal-body">
-                        Do you confirm to delete selected network(s)?
+                      <div class="modal-body text-center" style="color:red;">
+                          Selected networks and devices bound to them will be deleted! <br>
+                          <b style="color:black;">Are you sure?</b>
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -220,8 +221,9 @@
             <!-- Networks Table End -->
             <br>
 
+            <div class="dev-table-selector">
             <div id="devTableToolbar">
-                
+
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteSelectedDevsModal">
                     Delete Device
@@ -294,6 +296,7 @@
               </thead>
                 <tbody id="deviceTableBody"></tbody>
             </table>
+                </div>
             <!-- Devices Table End -->
         </div>
 	</div>

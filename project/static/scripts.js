@@ -55,7 +55,8 @@ $(document).on("submit", "#networkDeviceForm", function(event){
 // device table creation
 var $table = $('#networksTable');
 var $deviceTable = $('#deviceTable');
-$deviceTable.hide();
+// $deviceTable.hide();
+$('.dev-table-selector').hide()
 var JSON_Selected = $table.bootstrapTable('getSelections');
 $(function() {
     $table.on('check.bs.table', function (e, row, $element) {
@@ -74,7 +75,8 @@ function checkUnCheckResult() {
     $deviceTable = $('#deviceTable');
     JSON_Selected = $table.bootstrapTable('getSelections');
     if (JSON_Selected.length==0) {
-        $deviceTable.fadeOut();
+        // $deviceTable.fadeOut();
+        $('.dev-table-selector').fadeOut()
         $deviceTable.bootstrapTable("destroy");
         return
     }
@@ -88,8 +90,10 @@ function checkUnCheckResult() {
             console.log(data);
             $deviceTable.bootstrapTable("destroy");
             $deviceTable.bootstrapTable({data: data}); // device table source
-            $deviceTable.hide();
-            $deviceTable.fadeIn();
+            // $deviceTable.hide();
+            // $deviceTable.fadeIn();
+            $('.dev-table-selector').hide();
+            $('.dev-table-selector').fadeIn();
         },
         error: function(error) {
             console.log(error);
@@ -98,3 +102,19 @@ function checkUnCheckResult() {
     // $.post("/device.json", JSON_Selected);
 
 }
+
+// network delete modal
+
+$(document).on("click", "#deleteSelectedNetsButton", function(event){
+    JSON_Selected = $table.bootstrapTable('getSelections');
+    $.ajax({
+        url: "/delete_networks",
+        type: "POST",
+        data: JSON.stringify(JSON_Selected),
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+            console.log(data);
+        }
+    });
+});
