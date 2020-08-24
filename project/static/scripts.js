@@ -34,7 +34,7 @@ $(document).ready(function(){
 });
 
 // post form
-/*
+
 $(document).on("submit", "#networkDeviceForm", function(event){
     event.preventDefault();
     $.ajax({
@@ -50,7 +50,7 @@ $(document).on("submit", "#networkDeviceForm", function(event){
         }
     });
 });
-*/
+
 
 // device table creation
 var $table = $('#networksTable');
@@ -99,12 +99,11 @@ function checkUnCheckResult() {
             console.log(error);
         }
     });
-    // $.post("/device.json", JSON_Selected);
 
 }
 
 // network delete modal
-
+var deleteResult = document.getElementById("deleteResult")
 $(document).on("click", "#deleteSelectedNetsButton", function(event){
     JSON_Selected = $table.bootstrapTable('getSelections');
     $.ajax({
@@ -115,6 +114,11 @@ $(document).on("click", "#deleteSelectedNetsButton", function(event){
         contentType: "application/json",
         success: function(data) {
             console.log(data);
+            var output = '';
+            for (var i = 0; i < data.length; i++){
+                output += "<li>" + data[i] + "</li>";
+            }
+            deleteResult.innerHTML = output;
         }
     });
 });
