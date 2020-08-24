@@ -130,7 +130,7 @@
                 -->
               </div>
 
-                <div id="errorDiv" style="color:red;">
+                <div id="formErrorDiv" style="color:red;padding: 5px;">
                     {% if error %}
                     <p class="error"><strong>Error:</strong> {{ error }}</p>
                     {% endif %}
@@ -207,6 +207,7 @@
                     data-toolbar="#netTableToolbar"
                     data-click-to-select="true"
                     data-url="network.json"
+                    data-pagination="true"
             >
               <thead class="thead-dark">
                 <tr>

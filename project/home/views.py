@@ -117,9 +117,10 @@ def home():
             network = Network.query.filter_by(name=net_name).first()
             if network:
                 error = "Network already exists, try another unique name"
-                return render_template('home.html', form=form, error=error)
-                # return jsonify(error)
+                # return render_template('home.html', form=form, error=error)
+                return jsonify(error)
 
+            error = None
             if net_type == 'firewall':
                 pass
             else:
@@ -135,7 +136,9 @@ def home():
                     db.session.add(device)
                 db.session.commit()
 
-    return render_template('home.html', form=form, error=error, user_networks=user_networks, devices_list=devices_list)
+        return jsonify(error)
+
+    return render_template('home.html', form=form, error=error)
 
 
 @home_blueprint.route('/welcome')

@@ -33,8 +33,12 @@ $(document).ready(function(){
         }).change();
 });
 
-// post form
 
+var $table = $('#networksTable');
+var $deviceTable = $('#deviceTable');
+
+// post form
+var formErrorDiv = document.getElementById("formErrorDiv")
 $(document).on("submit", "#networkDeviceForm", function(event){
     event.preventDefault();
     $.ajax({
@@ -46,16 +50,18 @@ $(document).on("submit", "#networkDeviceForm", function(event){
         cache: false,
         processData: false,
         success: function(data) {
-            console.log(data);
+            if(data != null) {
+                formErrorDiv.innerHTML = JSON.stringify(data);
+            }else{
+                $table.bootstrapTable('refresh');
+            }
         }
+
     });
 });
 
-
 // device table creation
-var $table = $('#networksTable');
-var $deviceTable = $('#deviceTable');
-// $deviceTable.hide();
+
 $('.dev-table-selector').hide()
 var JSON_Selected = $table.bootstrapTable('getSelections');
 $(function() {
@@ -114,6 +120,9 @@ $(document).on("click", "#deleteSelectedNetsButton", function(event){
         contentType: "application/json",
         success: function(data) {
             console.log(data);
+            $table.bootstrapTable('refresh');
+            $deviceTable.bootstrapTable("destroy");
+            $('.dev-table-selector').hide()
             var output = '';
             for (var i = 0; i < data.length; i++){
                 output += "<li>" + data[i] + "</li>";
