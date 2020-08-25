@@ -68,14 +68,24 @@ var JSON_Selected = $table.bootstrapTable('getSelections');
 $(function() {
     $table.on('check.bs.table', function (e, row, $element) {
         //e.preventDefault();
-        console.log('CHECKED');
         checkUnCheckResult();
     });
 });
 $(function() {
     $table.on('uncheck.bs.table', function (e, row, $element) {
         //e.preventDefault();
-        console.log('UNCHECKED');
+        checkUnCheckResult();
+    });
+});
+$(function() {
+    $table.on('check-all.bs.table', function (e, row, $element) {
+        //e.preventDefault();
+        checkUnCheckResult();
+    });
+});
+$(function() {
+    $table.on('uncheck-all.bs.table', function (e, row, $element) {
+        //e.preventDefault();
         checkUnCheckResult();
     });
 });
