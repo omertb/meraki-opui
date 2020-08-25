@@ -15,6 +15,8 @@ home_blueprint = Blueprint('home', __name__, template_folder='templates')
 @home_blueprint.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
+    # beginning of "on page load"
+    #####
     error = None
     template_age = datetime.datetime.now() - Template.query.first().reg_date
     templates_names = []
@@ -43,14 +45,15 @@ def home():
     form = NetworkDeviceForm(request.form)
     form.net_template.choices = list(templates_names)
     form.registered_nets.choices = [value for value, in user_networks.values(Network.name)]
+    #####
+    # end of "on page load" block
 
     if request.method == 'POST':
+        error = None
         device_serials_list = form.serial_nos.data.strip().upper().replace(" ", "").split("\r\n")
 
         if form.new_or_existing.data == 'existing':
             net_name = form.registered_nets.data
-            print(net_name)
-            save_devices_in_db(device_serials_list, net_name)
 
         elif form.new_or_existing.data == 'new':
             net_name = form.net_name.data
@@ -68,14 +71,19 @@ def home():
                 # return render_template('home.html', form=form, error=error)
                 return jsonify(error)
 
-            error = None
             if net_type == 'firewall':
-                pass
+                template = Template.query.filter_by(name=form.net_template.data).first()
+                bound_template = template.id
             else:
-                network = Network(net_name, net_type, user_id)
-                db.session.add(network)
-                db.session.commit()
-                save_devices_in_db(device_serials_list, net_name)
+                bound_template = None
+
+            network = Network(net_name, net_type, user_id, bound_template)
+            db.session.add(network)
+            db.session.commit()
+        else:
+            return jsonify("Bad option sent to server")
+
+        save_devices_in_db(device_serials_list, net_name)
 
         return jsonify(error)
 

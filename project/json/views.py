@@ -1,5 +1,5 @@
 from project import db
-from project.models import Network, Device
+from project.models import Network, Device, Template
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 
@@ -37,8 +37,11 @@ def network_table():
     user_networks = Network.query.filter_by(user_id=current_user.id)
     network_list = []
     for row, network in enumerate(user_networks.all()):
+        template_name = network.template.name if network.template is not None else None
         network = network.serialize()
         network['rowNum'] = row + 1
+        network['committed'] = 'No' if network['committed'] is False else 'Yes'
+        network['bound_template'] = template_name
         network_list.append(network)
     return jsonify(network_list)
     # return jsonify([network.serialize() for network in user_networks.all()])
@@ -57,6 +60,7 @@ def device_table():
                 device = device.serialize()
                 device['rowNum'] = i
                 device['network'] = network['name']
+                device['committed'] = 'No' if device['committed'] is False else 'Yes'
                 device_list.append(device)
                 i += 1
         return jsonify(device_list)

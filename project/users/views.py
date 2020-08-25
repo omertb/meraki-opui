@@ -23,6 +23,8 @@ def login():
             # if user is not None and bcrypt.check_password_hash(user.password, request.form['password']):
             # if user is not None and bcrypt.check_password_hash(user.password, request.form['password']):
             username = username.split('@')[0]
+
+            # ldap login
             try:
                 ldap_login_user = User.ldap_login(username, password)
                 if ldap_login_user:
