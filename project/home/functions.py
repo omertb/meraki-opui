@@ -27,7 +27,7 @@ def get_organization_ids() -> list:
     return org_id_list
 
 
-def get_templates():
+def get_templates() -> dict:
     org_id_list = get_organization_ids()
     templates_dict = {}
     for org_id in org_id_list:

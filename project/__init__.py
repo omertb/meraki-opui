@@ -12,11 +12,13 @@ app.config.from_object('config.DevelopmentConfig')
 # create the sqlalchemy object
 db = SQLAlchemy(app)
 
-# import users blueprint
+# import blueprints
 from project.users.views import users_blueprint
 from project.home.views import home_blueprint
+from project.json.views import json_blueprint
 app.register_blueprint(users_blueprint)
 app.register_blueprint(home_blueprint)
+app.register_blueprint(json_blueprint)
 
 from project.models import User
 
