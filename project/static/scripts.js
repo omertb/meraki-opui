@@ -64,7 +64,6 @@ $(document).on("submit", "#networkDeviceForm", function(event){
 //vf lines for fade effect for devices table on select,unselect event on network table
 // device table creation
 
-//vf $('.dev-table-selector').hide()
 var JSON_Selected = $table.bootstrapTable('getSelections');
 $(function() {
     $table.on('check.bs.table', function (e, row, $element) {
@@ -95,8 +94,6 @@ function checkUnCheckResult() {
     //$deviceTable = $('#deviceTable');
     JSON_Selected = $table.bootstrapTable('getSelections');
     if (JSON_Selected.length==0) {
-        // $deviceTable.fadeOut();
-        //vf $('.dev-table-selector').fadeOut()
         $deviceTable.bootstrapTable("destroy");
         return
     }
@@ -110,11 +107,6 @@ function checkUnCheckResult() {
             console.log(data);
             $deviceTable.bootstrapTable("destroy");
             $deviceTable.bootstrapTable({data: data}); // device table source
-            // $deviceTable.bootstrapTable('refresh');
-            // $deviceTable.hide();
-            // $deviceTable.fadeIn();
-            //vf $('.dev-table-selector').hide();
-            //vf $('.dev-table-selector').fadeIn();
         },
         error: function(error) {
             console.log(error);
@@ -143,8 +135,7 @@ $(document).on("click", "#deleteSelectedNetsButton", function(event){
         success: function(data) {
             console.log(data);
             $table.bootstrapTable('refresh');
-            //vf $deviceTable.bootstrapTable("destroy");
-            $('.dev-table-selector').hide()
+            $deviceTable.bootstrapTable("destroy");
             var output = '';
             for (var i = 0; i < data.length; i++){
                 output += "<li>" + data[i] + "</li>";
