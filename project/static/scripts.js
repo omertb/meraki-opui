@@ -53,6 +53,7 @@ $(document).on("submit", "#networkDeviceForm", function(event){
             if(data != null) {
                 formErrorDiv.innerHTML = JSON.stringify(data);
             }else{
+                formErrorDiv.innerHTML = "";
                 $table.bootstrapTable('refresh');
             }
         }

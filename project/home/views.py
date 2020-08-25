@@ -46,17 +46,22 @@ def home():
 
     if request.method == 'POST':
         device_serials_list = form.serial_nos.data.strip().upper().replace(" ", "").split("\r\n")
-        print(form)
 
         if form.new_or_existing.data == 'existing':
-            pass
+            net_name = form.registered_nets.data
+            print(net_name)
+            save_devices_in_db(device_serials_list, net_name)
 
         elif form.new_or_existing.data == 'new':
             net_name = form.net_name.data
+            # validation on serverside
+            if net_name == "":
+                return jsonify("Enter a unique network name!")
+
             net_type = form.net_type.data
             user_id = current_user.id
 
-            # ensure network name does not already exists
+            # ensure that network name does not already exist in db641296
             network = Network.query.filter_by(name=net_name).first()
             if network:
                 error = "Network already exists, try another unique name"
@@ -70,15 +75,19 @@ def home():
                 network = Network(net_name, net_type, user_id)
                 db.session.add(network)
                 db.session.commit()
-                network = Network.query.filter_by(name=net_name).first()
-                for device_serial in device_serials_list:
-                    dev_name = device_serial.replace("-", "")
-                    dev_serial = device_serial
-                    network_id = network.id
-                    device = Device(dev_name, dev_serial, network_id)
-                    db.session.add(device)
-                db.session.commit()
+                save_devices_in_db(device_serials_list, net_name)
 
         return jsonify(error)
 
     return render_template('home.html', form=form, error=error)
+
+
+def save_devices_in_db(device_serials_list, net_name):
+    network = Network.query.filter_by(name=net_name).first()
+    for device_serial in device_serials_list:
+        dev_name = device_serial.replace("-", "")
+        dev_serial = device_serial
+        network_id = network.id
+        device = Device(dev_name, dev_serial, network_id)
+        db.session.add(device)
+    db.session.commit()

@@ -6,25 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <link href="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.css" rel="stylesheet">
 
-<link href="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.css" rel="stylesheet">
-
-    <title>Register Networks and Devices</title>
-
+      <title>Register Networks and Devices</title>
   </head>
-
 
   <body>
 
   <div class="container-fluid">
-	<div class="row">
-		<div class="col-md-12">
-			<div class="page-header">
+	<div class="row navbar navbar-light" style="background-color: #e3f2fd;">
+			<div class="col-md-6 page-header">
 				<h1>
 					Store <small>Network and Device Registration</small>
 				</h1>
+
 			</div>
+            <div class="col-md-6">
+                <form class="form-inline my-2 my-lg-0 float-right" method="get" action="/logout">
+                  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
+                </form>
+
+            </div>
+<!-- optional nav-bar
 			<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
               <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -44,13 +48,9 @@
                   </li>
                 </ul>
 
-                <form class="form-inline my-2 my-lg-0" method="get" action="/logout">
-                  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
-                </form>
               </div>
-            </nav>
+            </nav> -->
 
-		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-4">
@@ -63,7 +63,7 @@
 		<div class="col-md-4">
             <form id="networkDeviceForm" action="" method="post">
 
-                <div class="form-group">
+                <div class="form-group pt-4">
                     <label for="selectNewExistingForm">Select:</label>
                     {{ form.new_or_existing(class_="form-control", id="selectNewExistingForm") }}
                     <!--
