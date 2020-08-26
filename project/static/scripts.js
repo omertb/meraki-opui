@@ -104,7 +104,6 @@ function checkUnCheckResult() {
         type: 'POST',
         contentType: "application/json",
         success: function(data) {
-            console.log(data);
             $deviceTable.bootstrapTable("destroy");
             $deviceTable.bootstrapTable({data: data}); // device table source
         },
@@ -122,8 +121,8 @@ $(function() {
     });
 });
 
-// network delete modal
-var deleteResult = document.getElementById("deleteResult")
+// delete network modal
+var deleteNetworkResult = document.getElementById("deleteNetworkResult")
 $(document).on("click", "#deleteSelectedNetsButton", function(event){
     JSON_Selected = $table.bootstrapTable('getSelections');
     $.ajax({
@@ -133,14 +132,35 @@ $(document).on("click", "#deleteSelectedNetsButton", function(event){
         dataType: "json",
         contentType: "application/json",
         success: function(data) {
-            console.log(data);
             $table.bootstrapTable('refresh');
             $deviceTable.bootstrapTable("destroy");
             var output = '';
             for (var i = 0; i < data.length; i++){
                 output += "<li>" + data[i] + "</li>";
             }
-            deleteResult.innerHTML = output;
+            deleteNetworkResult.innerHTML = output;
+        }
+    });
+});
+
+// delete device modal
+var deleteDeviceResult = document.getElementById("deleteDeviceResult")
+$(document).on("click", "#deleteSelectedDevsButton", function(event){
+    JSON_Selected = $deviceTable.bootstrapTable('getSelections');
+    $.ajax({
+        url: "/delete_devices",
+        type: "POST",
+        data: JSON.stringify(JSON_Selected),
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+            $table.bootstrapTable('refresh');
+            $deviceTable.bootstrapTable("destroy");
+            var output = '';
+            for (var i = 0; i < data.length; i++){
+                output += "<li>" + data[i] + "</li>";
+            }
+            deleteDeviceResult.innerHTML = output;
         }
     });
 });
