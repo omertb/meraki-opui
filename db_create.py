@@ -1,4 +1,4 @@
-# from project import db
+#!/usr/bin/env python3
 from project.models import *
 
 
@@ -6,8 +6,8 @@ from project.models import *
 db.create_all()
 
 # insert data
-db.session.add(User("admin", "admin", "admin@example.com"))
-db.session.add(User("user1", "user1", "user1@example.com"))
+db.session.add(User("admin", "admin", "admin@example.com", "admin", "admin", True, True))
+db.session.add(User("operator", "operator", "operator@example.com", "operator", "operator", False, True))
 # db.session.add(Network("Test-Wireless"))
 # db.session.add(Network("Test-Switch"))
 

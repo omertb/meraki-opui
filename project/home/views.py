@@ -18,14 +18,18 @@ def home():
     # beginning of "on page load"
     #####
     error = None
-    template_age = datetime.datetime.now() - Template.query.first().reg_date
+    if Template.query.first():
+        template_age = datetime.datetime.now() - Template.query.first().reg_date
+        template_age_days = template_age.days
+    else:
+        template_age_days = 100  # first time retrieving for template
     templates_names = []
     user_networks = Network.query.filter_by(user_id=current_user.id)
     devices_list = []
     for network in user_networks:
         devices_list.extend(Device.query.filter_by(network_id=network.id))
 
-    if template_age.days > 7:  # If templates in db are older than a week, then drop templates table and retrieve again
+    if template_age_days > 7:  # If templates in db are older than a week, then drop templates table and retrieve again
         try:
             templates = get_templates()  # returns dictionary
             Template.query.delete()

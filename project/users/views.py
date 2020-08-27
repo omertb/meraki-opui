@@ -3,7 +3,7 @@ from project.users.forms import LoginForm
 from project.models import User, db
 from flask_login import login_user, login_required, logout_user
 from ldap import INVALID_CREDENTIALS, SERVER_DOWN
-from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import OperationalError, ProgrammingError
 
 
 users_blueprint = Blueprint('users', __name__, template_folder='templates')
@@ -31,7 +31,7 @@ def login():
                     # verify if the user exists in DB and besides if DB is working!!
                     try:
                         user = User.query.filter_by(name=username).first()
-                    except OperationalError as e:
+                    except (ProgrammingError, OperationalError) as e:
                         error = str(e)
                         return render_template('login.html', form=form, error=error)
 
