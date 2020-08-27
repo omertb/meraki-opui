@@ -4,6 +4,7 @@ from project.models import User, db
 from flask_login import login_user, login_required, logout_user
 from ldap import INVALID_CREDENTIALS, SERVER_DOWN
 from sqlalchemy.exc import OperationalError, ProgrammingError
+import os
 
 
 users_blueprint = Blueprint('users', __name__, template_folder='templates')
@@ -26,17 +27,25 @@ def login():
 
             # ldap login
             try:
-                ldap_login_user = User.ldap_login(username, password)
+                # making some orderings so as to accept both DOMAIN\USER, USER at login
+                ad_domain = os.environ['USERDNSDOMAIN'].lower().split(".")[0]
+                username = username.split("\\")[-1]
+                ldap_username = ad_domain + "\\" + username
+
+                ldap_login_user = User.ldap_login(ldap_username, password)
                 if ldap_login_user:
                     # verify if the user exists in DB and besides if DB is working!!
                     try:
-                        user = User.query.filter_by(name=username).first()
+                        print(username)
+                        user = User.query.filter_by(username=username).first()
+                        print(user)
                     except (ProgrammingError, OperationalError) as e:
                         error = str(e)
                         return render_template('login.html', form=form, error=error)
 
                     if not user:
-                        email = username + "@lcwaikiki.com"
+                        email_suffix = ad_domain + ".com"
+                        email = username + "@" + email_suffix
                         try:
                             name, surname = username.split('.')
                         except ValueError:
@@ -47,7 +56,6 @@ def login():
                         db.session.add(user)
                         db.session.commit()
                     login_user(user)  # (flask_login) session created
-                    flash('You are logged in.')
                     return redirect(url_for('home.home'))
 
             except INVALID_CREDENTIALS:
