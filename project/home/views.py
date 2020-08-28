@@ -87,7 +87,7 @@ def home():
         else:
             return jsonify("Bad option sent to server")
 
-        save_devices_in_db(device_serials_list, net_name)
+        error = save_devices_in_db(device_serials_list, net_name)
 
         return jsonify(error)
 
@@ -96,10 +96,18 @@ def home():
 
 def save_devices_in_db(device_serials_list, net_name):
     network = Network.query.filter_by(name=net_name).first()
+    error = []
     for device_serial in device_serials_list:
         dev_name = device_serial.replace("-", "")
         dev_serial = device_serial
         network_id = network.id
+        device = Device.query.filter_by(serial=device_serial).first()
+        if device:
+            error.append("Device with serial: {} already exists!".format(dev_serial))
+            continue
         device = Device(dev_name, dev_serial, network_id)
         db.session.add(device)
     db.session.commit()
+    if not len(error):
+        return None
+    return error

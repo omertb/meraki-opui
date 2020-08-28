@@ -51,7 +51,12 @@ $(document).on("submit", "#networkDeviceForm", function(event){
         processData: false,
         success: function(data) {
             if(data != null) {
-                formErrorDiv.innerHTML = JSON.stringify(data);
+                var output = '';
+                for (var i = 0; i < data.length; i++){
+                    output += "<li>" + data[i] + "</li>";
+                }
+                formErrorDiv.innerHTML = output;
+                $table.bootstrapTable('refresh');
             }else{
                 formErrorDiv.innerHTML = "";
                 $table.bootstrapTable('refresh');
