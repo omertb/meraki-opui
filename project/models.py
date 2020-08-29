@@ -7,6 +7,12 @@ LDAP_SERVER = os.environ['USERDNSDOMAIN']
 LDAP_PORT = "389"
 
 
+membership_table = db.Table('membership',
+                            db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+                            db.Column('group_id', db.Integer, db.ForeignKey('groups.id'), primary_key=True)
+                            )
+
+
 class User(db.Model):
 
     __tablename__ = "users"
@@ -22,6 +28,7 @@ class User(db.Model):
     verified = db.Column(db.Boolean, nullable=False, default=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
     templates = db.relationship("Template", backref="user", lazy=True)
+    groups = db.relationship("Group", secondary=membership_table, back_populates='users')
 
     def __init__(self, username, password, email, name, surname, admin=False, verified=False):
         self.username = username
@@ -49,14 +56,28 @@ class User(db.Model):
     def ldap_login(email, password):
         ld = ldap.initialize("ldap://{}:{}".format(LDAP_SERVER, LDAP_PORT))
         return ld.simple_bind_s(email, password)
-        #try:
-        #    ld.simple_bind_s(email, password)
-        #except (ldap.INVALID_CREDENTIALS, ldap.SERVER_DOWN) as e:
-        #    return False
-        #return True
-#
+
     def __repr__(self):
         return '<username: {}>'.format(self.username)
+
+
+ownership_table = db.Table('ownership',
+                           db.Column('group_id', db.Integer, db.ForeignKey('groups.id'), primary_key=True),
+                           db.Column('network_id', db.Integer, db.ForeignKey('networks.id'), primary_key=True)
+                           )
+
+
+class Group(db.Model):
+
+    __tablename__ = "groups"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False, unique=True)
+    users = db.relationship("User", secondary=membership_table, back_populates='groups')
+    networks = db.relationship("Network", secondary=ownership_table, back_populates='groups')
+
+    def __init__(self, name):
+        self.name = name
 
 
 class Network(db.Model):
@@ -64,14 +85,16 @@ class Network(db.Model):
     __tablename__ = "networks"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False, unique=True)
-    type = db.Column(db.String(30), nullable=False)
+    name = db.Column(db.String(64), nullable=False, unique=True)
+    type = db.Column(db.String(32), nullable=False)
     n_id = db.Column(db.String(32), unique=True)
     committed = db.Column(db.Boolean, nullable=False)
     reg_date = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     bound_template = db.Column(db.Integer, db.ForeignKey('templates.id'))
     devices = db.relationship("Device", backref="network", lazy=True)
+    groups = db.relationship("Group", secondary=ownership_table, back_populates='networks')
+    tags = db.Column(db.String(256))
 
     def __init__(self, net_name, net_type, user_id, bound_template=None, committed=False):
         self.name = net_name
@@ -99,8 +122,8 @@ class Device(db.Model):
     __tablename__ = "devices"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False, unique=True)
-    serial = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(64), nullable=False, unique=True)
+    serial = db.Column(db.String(32), nullable=False)
     n_id = db.Column(db.String(32), unique=True)
     reg_date = db.Column(db.DateTime, nullable=False)
     committed = db.Column(db.Boolean, nullable=False)
@@ -129,7 +152,7 @@ class Template(db.Model):
     __tablename__ = "templates"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False, unique=True)
+    name = db.Column(db.String(64), nullable=False, unique=True)
     n_id = db.Column(db.String(32), unique=True)
     reg_date = db.Column(db.DateTime, nullable=False)
     networks = db.relationship("Network", backref="template", lazy=True)
