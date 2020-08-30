@@ -85,18 +85,19 @@ class Network(db.Model):
     __tablename__ = "networks"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), nullable=False, unique=True)
+    name = db.Column(db.String(64), nullable=False)
+    meraki_id = db.Column(db.String(64), unique=True)
     type = db.Column(db.String(32), nullable=False)
-    n_id = db.Column(db.String(32), unique=True)
     committed = db.Column(db.Boolean, nullable=False)
     reg_date = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    bound_template = db.Column(db.String(32), db.ForeignKey('templates.id'))
+    bound_template = db.Column(db.String(64), db.ForeignKey('templates.meraki_id'))
     devices = db.relationship("Device", backref="network", lazy=True)
     groups = db.relationship("Group", secondary=ownership_table, back_populates='networks')
     tags = db.Column(db.String(256))
 
-    def __init__(self, net_name, net_type, user_id, tags=None, bound_template=None, committed=False):
+    def __init__(self, net_name, net_type, user_id=None, meraki_id=None,
+                 tags=None, bound_template=None, committed=False):
         self.name = net_name
         self.type = net_type
         self.committed = committed
@@ -104,6 +105,7 @@ class Network(db.Model):
         self.user_id = user_id
         self.bound_template = bound_template
         self.tags = tags
+        self.meraki_id = meraki_id
 
     def __repr__(self):
         return '<net_name: {}>'.format(self.name)
@@ -125,7 +127,6 @@ class Device(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False, unique=True)
     serial = db.Column(db.String(32), nullable=False)
-    n_id = db.Column(db.String(32), unique=True)
     reg_date = db.Column(db.DateTime, nullable=False)
     committed = db.Column(db.Boolean, nullable=False)
     network_id = db.Column(db.Integer, db.ForeignKey('networks.id'))
@@ -152,15 +153,16 @@ class Template(db.Model):
 
     __tablename__ = "templates"
 
-    id = db.Column(db.String(32), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False, unique=True)
+    meraki_id = db.Column(db.String(64), unique=True)
     reg_date = db.Column(db.DateTime, nullable=False)
     networks = db.relationship("Network", backref="template", lazy=True)
     template_user = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __init__(self, template_name, template_n_id, template_user=None):
         self.name = template_name
-        self.id = template_n_id
+        self.meraki_id = template_n_id
         self.reg_date = datetime.datetime.now()
         self.template_user = template_user
 

@@ -3,7 +3,6 @@ from project.models import Template, Network, Device
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.home.forms import NetworkDeviceForm
-from project.home.functions import get_templates, get_networks
 import datetime
 from requests.exceptions import ConnectionError
 
@@ -15,43 +14,17 @@ home_blueprint = Blueprint('home', __name__, template_folder='templates')
 @home_blueprint.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
+    error = None
     # beginning of "on page load"
     #####
-#    networks = get_networks()
-#    for network in networks:
-#        db.session.add(Network(network['name'], network['type'], None))
-#    db.session.commit()
-    error = None
-    if Template.query.first():
-        template_age = datetime.datetime.now() - Template.query.first().reg_date
-        template_age_days = template_age.days
-    else:
-        template_age_days = 100  # first time retrieving for template
     templates_names = []
-    user_networks = Network.query.filter_by(user_id=current_user.id)
-    devices_list = []
-    for network in user_networks:
-        devices_list.extend(Device.query.filter_by(network_id=network.id))
-
-    if template_age_days > 7:  # If templates in db are older than a week, then drop templates table and retrieve again
-        try:
-            templates = get_templates()  # returns dictionary
-            Template.query.delete()
-            for template in templates.items():
-                db_row = Template(*template)
-                db.session.add(db_row)
-            db.session.commit()
-            templates_names = templates.keys()
-        except ConnectionError:
-            error = "Meraki Server Bad Response"
-
-    else:  # if templates are not older than the value above, then use the ones in DB
-        templates_db = Template.query.all()
-        for template in templates_db:
-            templates_names.append(template.name)
+    templates_db = Template.query.all()
+    for template in templates_db:
+        templates_names.append(template.name)
 
     form = NetworkDeviceForm(request.form)
     form.net_template.choices = list(templates_names)
+    user_networks = Network.query.filter_by(user_id=current_user.id)
     form.registered_nets.choices = [value for value, in user_networks.values(Network.name)]
     #####
     # end of "on page load" block

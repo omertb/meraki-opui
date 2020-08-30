@@ -42,4 +42,16 @@ def get_networks() -> list:
     for org_id in org_id_list:
         networks = get_data('organizations/{}/networks'.format(org_id))
         networks_list.extend(networks)
-    return networks_list
+
+    # create customized dictionary list
+    networks_dict_list = []
+    for network in networks_list:
+        dict_item = {'net_name': network['name'],
+                     'net_type': network['type'],
+                     'meraki_id': network['id'],
+                     'tags': network['tags'].strip() if network['tags'] else None,
+                     'bound_template': network['configTemplateId'] if 'configTemplateId' in network else None
+                     }
+        networks_dict_list.append(dict_item)
+
+    return networks_dict_list
