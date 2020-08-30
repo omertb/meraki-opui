@@ -3,7 +3,7 @@ from project.models import Template, Network, Device
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.home.forms import NetworkDeviceForm
-from project.home.functions import get_templates
+from project.home.functions import get_templates, get_networks
 import datetime
 from requests.exceptions import ConnectionError
 
@@ -17,6 +17,10 @@ home_blueprint = Blueprint('home', __name__, template_folder='templates')
 def home():
     # beginning of "on page load"
     #####
+#    networks = get_networks()
+#    for network in networks:
+#        db.session.add(Network(network['name'], network['type'], None))
+#    db.session.commit()
     error = None
     if Template.query.first():
         template_age = datetime.datetime.now() - Template.query.first().reg_date

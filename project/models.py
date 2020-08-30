@@ -91,18 +91,19 @@ class Network(db.Model):
     committed = db.Column(db.Boolean, nullable=False)
     reg_date = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    bound_template = db.Column(db.Integer, db.ForeignKey('templates.id'))
+    bound_template = db.Column(db.String(32), db.ForeignKey('templates.id'))
     devices = db.relationship("Device", backref="network", lazy=True)
     groups = db.relationship("Group", secondary=ownership_table, back_populates='networks')
     tags = db.Column(db.String(256))
 
-    def __init__(self, net_name, net_type, user_id, bound_template=None, committed=False):
+    def __init__(self, net_name, net_type, user_id, tags=None, bound_template=None, committed=False):
         self.name = net_name
         self.type = net_type
         self.committed = committed
         self.reg_date = datetime.datetime.now()
         self.user_id = user_id
         self.bound_template = bound_template
+        self.tags = tags
 
     def __repr__(self):
         return '<net_name: {}>'.format(self.name)
@@ -151,16 +152,15 @@ class Template(db.Model):
 
     __tablename__ = "templates"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(32), primary_key=True)
     name = db.Column(db.String(64), nullable=False, unique=True)
-    n_id = db.Column(db.String(32), unique=True)
     reg_date = db.Column(db.DateTime, nullable=False)
     networks = db.relationship("Network", backref="template", lazy=True)
     template_user = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, template_name, n_id, template_user=None):
+    def __init__(self, template_name, template_n_id, template_user=None):
         self.name = template_name
-        self.n_id = n_id
+        self.id = template_n_id
         self.reg_date = datetime.datetime.now()
         self.template_user = template_user
 

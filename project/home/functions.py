@@ -34,3 +34,12 @@ def get_templates() -> dict:
         templates = get_data('organizations/{}/configTemplates'.format(org_id))
         templates_dict.update({i['name']: i['id'] for i in templates})
     return templates_dict
+
+
+def get_networks() -> list:
+    org_id_list = get_organization_ids()
+    networks_list = []
+    for org_id in org_id_list:
+        networks = get_data('organizations/{}/networks'.format(org_id))
+        networks_list.extend(networks)
+    return networks_list

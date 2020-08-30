@@ -7,7 +7,7 @@ class BaseConfig(object):
     SECRET_KEY = os.environ['FSECRETKEY']
     # SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = "postgresql://{}@my-postgres/meraki_operator".format(os.environ['PGCRED'])
+    SQLALCHEMY_DATABASE_URI = "postgresql://{}@opui-postgres/meraki_operator".format(os.environ['PGCRED'])
     SECURITY_PASSWORD_SALT = os.environ['PASSWDSALT']
 
 
