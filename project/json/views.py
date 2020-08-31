@@ -1,5 +1,5 @@
 from project import db
-from project.models import Network, Device, Template
+from project.models import Network, Device, Template, User
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 
@@ -55,7 +55,7 @@ def network_table():
     user_networks = Network.query.filter_by(user_id=current_user.id)
     network_list = []
     for row, network in enumerate(user_networks.all()):
-        template_name = network.template.name if network.template is not None else None
+        template_name = network.template.name if network.template else None
         network = network.serialize()
         network['rowNum'] = row + 1
         network['committed'] = 'No' if network['committed'] is False else 'Yes'
@@ -84,3 +84,20 @@ def device_table():
         return jsonify(device_list)
     else:
         return "Not Found", 404
+
+
+@json_blueprint.route('/admin/users.json', methods=['GET'])
+@login_required
+def users_table():
+    users = User.query.all()
+    users_list = []
+    for i, row in enumerate(users):
+        user = {'name': row.username,
+                'groups': [group.name for group in row.groups],
+                'rowNum': i + 1,
+                'admin': 'Yes' if row.admin else 'No',
+                'operator': 'Yes' if row.verified else 'No'
+                }
+        users_list.append(user)
+    return jsonify(users_list)
+    # return jsonify([network.serialize() for network in user_networks.all()])

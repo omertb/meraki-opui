@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>User and Network Administration</title>
+
+
+    <link href="static/bootstrap.min.css" rel="stylesheet">
+    <link href="static/style.css" rel="stylesheet">
+
+  </head>
+  <body>
+
+    <div class="container-fluid">
+	<div class="row navbar navbar-light" style="background-color: #f1f1f1;">
+		<div class="col-md-6">
+			<div class="page-header">
+				<h1>
+					Store <small>User and Network Administration</small>
+				</h1>
+			</div>
+		</div>
+		<div class="col-md-6">
+            <form class="form-inline my-2 my-lg-0 float-right" method="get" action="/logout">
+              <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Logout</button>
+            </form>
+        </div>
+	</div>
+	<div class="row">
+		<div class="col-md-3 sidebar">
+			<a class="active"href="#">User Groups</a>
+			<a href="#">Group Networks</a>
+		</div>
+		<div class="col-md-6 content">
+            <table
+                    id="usersTable"
+                    class="table table-hover table-sm"
+                    data-toggle="table"
+                    data-search="true"
+                    data-toolbar="#usersTableToolbar"
+                    data-click-to-select="true"
+                    data-url="admin/users.json"
+                    data-pagination="true"
+            >
+              <thead class="thead-dark">
+                <tr>
+                    <th scope="col" data-field="state" data-checkbox="true"></th>
+                    <th scope="col" data-field="rowNum" data-sortable="true">#</th>
+                    <th scope="col" data-field="name" data-sortable="true">Username</th>
+                    <th scope="col" data-field="groups" data-sortable="true">Groups</th>
+                    <th scope="col" data-field="admin">Admin</th>
+                    <th scope="col" data-field="operator">Operator</th>
+                </tr>
+              </thead>
+            </table>
+		</div>
+		<div class="col-md-3 content">
+		</div>
+	</div>
+</div>
+
+    <script src="static/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.js"></script>
+    <script src="static/scripts.js"></script>
+  </body>
+</html>

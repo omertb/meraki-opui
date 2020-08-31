@@ -14,7 +14,12 @@ admin_blueprint = Blueprint('admin', __name__, template_folder='templates')
 @admin_blueprint.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
-    error = None
+    return render_template('admin.html')
+    # load_templates_to_db()
+    # load_networks_to_db()
+
+
+def load_templates_to_db():
     if Template.query.first():
         template_age = datetime.datetime.now() - Template.query.first().reg_date
         template_age_days = template_age.days
@@ -33,13 +38,15 @@ def admin():
             error = "Meraki Server Bad Response"
             return error
 
+
+def load_networks_to_db():
     if Network.query.first():
         network_age = datetime.datetime.now() - Network.query.first().reg_date
         network_age_days = network_age.days
     else:
         network_age_days = 100  # first time retrieving for template
 
-    if network_age_days > 30:  # If templates in db are older than a week, then drop templates table and retrieve again
+    if network_age_days > 200:  # If templates in db are older than a week, then drop templates table and retrieve again
         try:
             networks = get_networks()  # returns dictionary list
             Network.query.delete()
