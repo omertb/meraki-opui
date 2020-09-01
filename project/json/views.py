@@ -1,11 +1,28 @@
 from project import db
-from project.models import Network, Device, Template, User
+from project.models import Network, Device, Template, User, Group
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 
 
 # home blueprint definition
 json_blueprint = Blueprint('json', __name__, template_folder='templates')
+
+
+@json_blueprint.route('/groups/delete_groups', methods=['POST'])
+@login_required
+def delete_groups():
+    result = []
+    if request.method == 'POST':
+        groups_to_be_deleted = request.get_json()
+        for group in groups_to_be_deleted:
+            db_group = Group.query.filter_by(name=group['name']).first()
+            db.session.delete(db_group)
+            result.append("Group: {} is removed".format(group['name']))
+        try:
+            db.session.commit()
+        except:
+            return jsonify("Database error!")
+        return jsonify(result)
 
 
 @json_blueprint.route('/delete_devices', methods=['POST'])
@@ -16,10 +33,9 @@ def delete_devices():
         devices_to_be_deleted = request.get_json()
         for device in devices_to_be_deleted:
             db_device = Device.query.filter_by(name=device['name']).first()
-            db.session.delete(db_device)
             network_name = device['network']
-            result.append("Device: {} is removed from Network: {}!".format(device['name'], network_name))
             db.session.delete(db_device)
+            result.append("Device: {} is removed from Network: {}!".format(device['name'], network_name))
         try:
             db.session.commit()
         except:
@@ -86,7 +102,7 @@ def device_table():
         return "Not Found", 404
 
 
-@json_blueprint.route('/admin/users.json', methods=['GET'])
+@json_blueprint.route('/users/users.json', methods=['GET'])
 @login_required
 def users_table():
     users = User.query.all()
@@ -100,4 +116,17 @@ def users_table():
                 }
         users_list.append(user)
     return jsonify(users_list)
-    # return jsonify([network.serialize() for network in user_networks.all()])
+
+
+@json_blueprint.route('/groups/groups.json', methods=['GET'])
+@login_required
+def groups_table():
+    groups = Group.query.all()
+    groups_list = []
+    for i, row in enumerate(groups):
+        group = {'name': row.name,
+                'users': [user.username for user in row.users],
+                'rowNum': i + 1
+                }
+        groups_list.append(group)
+    return jsonify(groups_list)

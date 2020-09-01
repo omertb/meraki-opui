@@ -37,7 +37,7 @@ $(document).ready(function(){
 var $table = $('#networksTable');
 var $deviceTable = $('#deviceTable');
 
-// post form
+// network device form post
 var formErrorDiv = document.getElementById("formErrorDiv")
 $(document).on("submit", "#networkDeviceForm", function(event){
     event.preventDefault();
@@ -171,3 +171,53 @@ $(document).on("click", "#deleteSelectedDevsButton", function(event){
 });
 
 $('.my-select').selectpicker();
+
+// new group post
+var newGroupErrorDiv = document.getElementById("newGroupErrorDiv")
+var $groupsTable = $('#groupsTable')
+
+$(document).on("submit", "#createGroupForm", function(event){
+    event.preventDefault();
+    $.ajax({
+        url: "/groups",
+        type: "POST",
+        data: new FormData(this),
+        dataType: "json",
+        contentType: false,
+        cache: false,
+        processData: false,
+        success: function(data) {
+            if(data != null) {
+                var output = data;
+                newGroupErrorDiv.innerHTML = output;
+                $groupsTable.bootstrapTable('refresh');
+            }else{
+
+                newGroupErrorDiv.innerHTML = "";
+                $groupsTable.bootstrapTable('refresh');
+            }
+        }
+    });
+});
+
+// delete device modal
+var deleteGroupResult = document.getElementById("deleteGroupResult")
+$(document).on("click", "#deleteGroupButton", function(event){
+    JSON_Selected = $groupsTable.bootstrapTable('getSelections');
+    $.ajax({
+        url: "/groups/delete_groups",
+        type: "POST",
+        data: JSON.stringify(JSON_Selected),
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+            $groupsTable.bootstrapTable('refresh');
+            var output = '';
+            for (var i = 0; i < data.length; i++){
+                output += "<li>" + data[i] + "</li>";
+            }
+            deleteGroupResult.innerHTML = output;
+        }
+    });
+});
+

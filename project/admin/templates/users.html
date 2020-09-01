@@ -38,40 +38,11 @@
                 <a href="/networks">Networks</a>
             </div>
 		</div>
-        <div class="col-md-2 pt-2">
-            <form id="createGroupForm" action="" method="post">
-                <div class="form-group">
-                    {{ form.new_group_name(class_="form-control", id="netGroupInput", placeholder="Type a Group Name") }}
-                </div>
-                <div class="form-group">
-                    <button id="createGroupButton" class="btn btn-sm btn-primary btn-block" type="submit">
-                        Create New Group
-                    </button>
-                </div>
-            </form>
-        </div>
-        <div class="col-md-2 pt-2">
-            <form id="groupMembershipForm" action="" method="post">
-                <div class="form-group">
-                    <label for="userSelectMultiple">Choose Users: </label><br>
-                    {{ form.select_user(class_="selectpicker my-select", id="userSelectMultiple", data_live_search="true") }}
-                </div>
-                <div class="form-group">
-                    <label for="groupSelectMultiple">Choose Groups: </label><br>
-                    {{ form.select_group(class_="selectpicker my-select", id="groupSelectMultiple", data_live_search="true") }}
-                </div>
-                <div class="form-group">
-                    <button id="membershipButton" class="btn btn-sm btn-info btn-block" type="submit">
-                        Member User
-                    </button>
-                </div>
-            </form>
-        </div>
         <div class="col-md-6">
             <div class="content pt-2">
                 <div id="usersTableToolbar">
-                    <button id="disableUserButton" class="btn btn-outline-danger btn-sm">Disable Operation</button>
-                    <button id="resetGroupsButton" class="btn btn-outline-warning btn-sm">Reset Groups</button>
+                    <button id="userAdminButton" class="btn btn-outline-primary btn-sm">Admin</button>
+                    <button id="userOperatorButton" class="btn btn-outline-secondary btn-sm">Operator</button>
                 </div>
                 <table
                         id="usersTable"
@@ -80,7 +51,7 @@
                         data-search="true"
                         data-toolbar="#usersTableToolbar"
                         data-click-to-select="true"
-                        data-url="admin/users.json"
+                        data-url="users/users.json"
                         data-pagination="true"
                 >
                   <thead class="thead-dark">
@@ -94,8 +65,10 @@
                     </tr>
                   </thead>
                 </table>
+            </div>
         </div>
-    </div>
+        <div class="col-md-4">
+        </div>
 
 	</div>
 </div>

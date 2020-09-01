@@ -1,5 +1,5 @@
 from project import db
-from project.models import Template, Network, Device
+from project.models import Template, Network, Group
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from requests.exceptions import ConnectionError
@@ -28,6 +28,18 @@ def users():
 def groups():
     form = GroupMembershipForm(request.form)
     form.set_choices()
+
+    if request.method == 'POST':
+        error = None
+        new_group_name = form.new_group_name.data
+        print(new_group_name)
+        if Group.query.filter_by(name=new_group_name).first():
+            error = "Group already exists!"
+            return jsonify(error)
+        new_group = Group(new_group_name)
+        db.session.add(new_group)
+        db.session.commit()
+        return jsonify(error)
 
     return render_template('groups.html', form=form)
     # load_templates_to_db()
