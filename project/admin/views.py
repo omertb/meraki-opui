@@ -4,6 +4,7 @@ from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from requests.exceptions import ConnectionError
 from project.functions import get_templates, get_networks
+from project.admin.forms import GroupMembershipForm
 import datetime
 
 
@@ -14,7 +15,10 @@ admin_blueprint = Blueprint('admin', __name__, template_folder='templates')
 @admin_blueprint.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
-    return render_template('admin.html')
+    form = GroupMembershipForm(request.form)
+    form.set_choices()
+
+    return render_template('admin.html', form=form)
     # load_templates_to_db()
     # load_networks_to_db()
 

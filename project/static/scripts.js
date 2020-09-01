@@ -169,3 +169,5 @@ $(document).on("click", "#deleteSelectedDevsButton", function(event){
         }
     });
 });
+
+$('.my-select').selectpicker();
