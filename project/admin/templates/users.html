@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>User and Network Administration</title>
+
+
+    <link href="static/bootstrap.min.css" rel="stylesheet">
+    <link href="static/style.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+
+  </head>
+  <body>
+
+    <div class="container-fluid">
+	<div class="row navbar navbar-light" style="background-color: #f1f1f1;">
+		<div class="col-md-6">
+			<div class="page-header">
+				<h1>
+					Store <small>User and Network Administration</small>
+				</h1>
+			</div>
+		</div>
+		<div class="col-md-6">
+            <form class="form-inline my-2 my-lg-0 float-right" method="get" action="/logout">
+              <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Logout</button>
+            </form>
+        </div>
+	</div>
+	<div class="row">
+		<div class="col-md-2">
+            <div class="sidebar">
+                <a class="active" href="#">Users</a>
+                <a href="/groups">Groups</a>
+                <a href="/networks">Networks</a>
+            </div>
+		</div>
+        <div class="col-md-2 pt-2">
+            <form id="createGroupForm" action="" method="post">
+                <div class="form-group">
+                    {{ form.new_group_name(class_="form-control", id="netGroupInput", placeholder="Type a Group Name") }}
+                </div>
+                <div class="form-group">
+                    <button id="createGroupButton" class="btn btn-sm btn-primary btn-block" type="submit">
+                        Create New Group
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-2 pt-2">
+            <form id="groupMembershipForm" action="" method="post">
+                <div class="form-group">
+                    <label for="userSelectMultiple">Choose Users: </label><br>
+                    {{ form.select_user(class_="selectpicker my-select", id="userSelectMultiple", data_live_search="true") }}
+                </div>
+                <div class="form-group">
+                    <label for="groupSelectMultiple">Choose Groups: </label><br>
+                    {{ form.select_group(class_="selectpicker my-select", id="groupSelectMultiple", data_live_search="true") }}
+                </div>
+                <div class="form-group">
+                    <button id="membershipButton" class="btn btn-sm btn-info btn-block" type="submit">
+                        Member User
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <div class="content pt-2">
+                <div id="usersTableToolbar">
+                    <button id="disableUserButton" class="btn btn-outline-danger btn-sm">Disable Operation</button>
+                    <button id="resetGroupsButton" class="btn btn-outline-warning btn-sm">Reset Groups</button>
+                </div>
+                <table
+                        id="usersTable"
+                        class="table table-hover table-sm"
+                        data-toggle="table"
+                        data-search="true"
+                        data-toolbar="#usersTableToolbar"
+                        data-click-to-select="true"
+                        data-url="admin/users.json"
+                        data-pagination="true"
+                >
+                  <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" data-field="state" data-checkbox="true"></th>
+                        <th scope="col" data-field="rowNum" data-sortable="true">#</th>
+                        <th scope="col" data-field="name" data-sortable="true">Username</th>
+                        <th scope="col" data-field="groups" data-sortable="true">Groups</th>
+                        <th scope="col" data-field="admin">Admin</th>
+                        <th scope="col" data-field="operator">Operator</th>
+                    </tr>
+                  </thead>
+                </table>
+        </div>
+    </div>
+
+	</div>
+</div>
+
+    <script src="static/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+    <script src="static/scripts.js"></script>
+  </body>
+</html>

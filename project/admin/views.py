@@ -12,16 +12,37 @@ import datetime
 admin_blueprint = Blueprint('admin', __name__, template_folder='templates')
 
 
-@admin_blueprint.route('/admin', methods=['GET', 'POST'])
+@admin_blueprint.route('/users', methods=['GET', 'POST'])
 @login_required
-def admin():
+def users():
     form = GroupMembershipForm(request.form)
     form.set_choices()
 
-    return render_template('admin.html', form=form)
+    return render_template('users.html', form=form)
     # load_templates_to_db()
     # load_networks_to_db()
 
+
+@admin_blueprint.route('/groups', methods=['GET', 'POST'])
+@login_required
+def groups():
+    form = GroupMembershipForm(request.form)
+    form.set_choices()
+
+    return render_template('groups.html', form=form)
+    # load_templates_to_db()
+    # load_networks_to_db()
+
+
+@admin_blueprint.route('/networks', methods=['GET', 'POST'])
+@login_required
+def networks():
+    form = GroupMembershipForm(request.form)
+    form.set_choices()
+
+    return render_template('networks.html', form=form)
+    # load_templates_to_db()
+    # load_networks_to_db()
 
 def load_templates_to_db():
     if Template.query.first():
