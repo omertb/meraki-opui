@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectMultipleField, widgets
+from wtforms import StringField, SelectMultipleField
 from wtforms.validators import DataRequired, Length
 from project.models import Group, User
 
 
 class GroupMembershipForm(FlaskForm):
-    new_group_name = StringField('New Group Name: ', validators=[DataRequired(), Length(max=64)])
+    new_group_name = StringField('New Group Name: ', validators=[DataRequired(), Length(min=4, max=32)])
     select_group = SelectMultipleField('Select Groups: ', validators=[DataRequired()])
     select_user = SelectMultipleField('Select Groups: ', validators=[DataRequired()])
 

@@ -201,7 +201,7 @@ $(document).on("submit", "#createGroupForm", function(event){
 });
 
 // delete device modal
-var deleteGroupResult = document.getElementById("deleteGroupResult")
+var manageGroupResult = document.getElementById("manageGroupResult")
 $(document).on("click", "#deleteGroupButton", function(event){
     JSON_Selected = $groupsTable.bootstrapTable('getSelections');
     $.ajax({
@@ -216,8 +216,49 @@ $(document).on("click", "#deleteGroupButton", function(event){
             for (var i = 0; i < data.length; i++){
                 output += "<li>" + data[i] + "</li>";
             }
-            deleteGroupResult.innerHTML = output;
+            manageGroupResult.innerHTML = output;
         }
     });
 });
 
+$(document).on("click", "#resetGroupButton", function(event){
+    JSON_Selected = $groupsTable.bootstrapTable('getSelections');
+    $.ajax({
+        url: "/groups/reset_groups",
+        type: "POST",
+        data: JSON.stringify(JSON_Selected),
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+            $groupsTable.bootstrapTable('refresh');
+            var output = '';
+            for (var i = 0; i < data.length; i++){
+                output += "<li>" + data[i] + "</li>";
+            }
+            manageGroupResult.innerHTML = output;
+        }
+    });
+});
+
+$(document).on("click", "#membershipButton", function(event){
+    event.preventDefault();
+    let user_select = $('#userSelectMultiple').val();
+    let group_select = $('#groupSelectMultiple').val();
+    let user_group_array = [];
+    user_group_array.push(user_select, group_select);
+        $.ajax({
+        url: "/groups/add_user",
+        type: "POST",
+        data: JSON.stringify(user_group_array),
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+            $groupsTable.bootstrapTable('refresh');
+            var output = '';
+            for (var i = 0; i < data.length; i++){
+                output += "<li>" + data[i] + "</li>";
+            }
+            manageGroupResult.innerHTML = output;
+        }
+    });
+});

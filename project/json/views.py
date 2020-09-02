@@ -8,6 +8,45 @@ from flask_login import login_required, current_user
 json_blueprint = Blueprint('json', __name__, template_folder='templates')
 
 
+@json_blueprint.route('/groups/add_user', methods=['POST'])
+@login_required
+def add_user():
+    result = []
+    if request.method == 'POST':
+        user_group_list = request.get_json()
+        user_list = user_group_list[0]
+        group_list = user_group_list[-1]
+        for user_id in user_list:
+            user = User.query.get(int(user_id))
+            for grp_id in group_list:
+                group = Group.query.get(int(grp_id))
+                user.groups.append(group)
+            db.session.add(user)
+        try:
+            db.session.commit()
+        except:
+            return jsonify("Database error!")
+        return jsonify(result)
+
+
+@json_blueprint.route('/groups/reset_groups', methods=['POST'])
+@login_required
+def reset_groups():
+    result = []
+    if request.method == 'POST':
+        groups_to_be_reset = request.get_json()
+        for group in groups_to_be_reset:
+            db_group = Group.query.filter_by(name=group['name']).first()
+            db_group.users.clear()
+            db.session.add(db_group)
+            result.append("Group: {} membership is reset".format(group['name']))
+        try:
+            db.session.commit()
+        except:
+            return jsonify("Database error!")
+        return jsonify(result)
+
+
 @json_blueprint.route('/groups/delete_groups', methods=['POST'])
 @login_required
 def delete_groups():
