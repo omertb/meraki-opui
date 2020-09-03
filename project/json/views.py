@@ -169,3 +169,18 @@ def groups_table():
                 }
         groups_list.append(group)
     return jsonify(groups_list)
+
+
+@json_blueprint.route('/networks/networks.json', methods=['GET'])
+@login_required
+def networks_table():
+    networks = Network.query.all()
+    networks_list = []
+    for i, row in enumerate(networks):
+        network = {'name': row.name,
+                   'groups': [group.name for group in row.groups],
+                   'tags': row.tags,
+                   'rowNum': i + 1
+                   }
+        networks_list.append(network)
+    return jsonify(networks_list)

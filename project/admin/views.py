@@ -4,7 +4,7 @@ from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from requests.exceptions import ConnectionError
 from project.functions import get_templates, get_networks
-from project.admin.forms import GroupMembershipForm
+from project.admin.forms import GroupMembershipForm, NetworkOwnershipForm
 import datetime
 
 
@@ -49,12 +49,13 @@ def groups():
 @admin_blueprint.route('/networks', methods=['GET', 'POST'])
 @login_required
 def networks():
-    form = GroupMembershipForm(request.form)
+    form = NetworkOwnershipForm(request.form)
     form.set_choices()
 
     return render_template('networks.html', form=form)
     # load_templates_to_db()
     # load_networks_to_db()
+
 
 def load_templates_to_db():
     if Template.query.first():
