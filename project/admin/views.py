@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 from requests.exceptions import ConnectionError
 from project.functions import get_templates, get_networks
 from project.admin.forms import GroupMembershipForm, NetworkOwnershipForm
+from sqlalchemy.exc import OperationalError, ProgrammingError
 import datetime
 
 
@@ -55,6 +56,30 @@ def networks():
     return render_template('networks.html', form=form)
     # load_templates_to_db()
     # load_networks_to_db()
+
+
+@admin_blueprint.route('/networks/update_table', methods=['GET'])
+@login_required
+def update_networks_table():
+    try:
+        networks = get_networks()
+    except ConnectionError:
+        error = "Meraki Server Bad Response"
+        return error
+    for network in networks:
+        try:
+            db_network = Network.query.filter_by(meraki_id=network['meraki_id']).first()
+        except (ProgrammingError, OperationalError) as e:
+            error = str(e)
+            return error
+        if db_network:
+            db_network.update(**network)
+        else:
+            db_network = Network(**network)
+        db_network.committed = True
+        db.session.add(db_network)
+    db.session.commit()
+    return "success"
 
 
 def load_templates_to_db():

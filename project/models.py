@@ -107,6 +107,17 @@ class Network(db.Model):
         self.tags = tags
         self.meraki_id = meraki_id
 
+    def update(self, net_name, net_type, user_id=None, meraki_id=None,
+               tags=None, bound_template=None, committed=False):
+        self.name = net_name
+        self.type = net_type
+        self.committed = committed
+        self.reg_date = datetime.datetime.now()
+        self.user_id = user_id
+        self.bound_template = bound_template
+        self.tags = tags
+        self.meraki_id = meraki_id
+
     def __repr__(self):
         return '<net_name: {}>'.format(self.name)
 

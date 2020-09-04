@@ -262,3 +262,21 @@ $(document).on("click", "#membershipButton", function(event){
         }
     });
 });
+var networksResultInToolbar = document.getElementById("networksResultInToolbar")
+var $networksTable = $('#networksTable')
+$(document).on("click", "#updateNetworksTableButton", function(event){
+    $.get("/networks/update_table", function(data, status){
+        if(data==="success"){
+            $networksTable.bootstrapTable('refresh');
+        }else{
+            networksResultInToolbar.innerHTML = data;
+        }
+  });
+});
+
+// wait animation with wait-modal
+$body = $("body");
+$(document).on({
+    ajaxStart: function() { $body.addClass("loading");    },
+     ajaxStop: function() { $body.removeClass("loading"); }
+});

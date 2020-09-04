@@ -36,9 +36,7 @@ def login():
                 if ldap_login_user:
                     # verify if the user exists in DB and besides if DB is working!!
                     try:
-                        print(username)
                         user = User.query.filter_by(username=username).first()
-                        print(user)
                     except (ProgrammingError, OperationalError) as e:
                         error = str(e)
                         return render_template('login.html', form=form, error=error)
