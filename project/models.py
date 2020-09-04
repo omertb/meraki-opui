@@ -12,6 +12,23 @@ membership_table = db.Table('membership',
                             db.Column('group_id', db.Integer, db.ForeignKey('groups.id'), primary_key=True)
                             )
 
+ownership_table = db.Table('ownership',
+                           db.Column('group_id', db.Integer, db.ForeignKey('groups.id'), primary_key=True),
+                           db.Column('network_id', db.Integer, db.ForeignKey('networks.id'), primary_key=True)
+                           )
+
+
+group_tag_table = db.Table('grptag',
+                           db.Column('group_id', db.Integer, db.ForeignKey('groups.id'), primary_key=True),
+                           db.Column('tag_id', db.Integer, db.ForeignKey('tags.id'), primary_key=True)
+                           )
+
+
+network_tag_table = db.Table('nettag',
+                             db.Column('net_id', db.Integer, db.ForeignKey('networks.id'), primary_key=True),
+                             db.Column('tag_id', db.Integer, db.ForeignKey('tags.id'), primary_key=True)
+                             )
+
 
 class User(db.Model):
 
@@ -61,12 +78,6 @@ class User(db.Model):
         return '<username: {}>'.format(self.username)
 
 
-ownership_table = db.Table('ownership',
-                           db.Column('group_id', db.Integer, db.ForeignKey('groups.id'), primary_key=True),
-                           db.Column('network_id', db.Integer, db.ForeignKey('networks.id'), primary_key=True)
-                           )
-
-
 class Group(db.Model):
 
     __tablename__ = "groups"
@@ -75,9 +86,13 @@ class Group(db.Model):
     name = db.Column(db.String(64), nullable=False, unique=True)
     users = db.relationship("User", secondary=membership_table, back_populates='groups')
     networks = db.relationship("Network", secondary=ownership_table, back_populates='groups')
+    tags = db.relationship("Tag", secondary=group_tag_table, back_populates='groups')
 
     def __init__(self, name):
         self.name = name
+
+    def __repr__(self):
+        return '<group: {}>'.format(self.name)
 
 
 class Network(db.Model):
@@ -94,28 +109,29 @@ class Network(db.Model):
     bound_template = db.Column(db.String(64), db.ForeignKey('templates.meraki_id'))
     devices = db.relationship("Device", backref="network", lazy=True)
     groups = db.relationship("Group", secondary=ownership_table, back_populates='networks')
-    tags = db.Column(db.String(256))
+    net_tags = db.Column(db.String(256))
+    tags = db.relationship("Tag", secondary=network_tag_table, back_populates='networks')
 
     def __init__(self, net_name, net_type, user_id=None, meraki_id=None,
-                 tags=None, bound_template=None, committed=False):
+                 net_tags=None, bound_template=None, committed=False):
         self.name = net_name
         self.type = net_type
         self.committed = committed
         self.reg_date = datetime.datetime.now()
         self.user_id = user_id
         self.bound_template = bound_template
-        self.tags = tags
+        self.net_tags = net_tags
         self.meraki_id = meraki_id
 
     def update(self, net_name, net_type, user_id=None, meraki_id=None,
-               tags=None, bound_template=None, committed=False):
+               net_tags=None, bound_template=None, committed=False):
         self.name = net_name
         self.type = net_type
         self.committed = committed
         self.reg_date = datetime.datetime.now()
         self.user_id = user_id
         self.bound_template = bound_template
-        self.tags = tags
+        self.net_tags = net_tags
         self.meraki_id = meraki_id
 
     def __repr__(self):
@@ -179,3 +195,19 @@ class Template(db.Model):
 
     def __repr__(self):
         return '<template_name: {}>'.format(self.name)
+
+
+class Tag(db.Model):
+
+    __tablename__ = "tags"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False, unique=True)
+    groups = db.relationship("Group", secondary=group_tag_table, back_populates='tags')
+    networks = db.relationship("Network", secondary=network_tag_table, back_populates='tags')
+
+    def __init__(self, tag_name):
+        self.name = tag_name
+
+    def __repr__(self):
+        return '<tag_name: {}>'.format(self.name)

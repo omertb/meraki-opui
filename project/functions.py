@@ -49,7 +49,7 @@ def get_networks() -> list:
         dict_item = {'net_name': network['name'],
                      'net_type': network['type'],
                      'meraki_id': network['id'],
-                     'tags': network['tags'].strip() if network['tags'] else None,
+                     'net_tags': network['tags'].strip() if network['tags'] else None,
                      'bound_template': network['configTemplateId'] if 'configTemplateId' in network else None
                      }
         networks_dict_list.append(dict_item)

@@ -6,7 +6,7 @@ from requests.exceptions import ConnectionError
 from project.functions import get_templates, get_networks
 from project.admin.forms import GroupMembershipForm, NetworkOwnershipForm
 from sqlalchemy.exc import OperationalError, ProgrammingError
-import datetime
+import datetime, time
 
 
 # admin blueprint definition
@@ -61,6 +61,7 @@ def networks():
 @admin_blueprint.route('/networks/update_table', methods=['GET'])
 @login_required
 def update_networks_table():
+    t1 = time.time()
     try:
         networks = get_networks()
     except ConnectionError:
@@ -79,6 +80,8 @@ def update_networks_table():
         db_network.committed = True
         db.session.add(db_network)
     db.session.commit()
+    t2 = time.time()
+    print("elapsed time: {}".format(t2-t1))
     return "success"
 
 
