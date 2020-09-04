@@ -179,7 +179,7 @@ def networks_table():
     for i, row in enumerate(networks):
         network = {'name': row.name,
                    'groups': [group.name for group in row.groups],
-                   'tags': row.tags,
+                   'tags': row.net_tags,
                    'rowNum': i + 1
                    }
         networks_list.append(network)

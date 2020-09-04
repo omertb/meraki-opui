@@ -1,5 +1,5 @@
 from project import db
-from project.models import Template, Network, Group
+from project.models import Template, Network, Group, Tag
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from requests.exceptions import ConnectionError
@@ -74,11 +74,21 @@ def update_networks_table():
             error = str(e)
             return error
         if db_network:
-            db_network.update(**network)
+            db_network.update(**network)  # update the existing network in db consistent with cloud
         else:
-            db_network = Network(**network)
-        db_network.committed = True
+            db_network = Network(**network)  # there is a new network cloud, and save it in db
+            # update tags table and their relation with networks
+            if network['net_tags']:
+                for tag in network['net_tags'].split(" "):
+                    db_tag = Tag.query.filter_by(name=tag).first()
+                    if not db_tag:
+                        new_tag = Tag(tag)
+                        db.session.add(new_tag)
+                        db_network.tags.append(new_tag)
+
+        db_network.committed = True  # db is synced with cloud
         db.session.add(db_network)
+        
     db.session.commit()
     t2 = time.time()
     print("elapsed time: {}".format(t2-t1))
