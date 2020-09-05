@@ -175,30 +175,45 @@ $('.my-select').selectpicker();
 // new group post
 var newGroupErrorDiv = document.getElementById("newGroupErrorDiv")
 var $groupsTable = $('#groupsTable')
+var group_select = document.getElementById("groupSelectMultiple")
 
-$(document).on("submit", "#createGroupForm", function(event){
+$(document).on("click", "#createGroupButton", function(event){
+    var new_group_name = $('#newGroupInput').val();
     event.preventDefault();
     $.ajax({
         url: "/groups",
         type: "POST",
-        data: new FormData(this),
+        data: new_group_name,
         dataType: "json",
-        contentType: false,
+        contentType: 'application/json; charset=utf-8',
         cache: false,
         processData: false,
         success: function(data) {
-            if(data != null) {
-                var output = data;
+            if(data === "Exists!") {
+                var output = "Group already exists!";
                 newGroupErrorDiv.innerHTML = output;
-                $groupsTable.bootstrapTable('refresh');
             }else{
-
                 newGroupErrorDiv.innerHTML = "";
+                manageGroupResult.innerHTML = "";
                 $groupsTable.bootstrapTable('refresh');
+                updateGroupSelect(data);
             }
         }
     });
 });
+
+function updateGroupSelect(data){
+    var optionHTML = '';
+    for (let grp of data) {
+        optionHTML += '<option value="' + grp[0].toString() + '">' + grp[1].toString() + '</option>';
+    }
+    group_select.removeAttribute("data-live-search");
+    group_select.classList.remove("selectpicker");
+    group_select.innerHTML = optionHTML;
+    $('#groupSelectMultiple').addClass('selectpicker');
+    $('#groupSelectMultiple').attr('data-live-search', 'true');
+    $('#groupSelectMultiple').selectpicker('refresh');
+}
 
 // delete device modal
 var manageGroupResult = document.getElementById("manageGroupResult")
@@ -217,6 +232,9 @@ $(document).on("click", "#deleteGroupButton", function(event){
                 output += "<li>" + data[i] + "</li>";
             }
             manageGroupResult.innerHTML = output;
+            $.get("/groups/groups_select", function(data, status){
+                updateGroupSelect(data);
+            });
         }
     });
 });
@@ -255,13 +273,19 @@ $(document).on("click", "#membershipButton", function(event){
         success: function(data) {
             $groupsTable.bootstrapTable('refresh');
             var output = '';
-            for (var i = 0; i < data.length; i++){
-                output += "<li>" + data[i] + "</li>";
+            console.log(data);
+            if(Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    output += "<li>" + data[i] + "</li>";
+                }
+            }else{
+                output = data;
             }
             manageGroupResult.innerHTML = output;
         }
     });
 });
+
 var networksResultInToolbar = document.getElementById("networksResultInToolbar")
 var $networksTable = $('#networksTable')
 $(document).on("click", "#updateNetworksTableButton", function(event){

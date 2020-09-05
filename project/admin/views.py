@@ -17,7 +17,6 @@ admin_blueprint = Blueprint('admin', __name__, template_folder='templates')
 @login_required
 def users():
     form = GroupMembershipForm(request.form)
-    form.set_choices()
 
     return render_template('users.html', form=form)
     # load_templates_to_db()
@@ -32,19 +31,27 @@ def groups():
 
     if request.method == 'POST':
         error = None
-        new_group_name = form.new_group_name.data
+        new_group_name = request.data.decode("utf-8")
         print(new_group_name)
         if Group.query.filter_by(name=new_group_name).first():
-            error = "Group already exists!"
+            error = "Exists!"
             return jsonify(error)
         new_group = Group(new_group_name)
         db.session.add(new_group)
         db.session.commit()
-        return jsonify(error)
+        return_data = [(group.id, group.name) for group in Group.query.all()]
+        return jsonify(return_data)
 
     return render_template('groups.html', form=form)
     # load_templates_to_db()
     # load_networks_to_db()
+
+
+@admin_blueprint.route('/groups/groups_select', methods=['GET'])
+@login_required
+def groups_select():
+    return_data = [(group.id, group.name) for group in Group.query.all()]
+    return jsonify(return_data)
 
 
 @admin_blueprint.route('/networks', methods=['GET', 'POST'])
@@ -88,7 +95,7 @@ def update_networks_table():
 
         db_network.committed = True  # db is synced with cloud
         db.session.add(db_network)
-        
+
     db.session.commit()
     t2 = time.time()
     print("elapsed time: {}".format(t2-t1))

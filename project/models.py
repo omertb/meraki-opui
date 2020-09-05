@@ -44,7 +44,6 @@ class User(db.Model):
     reg_date = db.Column(db.DateTime, nullable=False)
     verified = db.Column(db.Boolean, nullable=False, default=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
-    templates = db.relationship("Template", backref="user", lazy=True)
     groups = db.relationship("Group", secondary=membership_table, back_populates='users')
 
     def __init__(self, username, password, email, name, surname, admin=False, verified=False):
@@ -185,13 +184,11 @@ class Template(db.Model):
     meraki_id = db.Column(db.String(64), unique=True)
     reg_date = db.Column(db.DateTime, nullable=False)
     networks = db.relationship("Network", backref="template", lazy=True)
-    template_user = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, template_name, template_n_id, template_user=None):
+    def __init__(self, template_name, template_n_id):
         self.name = template_name
         self.meraki_id = template_n_id
         self.reg_date = datetime.datetime.now()
-        self.template_user = template_user
 
     def __repr__(self):
         return '<template_name: {}>'.format(self.name)
