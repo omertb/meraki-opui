@@ -59,8 +59,10 @@ def reset_groups():
         for group in groups_to_be_reset:
             db_group = Group.query.filter_by(name=group['name']).first()
             db_group.users.clear()
+            db_group.tags.clear()
+            db_group.networks.clear()
             db.session.add(db_group)
-            result.append("Group: {} membership is reset".format(group['name']))
+            result.append("Group: {} membership, tags and networks relations are reset".format(group['name']))
         try:
             db.session.commit()
         except:
