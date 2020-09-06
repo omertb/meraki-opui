@@ -227,7 +227,7 @@ $(document).on("click", "#deleteGroupButton", function(event){
         contentType: "application/json",
         success: function(data) {
             $groupsTable.bootstrapTable('refresh');
-            var output = '';
+            var output = '<br>';
             for (var i = 0; i < data.length; i++){
                 output += "<li>" + data[i] + "</li>";
             }
@@ -273,7 +273,6 @@ $(document).on("click", "#membershipButton", function(event){
         success: function(data) {
             $groupsTable.bootstrapTable('refresh');
             var output = '';
-            console.log(data);
             if(Array.isArray(data)) {
                 for (var i = 0; i < data.length; i++) {
                     output += "<li>" + data[i] + "</li>";
@@ -281,9 +280,43 @@ $(document).on("click", "#membershipButton", function(event){
             }else{
                 output = data;
             }
+            $('#groupSelectMultiple').val('default');
+            $('#userSelectMultiple').val('default');
+            $('#groupSelectMultiple').selectpicker('refresh');
+            $('#userSelectMultiple').selectpicker('refresh');
             manageGroupResult.innerHTML = output;
         }
     });
+});
+var manageNetworkResult = document.getElementById("manageNetworkResult");
+$(document).on("click", "#tagGroupButton", function(event){
+    event.preventDefault();
+    let group_select = $('#groupSelectMultiple2').val();
+    let tag_select = $('#tagSelectMultiple').val();
+    let group_tag_select = [];
+    group_tag_select.push(group_select, tag_select);
+        $.ajax({
+            url: "/networks/tag_group",
+            type: "POST",
+            data: JSON.stringify(group_tag_select),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                var output = '<br>';
+                if (Array.isArray(data)) {
+                    for (var i = 0; i < data.length; i++) {
+                        output += "<li>" + data[i] + "</li>";
+                    }
+                } else {
+                    output = data;
+                }
+                $('#groupSelectMultiple2').val('default');
+                $('#tagSelectMultiple').val('default');
+                $('#groupSelectMultiple2').selectpicker('refresh');
+                $('#tagSelectMultiple').selectpicker('refresh');
+                manageNetworkResult.innerHTML = output;
+            }
+        });
 });
 
 var networksResultInToolbar = document.getElementById("networksResultInToolbar")

@@ -49,8 +49,8 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="networkSelectMultiple">Choose Networks: </label><br>
-                            {{ form.select_network(class_="selectpicker my-select", id="networkSelectMultiple", data_live_search="true") }}
+                            <label for="tagSelectMultiple">Choose Tags: </label><br>
+                            {{ form.select_tag(class_="selectpicker my-select", id="tagSelectMultiple", data_live_search="true") }}
                         </div>
                     </div>
                 </div>
@@ -60,8 +60,8 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <button id="membershipButton" class="btn btn-primary btn-block" type="submit">
-                                Bind Group
+                            <button id="tagGroupButton" class="btn btn-primary btn-block" type="submit">
+                                Tag Group
                             </button>
                         </div>
                     </div>
@@ -99,6 +99,11 @@
                     </tr>
                   </thead>
                 </table>
+                <div id="manageNetworkResult" style="color:red;padding: 5px;">
+                    {% if error %}
+                    <p class="error"><strong>Error:</strong> {{ error }}</p>
+                    {% endif %}
+                </div>
         </div>
 
     </div>

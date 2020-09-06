@@ -32,7 +32,6 @@ def groups():
     if request.method == 'POST':
         error = None
         new_group_name = request.data.decode("utf-8")
-        print(new_group_name)
         if Group.query.filter_by(name=new_group_name).first():
             error = "Exists!"
             return jsonify(error)
@@ -83,7 +82,7 @@ def update_networks_table():
         if db_network:
             db_network.update(**network)  # update the existing network in db consistent with cloud
         else:
-            db_network = Network(**network)  # there is a new network cloud, and save it in db
+            db_network = Network(**network)  # there is a new network on cloud, and save it in db
             # update tags table and their relation with networks
             if network['net_tags']:
                 for tag in network['net_tags'].split(" "):

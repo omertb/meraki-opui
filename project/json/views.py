@@ -1,11 +1,33 @@
 from project import db
-from project.models import Network, Device, Template, User, Group
+from project.models import Network, Device, Template, User, Group, Tag
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 
 
 # home blueprint definition
 json_blueprint = Blueprint('json', __name__, template_folder='templates')
+
+
+@json_blueprint.route('/networks/tag_group', methods=['POST'])
+@login_required
+def tag_group():
+    result = []
+    if request.method == 'POST':
+        group_tag_list = request.get_json()
+        print(group_tag_list)
+        group_list = group_tag_list[0]
+        tag_list = group_tag_list[-1]
+        for group_id in group_list:
+            group = Group.query.get(int(group_id))
+            for tag_id in tag_list:
+                tag = Tag.query.get(int(tag_id))
+                group.tags.append(tag)
+            db.session.add(group)
+        try:
+            db.session.commit()
+        except:
+            return jsonify("Database error!")
+        return jsonify(result)
 
 
 @json_blueprint.route('/groups/add_user', methods=['POST'])
