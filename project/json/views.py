@@ -184,10 +184,11 @@ def groups_table():
     groups = Group.query.all()
     groups_list = []
     for i, row in enumerate(groups):
-        group = {'name': row.name,
-                'users': [user.username for user in row.users],
-                'rowNum': i + 1
-                }
+        group = {'rowNum': i + 1,
+                 'name': row.name,
+                 'users': [user.username for user in row.users],
+                 'tags': [tag.name for tag in row.tags]
+                 }
         groups_list.append(group)
     return jsonify(groups_list)
 

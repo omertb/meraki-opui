@@ -1,3 +1,12 @@
+.cell-hyphens {
+   word-wrap: break-word;
+   max-width: 200px;
+   -webkit-hyphens: auto; /* iOS 4.2+ */
+   -moz-hyphens: auto; /* Firefox 5+ */
+   -ms-hyphens: auto; /* IE 10+ */
+   hyphens: auto;
+}
+
 .wait-modal {
     display:    none;
     position:   fixed;
