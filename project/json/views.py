@@ -14,7 +14,6 @@ def tag_group():
     result = []
     if request.method == 'POST':
         group_tag_list = request.get_json()
-        print(group_tag_list)
         group_list = group_tag_list[0]
         tag_list = group_tag_list[-1]
         for group_id in group_list:

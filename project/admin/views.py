@@ -81,6 +81,15 @@ def update_networks_table():
             return error
         if db_network:
             db_network.update(**network)  # update the existing network in db consistent with cloud
+            # build group network relation according to tag bindings to both networks and groups
+            db_net_tags = db_network.tags
+            db_groups = Group.query.all()
+            if db_net_tags:
+                for db_net_tag in db_net_tags:
+                    for db_group in db_groups:
+                        if db_net_tag in db_group.tags:
+                            db_group.networks.append(db_network)
+                            db.session.add(db_group)
         else:
             db_network = Network(**network)  # there is a new network on cloud, and save it in db
             # update tags table and their relation with networks
