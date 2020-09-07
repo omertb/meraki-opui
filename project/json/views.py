@@ -8,25 +8,41 @@ from flask_login import login_required, current_user
 json_blueprint = Blueprint('json', __name__, template_folder='templates')
 
 
-@json_blueprint.route('/networks/tag_group', methods=['POST'])
+'''administrator functions
+to do:
+- decorator for access by only admin users
+'''
+
+
+@json_blueprint.route('/users/users.json', methods=['GET'])
 @login_required
-def tag_group():
-    result = []
-    if request.method == 'POST':
-        group_tag_list = request.get_json()
-        group_list = group_tag_list[0]
-        tag_list = group_tag_list[-1]
-        for group_id in group_list:
-            group = Group.query.get(int(group_id))
-            for tag_id in tag_list:
-                tag = Tag.query.get(int(tag_id))
-                group.tags.append(tag)
-            db.session.add(group)
-        try:
-            db.session.commit()
-        except:
-            return jsonify("Database error!")
-        return jsonify(result)
+def users_table():
+    users = User.query.all()
+    users_list = []
+    for i, row in enumerate(users):
+        user = {'name': row.username,
+                'groups': [group.name for group in row.groups],
+                'rowNum': i + 1,
+                'admin': 'Yes' if row.admin else 'No',
+                'operator': 'Yes' if row.verified else 'No'
+                }
+        users_list.append(user)
+    return jsonify(users_list)
+
+
+@json_blueprint.route('/groups/groups.json', methods=['GET'])
+@login_required
+def groups_table():
+    groups = Group.query.all()
+    groups_list = []
+    for i, row in enumerate(groups):
+        group = {'rowNum': i + 1,
+                 'name': row.name,
+                 'users': [user.username for user in row.users],
+                 'tags': [tag.name for tag in row.tags]
+                 }
+        groups_list.append(group)
+    return jsonify(groups_list)
 
 
 @json_blueprint.route('/groups/add_user', methods=['POST'])
@@ -85,6 +101,48 @@ def delete_groups():
         except:
             return jsonify("Database error!")
         return jsonify(result)
+
+
+@json_blueprint.route('/networks/tag_group', methods=['POST'])
+@login_required
+def tag_group():
+    result = []
+    if request.method == 'POST':
+        group_tag_list = request.get_json()
+        group_list = group_tag_list[0]
+        tag_list = group_tag_list[-1]
+        for group_id in group_list:
+            group = Group.query.get(int(group_id))
+            for tag_id in tag_list:
+                tag = Tag.query.get(int(tag_id))
+                group.tags.append(tag)
+            db.session.add(group)
+        try:
+            db.session.commit()
+        except:
+            return jsonify("Database error!")
+        return jsonify(result)
+
+
+@json_blueprint.route('/networks/networks.json', methods=['GET'])
+@login_required
+def networks_table():
+    networks = Network.query.all()
+    networks_list = []
+    for i, row in enumerate(networks):
+        network = {'name': row.name,
+                   'groups': [group.name for group in row.groups],
+                   'tags': row.net_tags,
+                   'rowNum': i + 1
+                   }
+        networks_list.append(network)
+    return jsonify(networks_list)
+
+
+'''user related functions
+to do:
+- update these functions so that posted networks or devices cannot be deleted on which current user is not authorized.
+'''
 
 
 @json_blueprint.route('/delete_devices', methods=['POST'])
@@ -162,49 +220,3 @@ def device_table():
         return jsonify(device_list)
     else:
         return "Not Found", 404
-
-
-@json_blueprint.route('/users/users.json', methods=['GET'])
-@login_required
-def users_table():
-    users = User.query.all()
-    users_list = []
-    for i, row in enumerate(users):
-        user = {'name': row.username,
-                'groups': [group.name for group in row.groups],
-                'rowNum': i + 1,
-                'admin': 'Yes' if row.admin else 'No',
-                'operator': 'Yes' if row.verified else 'No'
-                }
-        users_list.append(user)
-    return jsonify(users_list)
-
-
-@json_blueprint.route('/groups/groups.json', methods=['GET'])
-@login_required
-def groups_table():
-    groups = Group.query.all()
-    groups_list = []
-    for i, row in enumerate(groups):
-        group = {'rowNum': i + 1,
-                 'name': row.name,
-                 'users': [user.username for user in row.users],
-                 'tags': [tag.name for tag in row.tags]
-                 }
-        groups_list.append(group)
-    return jsonify(groups_list)
-
-
-@json_blueprint.route('/networks/networks.json', methods=['GET'])
-@login_required
-def networks_table():
-    networks = Network.query.all()
-    networks_list = []
-    for i, row in enumerate(networks):
-        network = {'name': row.name,
-                   'groups': [group.name for group in row.groups],
-                   'tags': row.net_tags,
-                   'rowNum': i + 1
-                   }
-        networks_list.append(network)
-    return jsonify(networks_list)

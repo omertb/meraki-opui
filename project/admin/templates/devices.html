@@ -35,59 +35,24 @@
             <div class="sidebar">
                 <a href="/users">Users</a>
                 <a href="/groups">Groups</a>
-                <a class="active" href="#">Networks</a>
-                <a href="/devices">Devices</a>
+                <a href="/networks">Networks</a>
+                <a class="active" href="#">Devices</a>
             </div>
 		</div>
-        <div class="col-md-4 pt-2">
-            <form id="groupMembershipForm" action="" method="post">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="groupSelectMultiple2">Choose Groups: </label><br>
-                            {{ form.select_group(class_="selectpicker my-select", id="groupSelectMultiple2", data_live_search="true") }}
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="tagSelectMultiple">Choose Tags: </label><br>
-                            {{ form.select_tag(class_="selectpicker my-select", id="tagSelectMultiple", data_live_search="true") }}
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
-
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <button id="tagGroupButton" class="btn btn-primary btn-block" type="submit">
-                                Tag Group
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-
-                    </div>
-                </div>
-
-            </form>
-        </div>
-        <div class="col-md-6">
+        <div class="col-md-10">
             <div class="content pt-2">
-                <div id="adminNetworksTableToolbar">
-                    <button id="updateNetworksTableButton" class="btn btn-outline-primary btn-sm">Update Table</button>
-                    <button id="resetNetworksButton" class="btn btn-outline-warning btn-sm">Reset Network</button>
-                    <div id="networksResultInToolbar" style="color:red;"></div>
+                <div id="adminDevicesTableToolbar">
+                    <button id="updateDevicesTableButton" class="btn btn-outline-primary btn-sm">Update Devices</button>
+                    <div id="devicesResultInToolbar" style="color:red;"></div>
                 </div>
                 <table
-                        id="adminNetworksTable"
+                        id="adminDevicesTable"
                         class="table table-hover table-sm"
                         data-toggle="table"
                         data-search="true"
-                        data-toolbar="#adminNetworksTableToolbar"
+                        data-toolbar="#adminDevicesTableToolbar"
                         data-click-to-select="true"
-                        data-url="networks/networks.json"
+                        data-url="devices/devices.json"
                         data-pagination="true"
                 >
                   <thead class="thead-dark">

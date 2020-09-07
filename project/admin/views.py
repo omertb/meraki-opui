@@ -15,7 +15,7 @@ admin_blueprint = Blueprint('admin', __name__, template_folder='templates')
 
 @admin_blueprint.route('/users', methods=['GET', 'POST'])
 @login_required
-def users():
+def admin_users():
     form = GroupMembershipForm(request.form)
 
     return render_template('users.html', form=form)
@@ -25,7 +25,7 @@ def users():
 
 @admin_blueprint.route('/groups', methods=['GET', 'POST'])
 @login_required
-def groups():
+def admin_groups():
     form = GroupMembershipForm(request.form)
     form.set_choices()
 
@@ -55,7 +55,7 @@ def groups_select():
 
 @admin_blueprint.route('/networks', methods=['GET', 'POST'])
 @login_required
-def networks():
+def admin_networks():
     form = NetworkOwnershipForm(request.form)
     form.set_choices()
 
@@ -66,7 +66,7 @@ def networks():
 
 @admin_blueprint.route('/networks/update_table', methods=['GET'])
 @login_required
-def update_networks_table():
+def update_admin_networks_table():
     '''
     If the network exists in db, updates the network row with new values;
      clears and rebuilds:
@@ -121,6 +121,12 @@ def update_networks_table():
     t2 = time.time()
     print("elapsed time: {}".format(t2-t1))
     return "success"
+
+
+@admin_blueprint.route('/devices', methods=['GET'])
+@login_required
+def admin_devices():
+    return render_template('devices.html')
 
 
 def load_templates_to_db():
