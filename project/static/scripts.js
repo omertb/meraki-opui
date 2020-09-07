@@ -331,6 +331,18 @@ $(document).on("click", "#updateNetworksTableButton", function(event){
   });
 });
 
+var devicesResultInToolbar = document.getElementById("devicesResultInToolbar")
+var $adminDevicesTable = $('#adminDevicesTable')
+$(document).on("click", "#updateAdminDevicesTableButton", function(event){
+    $.get("/devices/update_table", function(data, status){
+        if(data==="success"){
+            $adminDevicesTable.bootstrapTable('refresh');
+        }else{
+            devicesResultInToolbar.innerHTML = data;
+        }
+  });
+});
+
 // wait animation with wait-modal
 $body = $("body");
 $(document).on({

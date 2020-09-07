@@ -42,7 +42,7 @@
         <div class="col-md-10">
             <div class="content pt-2">
                 <div id="adminDevicesTableToolbar">
-                    <button id="updateDevicesTableButton" class="btn btn-outline-primary btn-sm">Update Devices</button>
+                    <button id="updateAdminDevicesTableButton" class="btn btn-outline-primary btn-sm">Update Devices</button>
                     <div id="devicesResultInToolbar" style="color:red;"></div>
                 </div>
                 <table
@@ -55,17 +55,18 @@
                         data-url="devices/devices.json"
                         data-pagination="true"
                 >
-                  <thead class="thead-dark">
+                  <thead class="thead-light">
                     <tr>
                         <th scope="col" data-field="state" data-checkbox="true"></th>
                         <th scope="col" data-field="rowNum" data-sortable="true">#</th>
                         <th scope="col" data-field="name" data-sortable="true">Name</th>
-                        <th scope="col" data-field="groups" data-sortable="true" class="cell-hyphens">Groups</th>
-                        <th scope="col" data-field="tags" data-sortable="true" class="cell-hyphens">Tags</th>
+                        <th scope="col" data-field="serial" data-sortable="true" class="cell-hyphens">Serial</th>
+                        <th scope="col" data-field="committed" data-sortable="true" class="cell-hyphens">Committed</th>
+                        <th scope="col" data-field="network_name" data-sortable="true" class="cell-hyphens">Network</th>
                     </tr>
                   </thead>
                 </table>
-                <div id="manageNetworkResult" style="color:red;padding: 5px;">
+                <div id="manageDeviceResult" style="color:red;padding: 5px;">
                     {% if error %}
                     <p class="error"><strong>Error:</strong> {{ error }}</p>
                     {% endif %}

@@ -1,9 +1,9 @@
 from project import db
-from project.models import Template, Network, Group, Tag
+from project.models import Template, Network, Group, Tag, Device
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from requests.exceptions import ConnectionError
-from project.functions import get_templates, get_networks
+from project.functions import get_templates, get_networks, get_devices
 from project.admin.forms import GroupMembershipForm, NetworkOwnershipForm
 from sqlalchemy.exc import OperationalError, ProgrammingError
 import datetime, time
@@ -127,6 +127,50 @@ def update_admin_networks_table():
 @login_required
 def admin_devices():
     return render_template('devices.html')
+
+
+@admin_blueprint.route('/devices/update_table', methods=['GET'])
+@login_required
+def admin_update_devices_table():
+    t1 = time.time()
+    try:
+        load_devices_to_db()
+    except:
+        return "error"
+    t2 = time.time()
+    print(t2 - t1)
+    return "success"
+
+
+def load_devices_to_db():
+    db_changed = False
+    dev_status_list = get_devices()
+    for device in dev_status_list:
+        db_device = Device.query.filter_by(serial=device['serial']).first()
+        if not db_device:  # new device
+            network = Network.query.filter_by(meraki_id=device['networkId']).first()
+            dict_item = {'device_name': device['name'],
+                         'device_serial': device['serial'],
+                         'network_id': network.id,
+                         'committed': True
+                         }
+            new_db_device = Device(**dict_item)
+            db.session.add(new_db_device)
+            db_changed = True
+        else:  # check if the device is changed
+            device_network_changed = db_device.network.meraki_id is not device['networkId']
+            device_name_changed = db_device.name is not device['name']
+            if device_name_changed or device_network_changed:
+                dict_item = {'device_name': device['name'],
+                             'device_serial': device['serial'],
+                             'network_id': network.id,
+                             'committed': True
+                             }
+                updated_db_device = db_device.update(**dict_item)
+                db.session.add(updated_db_device)
+                db_changed = True
+    if db_changed:
+        db.session.commit()
 
 
 def load_templates_to_db():

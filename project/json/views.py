@@ -139,6 +139,22 @@ def networks_table():
     return jsonify(networks_list)
 
 
+@json_blueprint.route('/devices/devices.json', methods=['GET'])
+@login_required
+def devices_table():
+    devices = Device.query.all()
+    devices_list = []
+    for i, row in enumerate(devices):
+        device = {'rowNum': i + 1,
+                  'name': row.name,
+                  'serial': row.serial,
+                  'committed': "Yes" if row.committed else "No",
+                  'network_name': row.network.name
+                  }
+        devices_list.append(device)
+    return jsonify(devices_list)
+
+
 '''user related functions
 to do:
 - update these functions so that posted networks or devices cannot be deleted on which current user is not authorized.

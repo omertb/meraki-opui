@@ -55,3 +55,12 @@ def get_networks() -> list:
         networks_dict_list.append(dict_item)
 
     return networks_dict_list
+
+
+def get_devices() -> list:
+    org_id_list = get_organization_ids()
+    dev_status_list = []
+    for org_id in org_id_list:
+        dev_status = get_data('organizations/{}/deviceStatuses'.format(org_id))
+        dev_status_list.extend(dev_status)
+    return dev_status_list
