@@ -67,6 +67,15 @@ def networks():
 @admin_blueprint.route('/networks/update_table', methods=['GET'])
 @login_required
 def update_networks_table():
+    '''
+    If the network exists in db, updates the network row with new values;
+     clears and rebuilds:
+    - tags table,
+    - networks-tags relations,
+    - group-networks relations
+    else, adds new network to networks table.
+    :return: 200
+    '''
     t1 = time.time()
     try:
         networks = get_networks()
@@ -79,27 +88,31 @@ def update_networks_table():
         except (ProgrammingError, OperationalError) as e:
             error = str(e)
             return error
+        # update if the network exists
         if db_network:
             db_network.update(**network)  # update the existing network in db consistent with cloud
-            # build group network relation according to tag bindings to both networks and groups
-            db_net_tags = db_network.tags
-            db_groups = Group.query.all()
-            if db_net_tags:
-                for db_net_tag in db_net_tags:
-                    for db_group in db_groups:
-                        if db_net_tag in db_group.tags:
-                            db_group.networks.append(db_network)
-                            db.session.add(db_group)
-        else:
-            db_network = Network(**network)  # there is a new network on cloud, and save it in db
-            # update tags table and their relation with networks
+            # update tags table and build their relation with networks
             if network['net_tags']:
+                db_network.tags.clear()
                 for tag in network['net_tags'].split(" "):
                     db_tag = Tag.query.filter_by(name=tag).first()
                     if not db_tag:
                         new_tag = Tag(tag)
                         db.session.add(new_tag)
                         db_network.tags.append(new_tag)
+            # build group network relation according to tag bindings to both networks and groups
+            db_net_tags = db_network.tags
+            if db_net_tags:
+                db_groups = Group.query.all()
+                for db_net_tag in db_net_tags:
+                    for db_group in db_groups:
+                        db_group.networks.clear()
+                        if db_net_tag in db_group.tags:
+                            db_group.networks.append(db_network)
+                            db.session.add(db_group)
+
+        else:
+            db_network = Network(**network)  # there is a new network on cloud, and save it in db
 
         db_network.committed = True  # db is synced with cloud
         db.session.add(db_network)

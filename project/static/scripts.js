@@ -320,7 +320,7 @@ $(document).on("click", "#tagGroupButton", function(event){
 });
 
 var networksResultInToolbar = document.getElementById("networksResultInToolbar")
-var $networksTable = $('#networksTable')
+var $networksTable = $('#adminNetworksTable')
 $(document).on("click", "#updateNetworksTableButton", function(event){
     $.get("/networks/update_table", function(data, status){
         if(data==="success"){
