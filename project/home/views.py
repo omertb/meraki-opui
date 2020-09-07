@@ -52,13 +52,13 @@ def home():
                 # return render_template('home.html', form=form, error=error)
                 return jsonify(error)
 
-            if net_type == 'firewall':
+            if net_type == 'appliance':
                 template = Template.query.filter_by(name=form.net_template.data).first()
-                bound_template = template.id
+                bound_template = template.meraki_id
             else:
                 bound_template = None
 
-            network = Network(net_name, net_type, user_id, bound_template)
+            network = Network(net_name, net_type, user_id, bound_template=bound_template)
             db.session.add(network)
             db.session.commit()
         else:

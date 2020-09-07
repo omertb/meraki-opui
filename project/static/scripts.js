@@ -24,7 +24,7 @@ $(document).ready(function(){
     $("#netTypeSelect").change(function(){
         $(this).find("option:selected").each(function(){
             var optionValue = $(this).attr("value");
-            if(optionValue=='firewall'){
+            if(optionValue=='appliance'){
                 $("#templateFormArea").slideDown();
             } else{
                 $("#templateFormArea").slideUp();

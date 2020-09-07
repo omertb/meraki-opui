@@ -135,8 +135,9 @@ def admin_update_devices_table():
     t1 = time.time()
     try:
         load_devices_to_db()
-    except:
-        return "error"
+    except Exception as e:
+        print(str(e))
+        return str(e)
     t2 = time.time()
     print(t2 - t1)
     return "success"
@@ -147,8 +148,8 @@ def load_devices_to_db():
     dev_status_list = get_devices()
     for device in dev_status_list:
         db_device = Device.query.filter_by(serial=device['serial']).first()
+        network = Network.query.filter_by(meraki_id=device['networkId']).first()
         if not db_device:  # new device
-            network = Network.query.filter_by(meraki_id=device['networkId']).first()
             dict_item = {'device_name': device['name'],
                          'device_serial': device['serial'],
                          'network_id': network.id,
@@ -158,16 +159,16 @@ def load_devices_to_db():
             db.session.add(new_db_device)
             db_changed = True
         else:  # check if the device is changed
-            device_network_changed = db_device.network.meraki_id is not device['networkId']
-            device_name_changed = db_device.name is not device['name']
+            device_network_changed = db_device.network.meraki_id != device['networkId']
+            device_name_changed = db_device.name != device['name']
             if device_name_changed or device_network_changed:
                 dict_item = {'device_name': device['name'],
                              'device_serial': device['serial'],
                              'network_id': network.id,
                              'committed': True
                              }
-                updated_db_device = db_device.update(**dict_item)
-                db.session.add(updated_db_device)
+                db_device.update(**dict_item)
+                db.session.add(db_device)
                 db_changed = True
     if db_changed:
         db.session.commit()
