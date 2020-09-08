@@ -32,6 +32,44 @@ def users_table():
     return jsonify(users_list)
 
 
+@json_blueprint.route('/users/user_operator', methods=['POST'])
+@login_required
+@is_admin
+def negate_user_operator_access():
+    if request.method == 'POST':
+        users_to_be_negated = request.get_json()
+        for user in users_to_be_negated:
+            db_user = User.query.filter_by(username=user['name']).first()
+            group = Group.query.filter_by(name='operators').first()
+            db_user.operator = not db_user.operator
+            db_user.groups.append(group) if db_user.operator else db_user.groups.remove(group)
+            db.session.add(db_user)
+        try:
+            db.session.commit()
+        except:
+            return jsonify("Database error!")
+    return jsonify("success")
+
+
+@json_blueprint.route('/users/user_admin', methods=['POST'])
+@login_required
+@is_admin
+def negate_user_admin_access():
+    if request.method == 'POST':
+        users_to_be_negated = request.get_json()
+        for user in users_to_be_negated:
+            db_user = User.query.filter_by(username=user['name']).first()
+            group = Group.query.filter_by(name='administrators').first()
+            db_user.admin = not db_user.admin
+            db_user.groups.append(group) if db_user.admin else db_user.groups.remove(group)
+            db.session.add(db_user)
+        try:
+            db.session.commit()
+        except:
+            return jsonify("Database error!")
+    return jsonify("success")
+
+
 @json_blueprint.route('/groups/groups.json', methods=['GET'])
 @login_required
 @is_admin

@@ -342,6 +342,35 @@ $(document).on("click", "#updateAdminDevicesTableButton", function(event){
         }
   });
 });
+var $usersTable = $('#usersTable')
+// user operator button
+$(document).on("click", "#userOperatorButton", function(event){
+    JSON_Selected = $usersTable.bootstrapTable('getSelections');
+    $.ajax({
+        url: "/users/user_operator",
+        type: "POST",
+        data: JSON.stringify(JSON_Selected),
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+            $usersTable.bootstrapTable('refresh');
+        }
+    });
+});
+
+$(document).on("click", "#userAdminButton", function(event){
+    JSON_Selected = $usersTable.bootstrapTable('getSelections');
+    $.ajax({
+        url: "/users/user_admin",
+        type: "POST",
+        data: JSON.stringify(JSON_Selected),
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+            $usersTable.bootstrapTable('refresh');
+        }
+    });
+});
 
 // wait animation with wait-modal
 $body = $("body");
