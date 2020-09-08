@@ -42,18 +42,18 @@ class User(db.Model):
     password = db.Column(db.String(128), nullable=False)
     networks = db.relationship("Network", backref="user", lazy=True)
     reg_date = db.Column(db.DateTime, nullable=False)
-    verified = db.Column(db.Boolean, nullable=False, default=False)
+    operator = db.Column(db.Boolean, nullable=False, default=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
     groups = db.relationship("Group", secondary=membership_table, back_populates='users')
 
-    def __init__(self, username, password, email, name, surname, admin=False, verified=False):
+    def __init__(self, username, password, email, name, surname, admin=False, operator=False):
         self.username = username
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
         self.email = email
         self.name = name
         self.surname = surname
         self.admin = admin
-        self.verified = verified
+        self.operator = operator
         self.reg_date = datetime.datetime.now()
 
     def is_authenticated(self):

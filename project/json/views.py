@@ -2,6 +2,7 @@ from project import db
 from project.models import Network, Device, Template, User, Group, Tag
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
+from project.decorators import *
 
 
 # home blueprint definition
@@ -16,6 +17,7 @@ to do:
 
 @json_blueprint.route('/users/users.json', methods=['GET'])
 @login_required
+@is_admin
 def users_table():
     users = User.query.all()
     users_list = []
@@ -24,7 +26,7 @@ def users_table():
                 'groups': [group.name for group in row.groups],
                 'rowNum': i + 1,
                 'admin': 'Yes' if row.admin else 'No',
-                'operator': 'Yes' if row.verified else 'No'
+                'operator': 'Yes' if row.operator else 'No'
                 }
         users_list.append(user)
     return jsonify(users_list)
@@ -32,6 +34,7 @@ def users_table():
 
 @json_blueprint.route('/groups/groups.json', methods=['GET'])
 @login_required
+@is_admin
 def groups_table():
     groups = Group.query.all()
     groups_list = []
@@ -47,6 +50,7 @@ def groups_table():
 
 @json_blueprint.route('/groups/add_user', methods=['POST'])
 @login_required
+@is_admin
 def add_user():
     result = []
     if request.method == 'POST':
@@ -68,6 +72,7 @@ def add_user():
 
 @json_blueprint.route('/groups/reset_groups', methods=['POST'])
 @login_required
+@is_admin
 def reset_groups():
     result = []
     if request.method == 'POST':
@@ -88,6 +93,7 @@ def reset_groups():
 
 @json_blueprint.route('/groups/delete_groups', methods=['POST'])
 @login_required
+@is_admin
 def delete_groups():
     result = []
     if request.method == 'POST':
@@ -105,6 +111,7 @@ def delete_groups():
 
 @json_blueprint.route('/networks/tag_group', methods=['POST'])
 @login_required
+@is_admin
 def tag_group():
     result = []
     if request.method == 'POST':
@@ -126,6 +133,7 @@ def tag_group():
 
 @json_blueprint.route('/networks/networks.json', methods=['GET'])
 @login_required
+@is_admin
 def networks_table():
     networks = Network.query.all()
     networks_list = []
@@ -141,6 +149,7 @@ def networks_table():
 
 @json_blueprint.route('/devices/devices.json', methods=['GET'])
 @login_required
+@is_admin
 def devices_table():
     devices = Device.query.all()
     devices_list = []
@@ -163,6 +172,7 @@ to do:
 
 @json_blueprint.route('/delete_devices', methods=['POST'])
 @login_required
+@is_operator
 def delete_devices():
     result = []
     if request.method == 'POST':
@@ -181,6 +191,7 @@ def delete_devices():
 
 @json_blueprint.route('/delete_networks', methods=['POST'])
 @login_required
+@is_operator
 def delete_networks():
     result = []
     if request.method == 'POST':
@@ -203,6 +214,7 @@ def delete_networks():
 
 @json_blueprint.route('/network.json', methods=['GET'])
 @login_required
+@is_operator
 def network_table():
     user_networks = Network.query.filter_by(user_id=current_user.id)
     network_list = []
@@ -219,6 +231,7 @@ def network_table():
 
 @json_blueprint.route('/device.json', methods=['POST'])
 @login_required
+@is_operator
 def device_table():
     if request.method == 'POST':
         selected_networks = request.get_json()

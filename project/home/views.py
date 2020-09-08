@@ -3,6 +3,7 @@ from project.models import Template, Network, Device
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.home.forms import NetworkDeviceForm
+from project.decorators import *
 import datetime
 from requests.exceptions import ConnectionError
 
@@ -13,6 +14,7 @@ home_blueprint = Blueprint('home', __name__, template_folder='templates')
 
 @home_blueprint.route('/', methods=['GET', 'POST'])
 @login_required
+@is_operator
 def home():
     error = None
     # beginning of "on page load"

@@ -7,6 +7,7 @@ from project.functions import get_templates, get_networks, get_devices
 from project.admin.forms import GroupMembershipForm, NetworkOwnershipForm
 from sqlalchemy.exc import OperationalError, ProgrammingError
 import datetime, time
+from project.decorators import *
 
 
 # admin blueprint definition
@@ -15,6 +16,7 @@ admin_blueprint = Blueprint('admin', __name__, template_folder='templates')
 
 @admin_blueprint.route('/users', methods=['GET', 'POST'])
 @login_required
+@is_admin
 def admin_users():
     form = GroupMembershipForm(request.form)
 
@@ -25,6 +27,7 @@ def admin_users():
 
 @admin_blueprint.route('/groups', methods=['GET', 'POST'])
 @login_required
+@is_admin
 def admin_groups():
     form = GroupMembershipForm(request.form)
     form.set_choices()
@@ -48,6 +51,7 @@ def admin_groups():
 
 @admin_blueprint.route('/groups/groups_select', methods=['GET'])
 @login_required
+@is_admin
 def groups_select():
     return_data = [(group.id, group.name) for group in Group.query.all()]
     return jsonify(return_data)
@@ -55,6 +59,7 @@ def groups_select():
 
 @admin_blueprint.route('/networks', methods=['GET', 'POST'])
 @login_required
+@is_admin
 def admin_networks():
     form = NetworkOwnershipForm(request.form)
     form.set_choices()
@@ -66,6 +71,7 @@ def admin_networks():
 
 @admin_blueprint.route('/networks/update_table', methods=['GET'])
 @login_required
+@is_admin
 def update_admin_networks_table():
     '''
     If the network exists in db, updates the network row with new values;
@@ -125,12 +131,14 @@ def update_admin_networks_table():
 
 @admin_blueprint.route('/devices', methods=['GET'])
 @login_required
+@is_admin
 def admin_devices():
     return render_template('devices.html')
 
 
 @admin_blueprint.route('/devices/update_table', methods=['GET'])
 @login_required
+@is_admin
 def admin_update_devices_table():
     t1 = time.time()
     try:
