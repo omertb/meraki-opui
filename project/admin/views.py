@@ -102,28 +102,38 @@ def update_admin_networks_table():
                 db_network.tags.clear()
                 for tag in network['net_tags'].split(" "):
                     db_tag = Tag.query.filter_by(name=tag).first()
-                    if not db_tag:
+                    if db_tag:
+                        db_network.tags.append(db_tag)
+                    else:
                         new_tag = Tag(tag)
                         db.session.add(new_tag)
                         db_network.tags.append(new_tag)
-            # build group network relation according to tag bindings to both networks and groups
-            db_net_tags = db_network.tags
-            if db_net_tags:
-                db_groups = Group.query.all()
-                for db_net_tag in db_net_tags:
-                    for db_group in db_groups:
-                        db_group.networks.clear()
-                        if db_net_tag in db_group.tags:
-                            db_group.networks.append(db_network)
-                            db.session.add(db_group)
 
         else:
             db_network = Network(**network)  # there is a new network on cloud, and save it in db
 
-        db_network.committed = True  # db is synced with cloud
         db.session.add(db_network)
+        db_network.committed = True  # db is synced with cloud
 
     db.session.commit()
+    # build group network relation according to tag bindings to both networks and groups
+    db_networks = Network.query.all()
+    for db_network in db_networks:
+        db_net_tags = db_network.tags
+        if db_net_tags:
+            db_groups = Group.query.all()
+            for db_group in db_groups:
+                for db_net_tag in db_net_tags:
+                    if db_net_tag in db_group.tags:
+                        if db_network not in db_group.networks:
+                            db_group.networks.append(db_network)
+                            db.session.add(db_group)
+                    else:
+                        if db_network in db_group.networks:
+                            db_group.networks.remove(db_network)
+                            db.session.add(db_group)
+    db.session.commit()
+
     t2 = time.time()
     print("elapsed time: {}".format(t2-t1))
     return "success"
