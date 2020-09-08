@@ -28,6 +28,11 @@ def home():
     form.net_template.choices = list(templates_names)
     user_networks = Network.query.filter_by(user_id=current_user.id)
     form.registered_nets.choices = [value for value, in user_networks.values(Network.name)]
+    user_groups = current_user.groups
+    for user_group in user_groups:
+        if user_group.networks:
+            group_networks = user_group.networks
+            form.registered_nets.choices.extend([network.name for network in group_networks])
     #####
     # end of "on page load" block
 
