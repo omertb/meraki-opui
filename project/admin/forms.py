@@ -12,7 +12,7 @@ class GroupMembershipForm(FlaskForm):
 
     def set_choices(self):
         self.select_group.choices = [(group.id, group.name) for group in Group.query.all()]
-        self.select_user.choices = [(user.id, user.name) for user in User.query.all()]
+        self.select_user.choices = [(user.id, user.username) for user in User.query.all()]
 
 
 class NetworkOwnershipForm(FlaskForm):
