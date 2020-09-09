@@ -1,0 +1,94 @@
+.cell-hyphens {
+   word-wrap: break-word;
+   max-width: 200px;
+   -webkit-hyphens: auto; /* iOS 4.2+ */
+   -moz-hyphens: auto; /* Firefox 5+ */
+   -ms-hyphens: auto; /* IE 10+ */
+   hyphens: auto;
+}
+
+.wait-modal {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 )
+                url('./ajax-loader.gif')
+                50% 50%
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading .wait-modal {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   wait-modal element will be visible */
+body.loading .wait-modal {
+    display: block;
+}
+
+/* The side navigation menu */
+.sidebar {
+  margin: 0;
+  padding: 0;
+  /*width: 200px;*/
+  /*background-color: #e3f2fd;*/
+  background-color: #f1f1f1;
+  background-repeat: repeat-y;
+  /*position: fixed;*/
+  height: 100%;
+  overflow: auto;
+}
+
+/* Sidebar links */
+.sidebar a {
+  display: block;
+  color: black;
+  padding: 16px;
+  text-decoration: none;
+}
+
+/* Active/current link */
+.sidebar a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* Links on mouse-over */
+.sidebar a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
+
+/* Page content. The value of the margin-left property should match the value of the sidebar's width property
+div.content {
+  margin-left: 200px;
+  padding: 1px 16px;
+  height: 1000px;
+}
+*/
+
+/* On screens that are less than 700px wide, make the sidebar into a topbar */
+@media screen and (max-width: 700px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .sidebar a {float: left;}
+  div.content {margin-left: 0;}
+}
+
+/* On screens that are less than 400px, display the bar vertically, instead of horizontally */
+@media screen and (max-width: 400px) {
+  .sidebar a {
+    text-align: center;
+    float: none;
+  }
+}
