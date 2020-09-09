@@ -26,6 +26,7 @@ def home():
 
     form = NetworkDeviceForm(request.form)
     form.net_template.choices = list(templates_names)
+    form.set_choices()
     user_networks = Network.query.filter_by(user_id=current_user.id)
     form.registered_nets.choices = [value for value, in user_networks.values(Network.name)]
     user_groups = current_user.groups
