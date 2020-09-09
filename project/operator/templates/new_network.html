@@ -9,6 +9,7 @@
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
       <link href="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.css" rel="stylesheet">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+      <link href="../static/style.op.css" rel="stylesheet">
 
 
       <title>Register Networks and Devices</title>
@@ -38,6 +39,19 @@
 	</div>
 
 	<div class="row">
+        <div class="col-md-2">
+            <div class="sidebar">
+                {% if current_user.admin %}
+                <a href="/users">Users</a>
+                <a href="/groups">Groups</a>
+                <a href="/networks">Networks</a>
+                <a href="/devices">Devices</a>
+                <hr>
+                {% endif %}
+                <a class="active" href="#">New Network</a>
+                <a href="/operator/add_devices">Add Devices</a>
+            </div>
+		</div>
 		<div class="col-md-3">
             <form id="networkDeviceForm" action="" method="post">
 
@@ -129,7 +143,7 @@
             </form>
 
 		</div>
-		<div class="col-md-9">
+		<div class="col-md-7">
             <div id="netTableToolbar">
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#deleteSelectedModal">

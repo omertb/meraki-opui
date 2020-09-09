@@ -2,12 +2,32 @@
 
 {% block custom_head %}
 <title>Login</title>
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
     <!-- Custom styles for this template -->
     <link href="static/login.css" rel="stylesheet">
 
 {% endblock %}
 
 {% block content %}
+<div class="container">
+<div class="text-center d-flex flex-column h-100">
+
     <form class="form-signin" action="" method="post">
   <img class="mb-4" src="static/logo.jpg" alt="" width="204" height="60">
   <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
@@ -45,5 +65,18 @@
   <button id="signInButton" class="btn btn-lg btn-primary btn-block" type="submit">Sign in
   </button>
     </form>
+</div>
 
+  <div class="text-center"
+        <!-- errors -->
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}</p>
+      {% endif %}
+
+      <!-- messages -->
+      {% for message in get_flashed_messages() %}
+        {{ message }}
+      {% endfor %}
+</div>
+</div>
 {% endblock %}

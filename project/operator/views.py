@@ -76,7 +76,7 @@ def new_network():
 
         return jsonify(error)
 
-    return render_template('new_network.html', form=form, error=error)
+    return render_template('new_network.html', current_user=current_user, form=form, error=error)
 
 
 def save_devices_in_db(device_serials_list, net_name):

@@ -38,6 +38,11 @@
                 <a href="/groups">Groups</a>
                 <a class="active" href="#">Networks</a>
                 <a href="/devices">Devices</a>
+                {% if current_user.operator %}
+                <hr>
+                <a href="/operator/new_network">New Network</a>
+                <a href="/operator/add_devices">Add Devices</a>
+                {% endif %}
             </div>
 		</div>
         <div class="col-md-4 pt-2">

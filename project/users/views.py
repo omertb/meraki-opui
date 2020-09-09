@@ -66,7 +66,7 @@ def login():
             except SERVER_DOWN:
                 error = 'Authentication Server Unreachable'
 
-    return render_template('login.html', form=form, error=error)
+    return render_template('login.html', form=form, error=error, current_user=False)
 
 
 @users_blueprint.route('/logout')
