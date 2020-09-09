@@ -48,48 +48,34 @@
                 <a href="/devices">Devices</a>
                 <hr>
                 {% endif %}
-                <a class="active" href="#">New Network</a>
-                <a href="/operator/add_devices">Add Devices</a>
+                <a href="/operator/new_network">New Network</a>
+                <a class="active" href="#">Add Devices</a>
             </div>
 		</div>
 		<div class="col-md-3">
-            <form id="networkDeviceForm" action="" method="post">
+            <form id="userAddDeviceForm" action="" method="post">
 
-                <div id="newNetForm">
 
-              <div class="form-group">
-                <label for="netNameInput">Network: </label>
-                  {{ form.net_name(class_="form-control", id="netNameInput", placeholder="Type a Network Name") }}
-                  <!--
-                  <input type="text" class="form-control" id="netNameInput" placeholder="Type a Network Name">
-                  -->
-              </div>
+                <div id="existingNetForm">
 
-              <div class="form-group">
-                <label for="netTypeSelect">Select Network Type: </label>
-                  {{ form.net_type(class_="form-control", id="netTypeSelect") }}
-                <!--
-                <select class="form-control" id="netTypeSelect">
-                  <option>appliance</option>
-                  <option>switch</option>
-                  <option>wireless</option>
-                </select>
-                -->
-              </div>
-                    <div id="templateFormArea">
+                  <div class="form-group">
+                    <label for="existingNetSelect">Select Network: </label>
+                      {{ form.registered_nets(class_="form-control selectpicker my-select", id="existingNetSelect", data_live_search="true") }}
+                      <!--
+                    <select class="form-control" id="existingNetSelect">
+                    </select>
+                    -->
+                  </div>
 
-                        <div class="form-group">
-                            <label for="netTemplateSelect">Select Network Template: </label>
-                              {{ form.net_template(class_="form-control", id="netTemplateSelect") }}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="netTagMSelect">Select Network Tags: </label>
-                          {{ form.net_tag_mselect(class_="form-control selectpicker my-select", id="netTagMSelect", data_live_search="true") }}
-                    </div>
                 </div>
 
+              <div class="form-group">
+                <label for="devicesTextArea">Enter Devices as Serials in Lines:</label>
+                  {{ form.serial_nos(class_="form-control", id="devicesTextArea", rows="4") }}
+                  <!--
+                <textarea class="form-control" id="devicesTextarea" rows="5"></textarea>
+                -->
+              </div>
 
                 <div id="formErrorDiv" style="color:red;padding: 5px;">
                     {% if error %}

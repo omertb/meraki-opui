@@ -4,12 +4,10 @@ from wtforms.validators import DataRequired, Length
 from flask_login import current_user
 
 
-class NetworkDeviceForm(FlaskForm):
+class NewNetworkForm(FlaskForm):
     net_name = StringField('Network Name: ', validators=[Length(max=64)])
     net_template = SelectField('Template: ', choices=[])
     net_type = SelectField('Network Type: ', choices=["appliance", "switch", "wireless"])
-    serial_nos = TextAreaField('Serial Numbers, one per line: ', validators=[DataRequired(), Length(max=2000)])
-    registered_nets = SelectField('Network: ', choices=[])
     new_or_existing = SelectField("New", choices=[("new", "New Network"), ("existing", "Existing Network")], )
     net_tag_mselect = SelectMultipleField("Select Tags:", validators=[DataRequired()])
 
@@ -18,3 +16,8 @@ class NetworkDeviceForm(FlaskForm):
         for group in current_user.groups:
             tag_list.extend(group.tags)
         self.net_tag_mselect.choices = [(tag.id, tag.name) for tag in tag_list]
+
+
+class AddDevicesForm(FlaskForm):
+    serial_nos = TextAreaField('Serial Numbers, one per line: ', validators=[DataRequired(), Length(max=2000)])
+    registered_nets = SelectField('Network: ', choices=[])

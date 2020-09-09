@@ -2,7 +2,7 @@ from project import db
 from project.models import Template, Network, Device
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
-from project.operator.forms import NetworkDeviceForm
+from project.operator.forms import NewNetworkForm, AddDevicesForm
 from project.decorators import *
 import datetime
 from requests.exceptions import ConnectionError
@@ -10,6 +10,23 @@ from requests.exceptions import ConnectionError
 
 # home blueprint definition
 operator_blueprint = Blueprint('operator', __name__, template_folder='templates')
+
+
+@operator_blueprint.route('/operator/add_devices', methods=['GET', 'POST'])
+@login_required
+@is_operator
+def add_devices():
+    error = None
+    form = AddDevicesForm(request.form)
+    user_networks = Network.query.filter_by(user_id=current_user.id)
+    form.registered_nets.choices = [value for value, in user_networks.values(Network.name)]
+    user_groups = current_user.groups
+    for user_group in user_groups:
+        if user_group.networks:
+            group_networks = user_group.networks
+            form.registered_nets.choices.extend([network.name for network in group_networks])
+
+    return render_template('add_devices.html', current_user=current_user, form=form, error=error)
 
 
 @operator_blueprint.route('/operator/new_network', methods=['GET', 'POST'])
@@ -24,16 +41,9 @@ def new_network():
     for template in templates_db:
         templates_names.append(template.name)
 
-    form = NetworkDeviceForm(request.form)
+    form = NewNetworkForm(request.form)
     form.net_template.choices = list(templates_names)
     form.set_choices()
-    user_networks = Network.query.filter_by(user_id=current_user.id)
-    form.registered_nets.choices = [value for value, in user_networks.values(Network.name)]
-    user_groups = current_user.groups
-    for user_group in user_groups:
-        if user_group.networks:
-            group_networks = user_group.networks
-            form.registered_nets.choices.extend([network.name for network in group_networks])
     #####
     # end of "on page load" block
 
