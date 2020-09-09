@@ -18,13 +18,7 @@ operator_blueprint = Blueprint('operator', __name__, template_folder='templates'
 def add_devices():
     error = None
     form = AddDevicesForm(request.form)
-    user_networks = Network.query.filter_by(user_id=current_user.id)
-    form.registered_nets.choices = [value for value, in user_networks.values(Network.name)]
-    user_groups = current_user.groups
-    for user_group in user_groups:
-        if user_group.networks:
-            group_networks = user_group.networks
-            form.registered_nets.choices.extend([network.name for network in group_networks])
+    form.set_choices()
 
     return render_template('add_devices.html', current_user=current_user, form=form, error=error)
 

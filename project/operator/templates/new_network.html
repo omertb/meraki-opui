@@ -126,7 +126,7 @@
                           <div id="deleteNetworkResult" style="color:darkblue;text-align: left"></div>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="deleteNetworkModalClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button id="deleteSelectedNetsButton" type="button" class="btn btn-danger">Delete</button>
                       </div>
                     </div>
@@ -183,86 +183,6 @@
             </table>
             <!-- Networks Table End -->
             <br>
-
-            <div class="dev-table-selector">
-            <div id="devTableToolbar">
-
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#deleteSelectedDevsModal">
-                    Delete Device
-                </button>
-                <!-- Modal -->
-                <div class="modal fade" id="deleteSelectedDevsModal" tabindex="-1" role="dialog" aria-labelledby="deleteSelectedDevsModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="deleteSelectedDevsModalLabel">Delete Selected Device(s)</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body text-center" style="color:red;">
-                        Selected devices are to be removed from networks?<br>
-                          <b style="color:black;">Are you sure?</b>
-                          <div id="deleteDeviceResult" style="color:darkblue;text-align: left"></div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button id="deleteSelectedDevsButton" type="button" class="btn btn-danger">Delete</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-outline-success btn-sm" data-toggle="modal" data-target="#commitSelectedDevsModal">
-                  Commit Device
-                </button>
-
-                <!-- Modal -->
-                <div class="modal fade" id="commitSelectedDevsModal" tabindex="-1" role="dialog" aria-labelledby="commitSelectedDevsModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="commitSelectedDevsModalLabel">Commit Selected Device(s)</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        Do you confirm to commit selected device(s) to Meraki Cloud?
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button id="commitSelectedDevsButton" type="button" class="btn btn-success">Commit</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-            </div>
-            <table
-                    id="deviceTable"
-                    class="table table-hover table-sm"
-                    data-search="true"
-                    data-toolbar="#devTableToolbar"
-                    data-pagination="true"
-                    data-click-to-select="true"
-            >
-              <thead class="thead-light">
-              <tr>
-                  <th scope="col" data-field="state" data-checkbox="true"></th>
-                  <th scope="col" data-field="rowNum" data-sortable="true">#</th>
-                  <th scope="col" data-field="name" data-sortable="true">Device Name</th>
-                  <th scope="col" data-field="serial" data-sortable="true">Device Serial</th>
-                  <th scope="col" data-field="committed">Device Committed</th>
-                  <th scope="col" data-field="network" data-sortable="true">Device Network</th>
-              </tr>
-              </thead>
-                <tbody id="deviceTableBody"></tbody>
-            </table>
-                </div>
-            <!-- Devices Table End -->
         </div>
 	</div>
 </div>
@@ -277,6 +197,6 @@
 
   <script src="../static/scripts.js"></script>
 
-
+    <div class="wait-modal"></div>
   </body>
 </html>

@@ -5,6 +5,21 @@ $('#signInButton').click(function() {
       '</span>Loading...').addClass('disabled');
 });
 
+$(document).ready(function() {
+    $("#selectNewExistingForm").change(function () {
+        $(this).find("option:selected").each(function () {
+            var optionValue = $(this).attr("value");
+            if (optionValue == 'new') {
+                $("#newNetForm").slideDown();
+                $("#existingNetForm").slideUp();
+            } else {
+                $("#newNetForm").slideUp();
+                $("#existingNetForm").slideDown();
+            }
+        });
+    }).change();
+});
+
 $(document).ready(function(){
     $("#netTypeSelect").change(function(){
         $(this).find("option:selected").each(function(){
@@ -18,6 +33,7 @@ $(document).ready(function(){
         }).change();
 });
 
+
 var $table = $('#networksTable');
 var $deviceTable = $('#deviceTable');
 
@@ -26,7 +42,7 @@ var formErrorDiv = document.getElementById("formErrorDiv")
 $(document).on("submit", "#networkDeviceForm", function(event){
     event.preventDefault();
     $.ajax({
-        url: "/operator/new_network",
+        url: "/",
         type: "POST",
         data: new FormData(this),
         dataType: "json",
@@ -50,25 +66,46 @@ $(document).on("submit", "#networkDeviceForm", function(event){
     });
 });
 
-$("#existingNetSelect").selectpicker('destroy');
+//vf lines for fade effect for devices table on select,unselect event on network table
+// device table creation
 
+var JSON_Selected = $table.bootstrapTable('getSelections');
 $(function() {
-    $("#existingNetSelect").on("change", function () {
+    $table.on('check.bs.table', function (e, row, $element) {
         //e.preventDefault();
-        deviceTableOnNetworkSelect();
+        checkUnCheckResult();
     });
 });
-function deviceTableOnNetworkSelect() {
+$(function() {
+    $table.on('uncheck.bs.table', function (e, row, $element) {
+        //e.preventDefault();
+        checkUnCheckResult();
+    });
+});
+$(function() {
+    $table.on('check-all.bs.table', function (e, row, $element) {
+        //e.preventDefault();
+        checkUnCheckResult();
+    });
+});
+$(function() {
+    $table.on('uncheck-all.bs.table', function (e, row, $element) {
+        //e.preventDefault();
+        checkUnCheckResult();
+    });
+});
+
+function checkUnCheckResult() {
     //$deviceTable = $('#deviceTable');
-    var selectedNetwork = $("#existingNetSelect").val();
-    if (selectedNetwork.length==0) {
+    JSON_Selected = $table.bootstrapTable('getSelections');
+    if (JSON_Selected.length==0) {
         $deviceTable.bootstrapTable("destroy");
         return
     }
     // console.log(JSON_Selected);
     $.ajax({
         url: "/operator/device.json",
-        data: JSON.stringify(selectedNetwork),
+        data: JSON.stringify(JSON_Selected),
         type: 'POST',
         contentType: "application/json",
         success: function(data) {
@@ -80,6 +117,13 @@ function deviceTableOnNetworkSelect() {
         }
     });
 }
+
+// reset device table on page change event for network table;
+$(function() {
+    $table.on('page-change.bs.table', function (e, row, $element) {
+        $deviceTable.bootstrapTable("destroy");
+    });
+});
 
 // delete network modal
 var deleteNetworkResult = document.getElementById("deleteNetworkResult")
@@ -93,7 +137,8 @@ $(document).on("click", "#deleteSelectedNetsButton", function(event){
         contentType: "application/json",
         success: function(data) {
             $table.bootstrapTable('refresh');
-            var output = '<br>';
+            $deviceTable.bootstrapTable("destroy");
+            var output = '';
             for (var i = 0; i < data.length; i++){
                 output += "<li>" + data[i] + "</li>";
             }
@@ -101,11 +146,6 @@ $(document).on("click", "#deleteSelectedNetsButton", function(event){
         }
     });
 });
-
-$(document).on("click", "#deleteNetworkModalClose", function(event){
-    deleteNetworkResult.innerHTML = "";
-});
-
 
 // delete device modal
 var deleteDeviceResult = document.getElementById("deleteDeviceResult")
@@ -118,18 +158,15 @@ $(document).on("click", "#deleteSelectedDevsButton", function(event){
         dataType: "json",
         contentType: "application/json",
         success: function(data) {
-            $deviceTable.bootstrapTable("refresh");
-            var output = '<br>';
+            $table.bootstrapTable('refresh');
+            $deviceTable.bootstrapTable("destroy");
+            var output = '';
             for (var i = 0; i < data.length; i++){
                 output += "<li>" + data[i] + "</li>";
             }
             deleteDeviceResult.innerHTML = output;
         }
     });
-});
-
-$(document).on("click", "#deleteDevicesModalClose", function(event){
-    deleteDeviceResult.innerHTML = "";
 });
 
 $('.my-select').selectpicker();

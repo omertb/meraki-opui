@@ -217,9 +217,13 @@ def delete_devices():
         devices_to_be_deleted = request.get_json()
         for device in devices_to_be_deleted:
             db_device = Device.query.filter_by(name=device['name']).first()
-            network_name = device['network']
-            db.session.delete(db_device)
-            result.append("Device: {} is removed from Network: {}!".format(device['name'], network_name))
+            network_name = db_device.network
+            if db_device.committed:
+                result.append("Device: {} in Network: {} cannot be deleted; "
+                              "it is committed!".format(device['name'], network_name))
+            else:
+                db.session.delete(db_device)
+                result.append("Device: {} is removed from Network: {}!".format(device['name'], network_name))
         try:
             db.session.commit()
         except:
@@ -239,10 +243,17 @@ def delete_networks():
             related_devices = Device.query.filter_by(network_id=db_network.id)
             if related_devices:
                 for device in related_devices:
-                    db.session.delete(device)
-                    result.append("Device: {} from Network: {} is deleted!".format(device.name, db_network.name))
-            db.session.delete(db_network)
-            result.append("Network: {} is deleted!".format(db_network.name))
+                    if device.committed:
+                        result.append("Device: {} from Network: {} cannot be deleted; "
+                                      "it is committed!".format(device.name, db_network.name))
+                    else:
+                        db.session.delete(device)
+                        result.append("Device: {} from Network: {} is deleted!".format(device.name, db_network.name))
+            if db_network.committed:
+                result.append("Network: {} cannot be deleted; it is committed!".format(db_network.name))
+            else:
+                db.session.delete(db_network)
+                result.append("Network: {} is deleted!".format(db_network.name))
         try:
             db.session.commit()
         except:
@@ -254,9 +265,15 @@ def delete_networks():
 @login_required
 @is_operator
 def network_table():
+    query_list = []
     user_networks = Network.query.filter_by(user_id=current_user.id)
+    query_list.extend(user_networks)
+    user_groups = current_user.groups
+    for group in user_groups:
+        query_list.extend(group.networks)
+
     network_list = []
-    for row, network in enumerate(user_networks.all()):
+    for row, network in enumerate(query_list):
         template_name = network.template.name if network.template else None
         network = network.serialize()
         network['rowNum'] = row + 1
@@ -272,18 +289,16 @@ def network_table():
 @is_operator
 def device_table():
     if request.method == 'POST':
-        selected_networks = request.get_json()
+        network_id = request.get_json()
         device_list = []
         i = 1
-        for network in selected_networks:
-            network_devices = Device.query.filter_by(network_id=network['id'])
-            for device in network_devices:
-                device = device.serialize()
-                device['rowNum'] = i
-                device['network'] = network['name']
-                device['committed'] = 'No' if device['committed'] is False else 'Yes'
-                device_list.append(device)
-                i += 1
+        network_devices = Device.query.filter_by(network_id=int(network_id))
+        for device in network_devices:
+            device = device.serialize()
+            device['rowNum'] = i
+            device['committed'] = 'No' if device['committed'] is False else 'Yes'
+            device_list.append(device)
+            i += 1
         return jsonify(device_list)
     else:
         return "Not Found", 404

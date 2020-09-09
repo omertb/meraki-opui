@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, TextAreaField, SelectMultipleField
 from wtforms.validators import DataRequired, Length
 from flask_login import current_user
+from project.models import Network
 
 
 class NewNetworkForm(FlaskForm):
@@ -21,3 +22,12 @@ class NewNetworkForm(FlaskForm):
 class AddDevicesForm(FlaskForm):
     serial_nos = TextAreaField('Serial Numbers, one per line: ', validators=[DataRequired(), Length(max=2000)])
     registered_nets = SelectField('Network: ', choices=[])
+
+    def set_choices(self):
+        user_networks = Network.query.filter_by(user_id=current_user.id)
+        self.registered_nets.choices = [(network.id, network.name) for network in user_networks]
+        user_groups = current_user.groups
+        for user_group in user_groups:
+            if user_group.networks:
+                group_networks = user_group.networks
+                self.registered_nets.choices.extend([(network.id, network.name) for network in group_networks])
