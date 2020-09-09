@@ -104,7 +104,7 @@ function checkUnCheckResult() {
     }
     // console.log(JSON_Selected);
     $.ajax({
-        url: "device.json",
+        url: "/operator/device.json",
         data: JSON.stringify(JSON_Selected),
         type: 'POST',
         contentType: "application/json",
@@ -131,7 +131,7 @@ var deleteNetworkResult = document.getElementById("deleteNetworkResult")
 $(document).on("click", "#deleteSelectedNetsButton", function(event){
     JSON_Selected = $table.bootstrapTable('getSelections');
     $.ajax({
-        url: "/delete_networks",
+        url: "/operator/delete_networks",
         type: "POST",
         data: JSON.stringify(JSON_Selected),
         dataType: "json",
@@ -153,7 +153,7 @@ var deleteDeviceResult = document.getElementById("deleteDeviceResult")
 $(document).on("click", "#deleteSelectedDevsButton", function(event){
     JSON_Selected = $deviceTable.bootstrapTable('getSelections');
     $.ajax({
-        url: "/delete_devices",
+        url: "/operator/delete_devices",
         type: "POST",
         data: JSON.stringify(JSON_Selected),
         dataType: "json",

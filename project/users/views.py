@@ -10,6 +10,11 @@ import os
 users_blueprint = Blueprint('users', __name__, template_folder='templates')
 
 
+@users_blueprint.route('/', methods=['GET'])
+def main_page():
+    return redirect(url_for('operator.new_network'))
+
+
 # login page
 @users_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
@@ -54,7 +59,7 @@ def login():
                         db.session.add(user)
                         db.session.commit()
                     login_user(user)  # (flask_login) session created
-                    return redirect(url_for('home.home'))
+                    return redirect(url_for('operator.new_network'))
 
             except INVALID_CREDENTIALS:
                 error = 'Invalid Credentials. Please try again.'

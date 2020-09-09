@@ -14,12 +14,12 @@ db = SQLAlchemy(app)
 
 # import blueprints
 from project.users.views import users_blueprint
-from project.home.views import home_blueprint
+from project.operator.views import operator_blueprint
 from project.json.views import json_blueprint
 from project.admin.views import admin_blueprint
 
 app.register_blueprint(users_blueprint)
-app.register_blueprint(home_blueprint)
+app.register_blueprint(operator_blueprint)
 app.register_blueprint(json_blueprint)
 app.register_blueprint(admin_blueprint)
 

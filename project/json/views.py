@@ -208,7 +208,7 @@ to do:
 '''
 
 
-@json_blueprint.route('/delete_devices', methods=['POST'])
+@json_blueprint.route('/operator/delete_devices', methods=['POST'])
 @login_required
 @is_operator
 def delete_devices():
@@ -227,7 +227,7 @@ def delete_devices():
         return jsonify(result)
 
 
-@json_blueprint.route('/delete_networks', methods=['POST'])
+@json_blueprint.route('/operator/delete_networks', methods=['POST'])
 @login_required
 @is_operator
 def delete_networks():
@@ -250,7 +250,7 @@ def delete_networks():
         return jsonify(result)
 
 
-@json_blueprint.route('/network.json', methods=['GET'])
+@json_blueprint.route('/operator/network.json', methods=['GET'])
 @login_required
 @is_operator
 def network_table():
@@ -267,7 +267,7 @@ def network_table():
     # return jsonify([network.serialize() for network in user_networks.all()])
 
 
-@json_blueprint.route('/device.json', methods=['POST'])
+@json_blueprint.route('/operator/device.json', methods=['POST'])
 @login_required
 @is_operator
 def device_table():

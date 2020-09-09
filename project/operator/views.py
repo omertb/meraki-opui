@@ -2,20 +2,20 @@ from project import db
 from project.models import Template, Network, Device
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
-from project.home.forms import NetworkDeviceForm
+from project.operator.forms import NetworkDeviceForm
 from project.decorators import *
 import datetime
 from requests.exceptions import ConnectionError
 
 
 # home blueprint definition
-home_blueprint = Blueprint('home', __name__, template_folder='templates')
+operator_blueprint = Blueprint('operator', __name__, template_folder='templates')
 
 
-@home_blueprint.route('/', methods=['GET', 'POST'])
+@operator_blueprint.route('/operator/new_network', methods=['GET', 'POST'])
 @login_required
 @is_operator
-def home():
+def new_network():
     error = None
     # beginning of "on page load"
     #####
@@ -76,7 +76,7 @@ def home():
 
         return jsonify(error)
 
-    return render_template('home.html', form=form, error=error)
+    return render_template('new_network.html', form=form, error=error)
 
 
 def save_devices_in_db(device_serials_list, net_name):
