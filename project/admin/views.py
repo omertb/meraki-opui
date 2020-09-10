@@ -3,7 +3,7 @@ from project.models import Template, Network, Group, Tag, Device
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from requests.exceptions import ConnectionError
-from project.functions import get_templates, get_networks, get_devices
+from project.functions import get_templates, get_networks, get_devices, get_device
 from project.admin.forms import GroupMembershipForm, NetworkOwnershipForm
 from sqlalchemy.exc import OperationalError, ProgrammingError
 import datetime, time

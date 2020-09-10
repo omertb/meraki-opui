@@ -91,6 +91,12 @@ def get_devices() -> list:
     return dev_status_list
 
 
+def get_device(serial):
+    uri = "devices/{}".format(serial)
+    response = get_data(uri)
+    return response
+
+
 #  WRITE FUNCTIONS
 
 def create_network(network_dict: dict):

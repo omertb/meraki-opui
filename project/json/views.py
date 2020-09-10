@@ -195,6 +195,7 @@ def devices_table():
         device = {'rowNum': i + 1,
                   'name': row.name,
                   'serial': row.serial,
+                  'device_model': row.devmodel,
                   'committed': "Yes" if row.committed else "No",
                   'network_name': row.network.name
                   }

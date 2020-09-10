@@ -153,20 +153,23 @@ class Device(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     serial = db.Column(db.String(32), nullable=False)
+    devmodel = db.Column(db.String(32))
     reg_date = db.Column(db.DateTime, nullable=False)
     committed = db.Column(db.Boolean, nullable=False)
     network_id = db.Column(db.Integer, db.ForeignKey('networks.id'))
 
-    def __init__(self, device_name, device_serial, network_id, committed=False):
+    def __init__(self, device_name, device_serial, network_id, device_model=None, committed=False):
         self.name = device_name
         self.serial = device_serial
+        self.devmodel = device_model
         self.reg_date = datetime.datetime.now()
         self.committed = committed
         self.network_id = network_id
 
-    def update(self, device_name, device_serial, network_id, committed=False):
+    def update(self, device_name, device_serial, network_id, device_model=None, committed=False):
         self.name = device_name
         self.serial = device_serial
+        self.devmodel = device_model
         self.reg_date = datetime.datetime.now()
         self.committed = committed
         self.network_id = network_id
