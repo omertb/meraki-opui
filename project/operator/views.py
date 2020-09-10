@@ -1,5 +1,5 @@
 from project import db
-from project.models import Template, Network, Device
+from project.models import Template, Network, Device, Tag
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.operator.forms import NewNetworkForm, AddDevicesForm
@@ -19,6 +19,9 @@ def add_devices():
     error = None
     form = AddDevicesForm(request.form)
     form.set_choices()
+    if request.method == 'POST':
+        device_serials_list = form.serial_nos.data.strip().upper().replace(" ", "").split("\r\n")
+        error = save_devices_in_db(device_serials_list, net_name)
 
     return render_template('add_devices.html', current_user=current_user, form=form, error=error)
 
@@ -43,40 +46,46 @@ def new_network():
 
     if request.method == 'POST':
         error = None
-        device_serials_list = form.serial_nos.data.strip().upper().replace(" ", "").split("\r\n")
+        net_name = form.net_name.data
+        # validation on serverside
+        if net_name == "":
+            return jsonify("Enter a unique network name!")
 
-        if form.new_or_existing.data == 'existing':
-            net_name = form.registered_nets.data
+        net_type = form.net_type.data
+        user_id = current_user.id
 
-        elif form.new_or_existing.data == 'new':
-            net_name = form.net_name.data
-            # validation on serverside
-            if net_name == "":
-                return jsonify("Enter a unique network name!")
+        # ensure that network name does not already exist in db641296
+        network = Network.query.filter_by(name=net_name).first()
+        if network:
+            error = "Network already exists, try another unique name"
+            # return render_template('home.html', form=form, error=error)
+            return jsonify(error)
 
-            net_type = form.net_type.data
-            user_id = current_user.id
-
-            # ensure that network name does not already exist in db641296
-            network = Network.query.filter_by(name=net_name).first()
-            if network:
-                error = "Network already exists, try another unique name"
-                # return render_template('home.html', form=form, error=error)
-                return jsonify(error)
-
-            if net_type == 'appliance':
-                template = Template.query.filter_by(name=form.net_template.data).first()
-                bound_template = template.meraki_id
-            else:
-                bound_template = None
-
-            network = Network(net_name, net_type, user_id, bound_template=bound_template)
-            db.session.add(network)
-            db.session.commit()
+        if net_type == 'appliance':
+            template = Template.query.filter_by(name=form.net_template.data).first()
+            bound_template = template.meraki_id
         else:
-            return jsonify("Bad option sent to server")
-
-        error = save_devices_in_db(device_serials_list, net_name)
+            bound_template = None
+        network = Network(net_name, net_type, user_id, bound_template=bound_template)
+        network.net_tags = ""
+        for tag_id in form.net_tag_mselect.data:
+            tag = Tag.query.get(int(tag_id))
+            network.tags.append(tag)
+            network.net_tags += tag.name + " "
+        # location specific tag for name seperated with dash;
+        # eg. for network name AB11-Firewall, then new tag will be AB11
+        if "-" in net_name:
+            specific_tag_name = net_name.split("-")[0]
+            specific_tag = Tag.query.filter_by(name=specific_tag_name).first()
+            if not specific_tag:
+                new_network_tag = Tag(specific_tag_name)
+                db.session.add(new_network_tag)
+                db.session.commit()
+                network.tags.append(new_network_tag)
+            else:
+                network.tags.append(specific_tag)
+        db.session.add(network)
+        db.session.commit()
 
         return jsonify(error)
 
