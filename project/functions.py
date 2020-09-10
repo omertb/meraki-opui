@@ -1,7 +1,7 @@
 import json, requests, os
 
 APIKEY = os.environ['APIKEY']
-BASE_URL = 'https://api.meraki.com/api/v0/'
+BASE_URL = 'https://api.meraki.com/api/v1/'
 
 cred_header = {
     'X-Cisco-Meraki-API-Key': APIKEY
@@ -47,9 +47,9 @@ def get_networks() -> list:
     networks_dict_list = []
     for network in networks_list:
         dict_item = {'net_name': network['name'],
-                     'net_type': network['type'],
+                     'net_type': " ".join(network['productTypes']),
                      'meraki_id': network['id'],
-                     'net_tags': network['tags'].strip() if network['tags'] else None,
+                     'net_tags': network['tags'] if network['tags'] else None,
                      'bound_template': network['configTemplateId'] if 'configTemplateId' in network else None
                      }
         networks_dict_list.append(dict_item)
@@ -61,6 +61,6 @@ def get_devices() -> list:
     org_id_list = get_organization_ids()
     dev_status_list = []
     for org_id in org_id_list:
-        dev_status = get_data('organizations/{}/deviceStatuses'.format(org_id))
+        dev_status = get_data('organizations/{}/devices/statuses'.format(org_id))
         dev_status_list.extend(dev_status)
     return dev_status_list

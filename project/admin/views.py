@@ -85,9 +85,19 @@ def update_admin_networks_table():
     t1 = time.time()
     try:
         networks = get_networks()
+        templates = get_templates()
     except ConnectionError:
         error = "Meraki Server Bad Response"
         return error
+    for key, value in templates.items():
+        template = Template.query.filter_by(meraki_id=value).first()
+        if template:
+            template.update(key, value)
+        else:
+            template = Template(key, value)
+        db.session.add(template)
+    db.session.commit()  # update templates table
+
     for network in networks:
         try:
             db_network = Network.query.filter_by(meraki_id=network['meraki_id']).first()
@@ -100,7 +110,7 @@ def update_admin_networks_table():
             # update tags table and build their relation with networks
             if network['net_tags']:
                 db_network.tags.clear()
-                for tag in network['net_tags'].split(" "):
+                for tag in network['net_tags']:
                     db_tag = Tag.query.filter_by(name=tag).first()
                     if db_tag:
                         db_network.tags.append(db_tag)

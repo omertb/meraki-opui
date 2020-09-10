@@ -197,6 +197,11 @@ class Template(db.Model):
         self.meraki_id = template_n_id
         self.reg_date = datetime.datetime.now()
 
+    def update(self, template_name, template_n_id):
+        self.name = template_name
+        self.meraki_id = template_n_id
+        self.reg_date = datetime.datetime.now()
+
     def __repr__(self):
         return '<template_name: {}>'.format(self.name)
 
