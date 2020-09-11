@@ -3,6 +3,8 @@ from project.models import Network, Device, Template, User, Group, Tag
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.decorators import *
+from project.functions import create_network, bind_template
+from requests.exceptions import ConnectionError
 
 
 # home blueprint definition
@@ -303,3 +305,36 @@ def device_table():
         return jsonify(device_list)
     else:
         return "Not Found", 404
+
+
+@json_blueprint.route('/operator/commit_networks', methods=['POST'])
+@login_required
+@is_operator
+def commit_networks():
+    result = []
+    if request.method == 'POST':
+        networks_to_be_commit = request.get_json()
+        for network in networks_to_be_commit:
+            db_network = Network.query.filter_by(name=network['name']).first()
+            network_dict = {
+                'name': db_network.name,
+                'productTypes': [db_network.type],
+                'tags': [tag.name for tag in db_network.tags]
+            }
+            try:
+                # commit to cloud
+                create_net_res = create_network(network_dict)
+                # write new network meraki id to db
+                db_network.meraki_id = create_net_res['id']
+                db.session.add(db_network)
+                # bind template
+                if db_network.template:
+                    template_meraki_id = db_network.template.meraki_id
+                    bind_template(db_network.meraki_id, template_meraki_id)
+                result.append("Network: {} committed to Meraki Cloud".format(db_network.name))
+                db_network.committed = True
+            except ConnectionError:
+                result.append("Meraki Response Error for Network: {}".format(db_network.name))
+                db_network.committed = False
+        db.session.commit()
+        return jsonify(result)

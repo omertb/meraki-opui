@@ -2,12 +2,24 @@ import json, requests, os
 
 APIKEY = os.environ['APIKEY']
 BASE_URL = 'https://api.meraki.com/api/v1/'
+BASE_URLv0 = 'https://api.meraki.com/api/v0/'
 
 cred_header = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
     'X-Cisco-Meraki-API-Key': APIKEY
 }
+
+
+def get_datav0(uri) -> list:
+    url = "{}{}".format(BASE_URLv0, uri)
+    response = requests.request("GET", url, headers=cred_header)
+    if response.status_code == 200:
+        response_list = json.loads(response.text)
+        return response_list
+    else:
+        print("Meraki Server Response: {} | Code: {}".format(response, response.status_code))
+        raise requests.exceptions.ConnectionError
 
 
 def get_data(uri) -> list:
@@ -33,7 +45,8 @@ def post_data(uri, data_dict, method="POST") -> list:
             return "success"
     elif response.status_code == 201:
         print("created")
-        return "success"
+        response_dict = json.loads(response.text)
+        return response_dict
     elif response.status_code == 204:
         print("deleted")
         return "success"
@@ -65,7 +78,7 @@ def get_networks() -> list:
     org_id_list = get_organization_ids()
     networks_list = []
     for org_id in org_id_list:
-        networks = get_data('organizations/{}/networks'.format(org_id))
+        networks = get_datav0('organizations/{}/networks'.format(org_id))
         networks_list.extend(networks)
 
     # create customized dictionary list
@@ -74,7 +87,7 @@ def get_networks() -> list:
         dict_item = {'net_name': network['name'],
                      'net_type': " ".join(network['productTypes']),
                      'meraki_id': network['id'],
-                     'net_tags': network['tags'] if network['tags'] else None,
+                     'net_tags': network['tags'].strip() if network['tags'] else None,
                      'bound_template': network['configTemplateId'] if 'configTemplateId' in network else None
                      }
         networks_dict_list.append(dict_item)
@@ -86,7 +99,7 @@ def get_devices() -> list:
     org_id_list = get_organization_ids()
     dev_status_list = []
     for org_id in org_id_list:
-        dev_status = get_data('organizations/{}/devices/statuses'.format(org_id))
+        dev_status = get_datav0('organizations/{}/deviceStatuses'.format(org_id))
         dev_status_list.extend(dev_status)
     return dev_status_list
 

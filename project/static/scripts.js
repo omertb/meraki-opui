@@ -106,10 +106,37 @@ $(document).on("click", "#deleteSelectedNetsButton", function(event){
     });
 });
 
+// commit network modal
+var commitNetworkResult = document.getElementById("commitNetworkResult")
+$(document).on("click", "#commitSelectedNetsButton", function(event){
+    JSON_Selected = $table.bootstrapTable('getSelections');
+    $.ajax({
+        url: "/operator/commit_networks",
+        type: "POST",
+        data: JSON.stringify(JSON_Selected),
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+            $table.bootstrapTable('refresh');
+            var output = '<br>';
+            if(Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    output += "<li>" + data[i] + "</li>";
+                }
+            }else {
+                output += data;
+            }
+            commitNetworkResult.innerHTML = output;
+        }
+    });
+});
+
+$(document).on("click", "#commitNetworkModalClose", function(event){
+    commitNetworkResult.innerHTML = "";
+});
 $(document).on("click", "#deleteNetworkModalClose", function(event){
     deleteNetworkResult.innerHTML = "";
 });
-
 
 // delete device modal
 var deleteDeviceResult = document.getElementById("deleteDeviceResult")

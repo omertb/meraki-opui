@@ -83,6 +83,13 @@ def update_admin_networks_table():
     :return: 200
     '''
     t1 = time.time()
+    # networks = Network.query.all()
+    # for network in networks:
+    #     network.tags.clear()
+    #     db.session.add(network)
+    # db.session.commit()
+    # Tag.query.delete()
+    # db.session.commit()
     try:
         networks = get_networks()
         templates = get_templates()
@@ -110,7 +117,7 @@ def update_admin_networks_table():
             # update tags table and build their relation with networks
             if network['net_tags']:
                 db_network.tags.clear()
-                for tag in network['net_tags']:
+                for tag in network['net_tags'].split(" "):
                     db_tag = Tag.query.filter_by(name=tag).first()
                     if db_tag:
                         db_network.tags.append(db_tag)
@@ -128,20 +135,20 @@ def update_admin_networks_table():
     db.session.commit()
     # build group network relation according to tag bindings to both networks and groups
     db_networks = Network.query.all()
-    for db_network in db_networks:
-        db_net_tags = db_network.tags
-        if db_net_tags:
-            db_groups = Group.query.all()
-            for db_group in db_groups:
+    db_groups = Group.query.all()
+    for db_group in db_groups:
+        db_grp_tags = db_group.tags
+        if db_grp_tags:
+            for db_network in db_networks:
+                db_net_tags = db_network.tags
                 for db_net_tag in db_net_tags:
                     if db_net_tag in db_group.tags:
-                        if db_network not in db_group.networks:
-                            db_group.networks.append(db_network)
-                            db.session.add(db_group)
+                        db_group.networks.append(db_network)
+                        break
                     else:
                         if db_network in db_group.networks:
                             db_group.networks.remove(db_network)
-                            db.session.add(db_group)
+                db.session.add(db_group)
     db.session.commit()
 
     t2 = time.time()
