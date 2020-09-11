@@ -1,11 +1,12 @@
 import json, requests, os
 
+
 APIKEY = os.environ['APIKEY']
 BASE_URL = 'https://api.meraki.com/api/v1/'
 BASE_URLv0 = 'https://api.meraki.com/api/v0/'
 
 cred_header = {
-    'Accept': 'application/json',
+    'Accept': '*/*',
     'Content-Type': 'application/json',
     'X-Cisco-Meraki-API-Key': APIKEY
 }
@@ -28,17 +29,19 @@ def get_data(uri) -> list:
     if response.status_code == 200:
         response_list = json.loads(response.text)
         return response_list
+    elif response.status_code == 404:
+        return response.status_code
     else:
         print("Meraki Server Response: {} | Code: {}".format(response, response.status_code))
         raise requests.exceptions.ConnectionError
 
 
-def post_data(uri, data_dict, method="POST") -> list:
-    url = "{}{}".format(BASE_URL, uri)
+def post_data(uri, data_dict, method="POST", base_url=BASE_URL) -> list:
+    url = "{}{}".format(base_url, uri)
     data = json.dumps(data_dict)
     response = requests.request(method, url, headers=cred_header, data=data)
     if response.status_code == 200:
-        if response.text:
+        if response.text.strip():
             response_list = json.loads(response.text)
             return response_list
         else:
@@ -50,8 +53,12 @@ def post_data(uri, data_dict, method="POST") -> list:
     elif response.status_code == 204:
         print("deleted")
         return "success"
+    elif response.status_code == 400:
+        return json.loads(response.text)
+    elif response.status_code == 401:
+        return json.loads(response.text)
     else:
-        print("Meraki Server Response: {} | Code: {}".format(response, response.status_code))
+        print("Meraki Server Response: {} | Code: {}".format(response.text, response.status_code))
         raise requests.exceptions.ConnectionError
 
 
@@ -110,6 +117,11 @@ def get_device(serial):
     return response
 
 
+def get_network(network_id):
+    uri = "networks/{}".format(network_id)
+    response = get_data(uri)
+    return response
+
 #  WRITE FUNCTIONS
 
 def create_network(network_dict: dict):
@@ -144,9 +156,18 @@ def rename_device(serial: str, name: str):
     return response
 
 
+def rename_device_v0(network_id: str, serial: str, name: str):
+    uri ="networks/{}/devices/{}".format(network_id, serial)
+    serial_dict = {}
+    serial_dict['serial'] = serial
+    serial_dict['name'] = name
+    response = post_data(uri, serial_dict, method="PUT", base_url=BASE_URLv0)
+    return response
+
+
 # DELETE FUNCTIONS
 
-def remove_network_devices(network_id: str, serial: str):
+def remove_network_device(network_id: str, serial: str):
     uri = "/networks/{}/devices/remove".format(network_id)
     serial_dict = {}
     serial_dict['serial'] = serial

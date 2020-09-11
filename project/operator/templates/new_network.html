@@ -80,7 +80,7 @@
 
                         <div class="form-group">
                             <label for="netTemplateSelect">Select Network Template: </label>
-                              {{ form.net_template(class_="form-control", id="netTemplateSelect") }}
+                              {{ form.net_template(class_="form-control selectpicker my-select", id="netTemplateSelect", data_live_search="true") }}
                         </div>
                     </div>
 
@@ -150,8 +150,8 @@
                       </div>
                       <div class="modal-body">
                         Do you confirm to commit selected network(s) to Meraki Cloud?
+                          <div id="commitNetworkResult" style="color:darkblue;text-align: left"></div>
                       </div>
-                        <div id="commitNetworkResult" style="color:darkblue;text-align: left"></div>
                       <div class="modal-footer">
                         <button id="commitNetworkModalClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button id="commitSelectedNetsButton" type="button" class="btn btn-success">Commit</button>

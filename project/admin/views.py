@@ -3,11 +3,12 @@ from project.models import Template, Network, Group, Tag, Device
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from requests.exceptions import ConnectionError
-from project.functions import get_templates, get_networks, get_devices, get_device
+from project.functions import get_templates, get_networks, get_devices, get_device, get_network
 from project.admin.forms import GroupMembershipForm, NetworkOwnershipForm
 from sqlalchemy.exc import OperationalError, ProgrammingError
 import datetime, time
 from project.decorators import *
+from sqlalchemy import func
 
 
 # admin blueprint definition
@@ -150,6 +151,21 @@ def update_admin_networks_table():
                             db_group.networks.remove(db_network)
                 db.session.add(db_group)
     db.session.commit()
+
+    # cleaning duplicate networks if not existing in cloud
+    sq = Network.query.with_entities(Network.name).group_by(Network.name).having(func.count(Network.name) > 1).subquery()
+    duplicates = Network.query.filter(Network.name == sq.c.name).order_by(Network.name).all()
+    if duplicates:
+        for network in duplicates:
+            result = get_network(network.meraki_id)
+            if result == 404:
+                network.groups.clear()
+                network.tags.clear()
+                if network.devices:
+                    for device in network.devices:
+                        db.session.delete(device)
+                db.session.delete(network)
+        db.session.commit()
 
     t2 = time.time()
     print("elapsed time: {}".format(t2-t1))

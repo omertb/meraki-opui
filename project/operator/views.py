@@ -19,9 +19,14 @@ def add_devices():
     error = None
     form = AddDevicesForm(request.form)
     form.set_choices()
+    form.serial_nos.data = ""
     if request.method == 'POST':
-        device_serials_list = form.serial_nos.data.strip().upper().replace(" ", "").split("\r\n")
-        error = save_devices_in_db(device_serials_list, net_name)
+        form_dict = request.get_json()
+        net_id = form_dict['network']
+        devices = form_dict['devices']
+        device_serials_list = devices.strip().upper().replace(" ", "").split("\n")
+        error = save_devices_in_db(device_serials_list, int(net_id))
+        return error
 
     return render_template('add_devices.html', current_user=current_user, form=form, error=error)
 
@@ -92,8 +97,8 @@ def new_network():
     return render_template('new_network.html', current_user=current_user, form=form, error=error)
 
 
-def save_devices_in_db(device_serials_list, net_name):
-    network = Network.query.filter_by(name=net_name).first()
+def save_devices_in_db(device_serials_list, net_id):
+    network = Network.query.get(net_id)
     error = []
     for device_serial in device_serials_list:
         dev_name = device_serial.replace("-", "")
@@ -106,6 +111,6 @@ def save_devices_in_db(device_serials_list, net_name):
         device = Device(dev_name, dev_serial, network_id)
         db.session.add(device)
     db.session.commit()
-    if not len(error):
-        return None
-    return error
+    if error:
+        return jsonify(error)
+    return jsonify("success")

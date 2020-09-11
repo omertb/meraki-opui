@@ -54,12 +54,11 @@ $(document).on("submit", "#networkDeviceForm", function(event){
     });
 });
 
-$("#existingNetSelect").selectpicker('destroy');
-
 $(function() {
     $("#existingNetSelect").on("change", function () {
         //e.preventDefault();
         deviceTableOnNetworkSelect();
+        $("#devicesTextArea").val('');
     });
 });
 function deviceTableOnNetworkSelect() {
@@ -84,6 +83,34 @@ function deviceTableOnNetworkSelect() {
         }
     });
 }
+
+$(document).on("click", "#addDeviceFormButton", function(event){
+    event.preventDefault();
+    let network_select = $("#existingNetSelect").val();
+    let devices = $("#devicesTextArea").val();
+    let network_device_dict = JSON.stringify({network:network_select, devices:devices});
+        $.ajax({
+        url: "/operator/add_devices",
+        type: "POST",
+        data: network_device_dict,
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+            var output = '';
+            if(Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    output += "<li>" + data[i] + "</li>";
+                }
+            }else{
+                output = data;
+            }
+            deviceTableOnNetworkSelect();
+            $('#formErrorDiv').innerHTML = output;
+            // $('#existingNetSelect').val('default');
+            // $('#existingNetSelect').selectpicker('refresh');
+        }
+    });
+});
 
 // delete network modal
 var deleteNetworkResult = document.getElementById("deleteNetworkResult")
@@ -149,7 +176,6 @@ $(document).on("click", "#deleteSelectedDevsButton", function(event){
         dataType: "json",
         contentType: "application/json",
         success: function(data) {
-            $deviceTable.bootstrapTable("refresh");
             var output = '<br>';
             for (var i = 0; i < data.length; i++){
                 output += "<li>" + data[i] + "</li>";
@@ -161,11 +187,42 @@ $(document).on("click", "#deleteSelectedDevsButton", function(event){
 
 $(document).on("click", "#deleteDevicesModalClose", function(event){
     deleteDeviceResult.innerHTML = "";
+    deviceTableOnNetworkSelect();
 });
+
+// commit device modal
+var commitDeviceResult = document.getElementById("commitDeviceResult")
+$(document).on("click", "#commitSelectedDevsButton", function(event){
+    JSON_Selected = $deviceTable.bootstrapTable('getSelections');
+    $.ajax({
+        url: "/operator/commit_devices",
+        type: "POST",
+        data: JSON.stringify(JSON_Selected),
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+            var output = '<br>';
+            if(Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    output += "<li>" + data[i] + "</li>";
+                }
+            }else {
+                output += data;
+            }
+            commitDeviceResult.innerHTML = output;
+        }
+    });
+});
+
+$(document).on("click", "#commitDeviceModalClose", function(event){
+    commitDeviceResult.innerHTML = "";
+    deviceTableOnNetworkSelect();
+});
+
 
 $('.my-select').selectpicker();
 
-// new group post
+// new group
 var newGroupErrorDiv = document.getElementById("newGroupErrorDiv")
 var $groupsTable = $('#groupsTable')
 var group_select = document.getElementById("groupSelectMultiple")
@@ -265,13 +322,13 @@ $(document).on("click", "#membershipButton", function(event){
         contentType: "application/json",
         success: function(data) {
             $groupsTable.bootstrapTable('refresh');
-            var output = '';
+            var output = '<br>';
             if(Array.isArray(data)) {
                 for (var i = 0; i < data.length; i++) {
                     output += "<li>" + data[i] + "</li>";
                 }
             }else{
-                output = data;
+                output += data;
             }
             $('#groupSelectMultiple').val('default');
             $('#userSelectMultiple').val('default');

@@ -3,7 +3,7 @@ from project.models import Network, Device, Template, User, Group, Tag
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.decorators import *
-from project.functions import create_network, bind_template
+from project.functions import create_network, bind_template, claim_network_devices, rename_device_v0
 from requests.exceptions import ConnectionError
 
 
@@ -297,8 +297,10 @@ def device_table():
         i = 1
         network_devices = Device.query.filter_by(network_id=int(network_id))
         for device in network_devices:
+            device_model = device.devmodel
             device = device.serialize()
             device['rowNum'] = i
+            device['model'] = device_model
             device['committed'] = 'No' if device['committed'] is False else 'Yes'
             device_list.append(device)
             i += 1
@@ -337,4 +339,46 @@ def commit_networks():
                 result.append("Meraki Response Error for Network: {}".format(db_network.name))
                 db_network.committed = False
         db.session.commit()
+        return jsonify(result)
+
+
+@json_blueprint.route('/operator/commit_devices', methods=['POST'])
+@login_required
+@is_operator
+def commit_devices():
+    result = []
+    if request.method == 'POST':
+        devices_to_be_commit = request.get_json()
+        meraki_net_id_list = []
+        dev_serial_list = []
+        for i, device in enumerate(devices_to_be_commit):
+            db_device = Device.query.filter_by(serial=device['serial']).first()
+            # check if there is a mismatch in network ids of devices
+            meraki_net_id_list.append(db_device.network.meraki_id)
+            if i > 0:
+                if meraki_net_id_list[i] != meraki_net_id_list[i-1]:
+                    return jsonify("Error, there is mismatch between network ids")
+            dev_serial_list.append(device['serial'])
+
+        try:
+            # bind devices to network on cloud
+            response = claim_network_devices(meraki_net_id_list[0], dev_serial_list)
+            if response == "success":
+                result.append("Devices are claimed and bound to network")
+            else:
+                result.extend(response['errors'])
+
+            # rename devices and get the model name from response and then update the table.
+            for device in devices_to_be_commit:
+                db_device = Device.query.filter_by(serial=device['serial']).first()
+                meraki_net_id = db_device.network.meraki_id
+                rename_response = rename_device_v0(meraki_net_id, device['serial'], device['name'])
+                db_device.devmodel = rename_response['model']
+                db_device.committed = True
+                db.session.add(db_device)
+            db.session.commit()
+
+        except ConnectionError:
+            result.append("Meraki Response Error")
+
         return jsonify(result)

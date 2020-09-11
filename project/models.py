@@ -158,10 +158,9 @@ class Device(db.Model):
     committed = db.Column(db.Boolean, nullable=False)
     network_id = db.Column(db.Integer, db.ForeignKey('networks.id'))
 
-    def __init__(self, device_name, device_serial, network_id, device_model=None, committed=False):
+    def __init__(self, device_name, device_serial, network_id, committed=False):
         self.name = device_name
         self.serial = device_serial
-        self.devmodel = device_model
         self.reg_date = datetime.datetime.now()
         self.committed = committed
         self.network_id = network_id
