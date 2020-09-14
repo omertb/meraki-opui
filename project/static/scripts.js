@@ -83,7 +83,7 @@ function deviceTableOnNetworkSelect() {
         }
     });
 }
-
+var deviceFormErrorDiv = document.getElementById("deviceFormErrorDiv")
 $(document).on("click", "#addDeviceFormButton", function(event){
     event.preventDefault();
     let network_select = $("#existingNetSelect").val();
@@ -105,7 +105,7 @@ $(document).on("click", "#addDeviceFormButton", function(event){
                 output = data;
             }
             deviceTableOnNetworkSelect();
-            $('#formErrorDiv').innerHTML = output;
+            deviceFormErrorDiv.innerHTML = output;
             // $('#existingNetSelect').val('default');
             // $('#existingNetSelect').selectpicker('refresh');
         }
