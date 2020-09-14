@@ -25,6 +25,8 @@ def add_devices():
         net_id = form_dict['network']
         devices = form_dict['devices']
         device_serials_list = devices.strip().upper().replace(" ", "").split("\n")
+        while '' in device_serials_list:
+            device_serials_list.remove('')  # remove blank items
         error = save_devices_in_db(device_serials_list, int(net_id))
         return error
 
