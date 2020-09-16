@@ -288,6 +288,8 @@ $(document).on("click", "#deleteGroupButton", function(event){
         }
     });
 });
+
+// "Reset Group" button on /groups page
 var resetGroupResult = document.getElementById("resetGroupResult")
 $(document).on("click", "#resetGroupButton", function(event){
     JSON_Selected = $groupsTable.bootstrapTable('getSelections');
@@ -397,8 +399,10 @@ $(document).on("click", "#updateAdminDevicesTableButton", function(event){
   });
 });
 var $usersTable = $('#usersTable')
+var adminUserTableResult = document.getElementById("adminUserTableResult")
 // user operator button
 $(document).on("click", "#userOperatorButton", function(event){
+    adminUserTableResult.innerHTML = "";
     JSON_Selected = $usersTable.bootstrapTable('getSelections');
     $.ajax({
         url: "/users/user_operator",
@@ -408,11 +412,17 @@ $(document).on("click", "#userOperatorButton", function(event){
         contentType: "application/json",
         success: function(data) {
             $usersTable.bootstrapTable('refresh');
+            if (data !== 'success') {
+                var output = "";
+                output += data;
+                adminUserTableResult.innerHTML = output;
+            }
         }
     });
 });
 
 $(document).on("click", "#userAdminButton", function(event){
+    adminUserTableResult.innerHTML = "";
     JSON_Selected = $usersTable.bootstrapTable('getSelections');
     $.ajax({
         url: "/users/user_admin",
@@ -422,8 +432,46 @@ $(document).on("click", "#userAdminButton", function(event){
         contentType: "application/json",
         success: function(data) {
             $usersTable.bootstrapTable('refresh');
+            if (data !== 'success') {
+                var output = "";
+                output += data;
+                adminUserTableResult.innerHTML = output;
+            }
         }
     });
+});
+
+// Reset Membership Button on /users page
+var resetMembershipResult = document.getElementById("resetMembershipResult")
+$(document).on("click", "#resetMembershipButton", function(event){
+    JSON_Selected = $usersTable.bootstrapTable('getSelections');
+    if (JSON_Selected.length > 0) {
+        $.ajax({
+            url: "/users/reset_membership",
+            type: "POST",
+            data: JSON.stringify(JSON_Selected),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                $usersTable.bootstrapTable('refresh');
+                var output = '<br>';
+                if (Array.isArray(data)) {
+                    for (var i = 0; i < data.length; i++) {
+                        output += "<li>" + data[i] + "</li>";
+                    }
+                } else {
+                    output = data;
+                }
+                resetMembershipResult.innerHTML = output;
+            }
+        });
+    }
+});
+
+$(document).on("click", "#resetMembershipModalClose", function(event){
+    adminUserTableResult.innerHTML = "";
+    resetMembershipResult.innerHTML = "";
+    // $usersTable.bootstrapTable('refresh');
 });
 
 // wait animation with wait-modal

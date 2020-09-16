@@ -40,11 +40,14 @@ def users_table():
 def negate_user_operator_access():
     if request.method == 'POST':
         users_to_be_negated = request.get_json()
+        print(users_to_be_negated)
         for user in users_to_be_negated:
+            if user['name'] == current_user.username:
+                return jsonify("Cannot modify current user")
             db_user = User.query.filter_by(username=user['name']).first()
-            group = Group.query.filter_by(name='operators').first()
+            # group = Group.query.filter_by(name='operators').first()
             db_user.operator = not db_user.operator
-            db_user.groups.append(group) if db_user.operator else db_user.groups.remove(group)
+            # db_user.groups.append(group) if db_user.operator else db_user.groups.remove(group)
             db.session.add(db_user)
         try:
             db.session.commit()
@@ -60,16 +63,41 @@ def negate_user_admin_access():
     if request.method == 'POST':
         users_to_be_negated = request.get_json()
         for user in users_to_be_negated:
+            if user['name'] == current_user.username:
+                return jsonify("Cannot modify current user")
             db_user = User.query.filter_by(username=user['name']).first()
-            group = Group.query.filter_by(name='administrators').first()
+            # group = Group.query.filter_by(name='administrators').first()
             db_user.admin = not db_user.admin
-            db_user.groups.append(group) if db_user.admin else db_user.groups.remove(group)
+            # db_user.groups.append(group) if db_user.admin else db_user.groups.remove(group)
             db.session.add(db_user)
         try:
             db.session.commit()
         except:
             return jsonify("Database error!")
     return jsonify("success")
+
+
+@json_blueprint.route('/users/reset_membership', methods=['POST'])
+@login_required
+@is_admin
+def reset_membership():
+    result = []
+    if request.method == 'POST':
+        users_to_be_reset = request.get_json()
+        if users_to_be_reset:
+            for user in users_to_be_reset:
+                if user['name'] == current_user.username:
+                    return jsonify("Cannot modify current user")
+                db_user = User.query.filter_by(username=user['name']).first()
+                db_user.groups.clear()
+                db.session.add(db_user)
+                result.append("User: {} groups have been reset!".format(db_user.username))
+            try:
+                db.session.commit()
+                result.append("DB Write is successful!")
+            except:
+                return jsonify("Database error!")
+    return jsonify(result)
 
 
 @json_blueprint.route('/groups/groups.json', methods=['GET'])

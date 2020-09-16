@@ -50,6 +50,35 @@
                 <div id="usersTableToolbar">
                     <button id="userAdminButton" class="btn btn-outline-primary btn-sm">Admin</button>
                     <button id="userOperatorButton" class="btn btn-outline-secondary btn-sm">Operator</button>
+
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-outline-warning btn-sm" data-toggle="modal" data-target="#resetMembershipModal">
+                      Reset Membership
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="resetMembershipModal" tabindex="-1" role="dialog" aria-labelledby="resetMembershipModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="resetMembershipModalLabel">Reset User Group Membership</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                              <div class="text-center"> User and group relations (memberships) are to be reset!<br>
+                                  Are you sure?
+                              </div>
+                              <div id="resetMembershipResult" style="color:darkblue;text-align: left"></div>
+                          </div>
+                          <div class="modal-footer">
+                            <button id="resetMembershipModalClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button id="resetMembershipButton" class="btn btn-outline-warning btn-sm">Reset Membership</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                 </div>
                 <table
                         id="usersTable"
@@ -72,6 +101,11 @@
                     </tr>
                   </thead>
                 </table>
+                <div id="adminUserTableResult" style="color:red;padding: 5px;">
+                    {% if error %}
+                    <p class="error"><strong>Error:</strong> {{ error }}</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
         <div class="col-md-4">
