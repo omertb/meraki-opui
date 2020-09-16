@@ -288,7 +288,7 @@ $(document).on("click", "#deleteGroupButton", function(event){
         }
     });
 });
-
+var resetGroupResult = document.getElementById("resetGroupResult")
 $(document).on("click", "#resetGroupButton", function(event){
     JSON_Selected = $groupsTable.bootstrapTable('getSelections');
     $.ajax({
@@ -303,9 +303,13 @@ $(document).on("click", "#resetGroupButton", function(event){
             for (var i = 0; i < data.length; i++){
                 output += "<li>" + data[i] + "</li>";
             }
-            manageGroupResult.innerHTML = output;
+            resetGroupResult.innerHTML = output;
         }
     });
+});
+
+$(document).on("click", "#resetGroupModalClose", function(event){
+    resetGroupResult.innerHTML = "";
 });
 
 $(document).on("click", "#membershipButton", function(event){

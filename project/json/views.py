@@ -119,11 +119,12 @@ def reset_groups():
         groups_to_be_reset = request.get_json()
         for group in groups_to_be_reset:
             db_group = Group.query.filter_by(name=group['name']).first()
-            db_group.users.clear()
+            # db_group.users.clear() # user relations are to be deleted in users section
             db_group.tags.clear()
             db_group.networks.clear()
             db.session.add(db_group)
-            result.append("Group: {} membership, tags and networks relations are reset".format(group['name']))
+            result.append("Group: {} tag and network relations are reset.\n"
+                          "Please \'Update Networks\' in Networks page.".format(group['name']))
         try:
             db.session.commit()
         except:
