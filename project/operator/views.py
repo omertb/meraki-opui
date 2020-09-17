@@ -16,6 +16,7 @@ operator_blueprint = Blueprint('operator', __name__, template_folder='templates'
 @login_required
 @is_operator
 def add_devices():
+    print(current_user)
     error = None
     form = AddDevicesForm(request.form)
     form.set_choices()

@@ -6,7 +6,7 @@ $ pwd
 
 $ mkdir pgsql_data
 
-$ docker run -d -p 5432:5432 --rm --name my-postgres -v /home/user/pgsql_data:/var/lib/postgresql/data postgres
+$ docker run -d -p 5432:5432 --rm --name my-postgres -v /home/user/pgsql_data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=mysecretpassword postgres
 $ docker exec -ti my-postgres psql -U postgres
 
 psql (12.3 (Debian 12.3-1.pgdg100+1))
