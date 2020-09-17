@@ -55,7 +55,12 @@ def login():
                             name = username
                             surname = 'service_user'
                         password = 'auth-by-ldap-eiaxzqnO4JKUwsQ'
-                        user = User(username, password, email, name, surname)
+                        users_exist = User.query.all()
+                        # first user who logs in is going to be admin
+                        if users_exist:
+                            user = User(username, password, email, name, surname)
+                        else:
+                            user = User(username, password, email, name, surname, admin=True)
                         db.session.add(user)
                         db.session.commit()
                     login_user(user)  # (flask_login) session created
