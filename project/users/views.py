@@ -60,7 +60,7 @@ def login():
                         if users_exist:
                             user = User(username, password, email, name, surname)
                         else:
-                            user = User(username, password, email, name, surname, admin=True)
+                            user = User(username, password, email, name, surname, admin=True, operator=True)
                         db.session.add(user)
                         db.session.commit()
                     login_user(user)  # (flask_login) session created
@@ -80,3 +80,8 @@ def logout():
     logout_user()  # (flask_login) clear session
     flash('You are logged out.')
     return redirect(url_for('users.login'))
+
+
+@users_blueprint.route('/err_403')
+def err_403():
+    return render_template('403.html', title='403')
