@@ -80,6 +80,9 @@ def new_network():
             tag = Tag.query.get(int(tag_id))
             network.tags.append(tag)
             network.net_tags += tag.name + " "
+            # build network group relation according to selected tags
+            for group in tag.groups:
+                network.groups.append(group)
         # location specific tag for name seperated with dash;
         # eg. for network name AB11-Firewall, then new tag will be AB11
         if "-" in net_name:
