@@ -297,12 +297,14 @@ def delete_networks():
 @login_required
 @is_operator
 def network_table():
-    query_list = []
+    initial_query_list = []
     user_networks = Network.query.filter_by(user_id=current_user.id)
-    query_list.extend(user_networks)
+    initial_query_list.extend(user_networks)
     user_groups = current_user.groups
     for group in user_groups:
-        query_list.extend(group.networks)
+        initial_query_list.extend(group.networks)
+
+    query_list = list(set(initial_query_list))
 
     network_list = []
     for row, network in enumerate(query_list):
