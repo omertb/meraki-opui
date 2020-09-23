@@ -490,7 +490,7 @@ $(document).on("click", "#renameSelectedDevsButton", function(event){
             dataType: "json",
             contentType: "application/json",
             success: function (data) {
-                $deviceTable.bootstrapTable("refresh");
+                deviceTableOnNetworkSelect();
                 var output = "<br>";
                 if (Array.isArray(data)) {
                     for (var i = 0; i < data.length; i++) {

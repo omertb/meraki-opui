@@ -424,8 +424,20 @@ def rename_devices():
         rename_devices_json = request.get_json()
         device_name = rename_devices_json["device_name"]
         device_list = rename_devices_json["device_list"]
-        meraki_net_id_list = []
-        dev_serial_list = []
         print(device_name)
         print(device_list)
+        for device in device_list:
+            db_device = Device.query.filter_by(serial=device['serial']).first()
+            meraki_net_id = db_device.network.meraki_id
+            serial = db_device.serial
+            try:
+                rename_response = rename_device_v0(meraki_net_id, serial, device_name)
+                result.append("{} with model {} is renamed to {}".format(db_device.name, rename_response['model'],
+                                                                         device_name))
+                db_device.name = device_name
+                db_device.devmodel = rename_response['model']
+                db.session.add(db_device)
+            except ConnectionError:
+                result.append("Meraki response error while renaming device: {}".format(device['name']))
+        db.session.commit()
     return jsonify(result)
