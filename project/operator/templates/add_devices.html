@@ -143,6 +143,36 @@
                   </div>
                 </div>
 
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#renameSelectedDevsModal">
+                  Rename Device
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="renameSelectedDevsModal" tabindex="-1" role="dialog" aria-labelledby="renameSelectedDevsModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="renameSelectedDevsModalLabel">Commit Selected Device(s)</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                          Rename selected device(s) on Meraki Cloud to:
+                          <div class="form-group pt-2">
+                          <input class="form-control" id="devNameInput" name="dev_name" placeholder="Type a Device Name" type="text" value="">
+                          </div>
+                          <div id="renameDeviceResult" style="color:darkblue;text-align: left"></div>
+                      </div>
+                      <div class="modal-footer">
+                        <button id="renameDeviceModalClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="renameSelectedDevsButton" type="button" class="btn btn-outline-primary">Rename</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
             </div>
             <table
                     id="deviceTable"
