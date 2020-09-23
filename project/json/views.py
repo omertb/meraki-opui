@@ -424,8 +424,6 @@ def rename_devices():
         rename_devices_json = request.get_json()
         device_name = rename_devices_json["device_name"]
         device_list = rename_devices_json["device_list"]
-        print(device_name)
-        print(device_list)
         for device in device_list:
             db_device = Device.query.filter_by(serial=device['serial']).first()
             meraki_net_id = db_device.network.meraki_id

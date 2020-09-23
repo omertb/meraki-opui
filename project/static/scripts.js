@@ -482,7 +482,6 @@ $(document).on("click", "#renameSelectedDevsButton", function(event){
     rename_devices_json.device_list = $deviceTable.bootstrapTable('getSelections');
     if (device_name && rename_devices_json.device_list.length > 0) {
         rename_devices_json.device_name = device_name;
-        console.log(rename_devices_json);
         $.ajax({
             url: "/operator/rename_devices",
             type: "POST",
