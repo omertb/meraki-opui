@@ -474,6 +474,43 @@ $(document).on("click", "#resetMembershipModalClose", function(event){
     // $usersTable.bootstrapTable('refresh');
 });
 
+// rename devices modal
+var renameDeviceResult = document.getElementById("renameDeviceResult")
+$(document).on("click", "#renameSelectedDevsButton", function(event){
+    let device_name = $('#devNameInput').val();
+    let rename_devices_json = {};
+    rename_devices_json.device_list = $deviceTable.bootstrapTable('getSelections');
+    if (device_name && rename_devices_json.device_list.length > 0) {
+        rename_devices_json.device_name = device_name;
+        console.log(rename_devices_json);
+        $.ajax({
+            url: "/operator/rename_devices",
+            type: "POST",
+            data: JSON.stringify(rename_devices_json),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                $deviceTable.bootstrapTable("refresh");
+                var output = "<br>";
+                if (Array.isArray(data)) {
+                    for (var i = 0; i < data.length; i++) {
+                        output += "<li>" + data[i] + "</li>";
+                    }
+                } else {
+                    output = data;
+                }
+                renameDeviceResult.innerHTML = output;
+            }
+        });
+    }
+});
+
+$(document).on("click", "#renameDeviceModalClose", function(event){
+    renameDeviceResult.innerHTML = "";
+    $('#devNameInput').val("");
+    // $usersTable.bootstrapTable('refresh');
+});
+
 // wait animation with wait-modal
 $body = $("body");
 $(document).on({

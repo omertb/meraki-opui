@@ -413,3 +413,19 @@ def commit_devices():
             result.append("Meraki Response Error")
 
         return jsonify(result)
+
+
+@json_blueprint.route('/operator/rename_devices', methods=['POST'])
+@login_required
+@is_operator
+def rename_devices():
+    result = []
+    if request.method == 'POST':
+        rename_devices_json = request.get_json()
+        device_name = rename_devices_json["device_name"]
+        device_list = rename_devices_json["device_list"]
+        meraki_net_id_list = []
+        dev_serial_list = []
+        print(device_name)
+        print(device_list)
+    return jsonify(result)
