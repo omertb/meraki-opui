@@ -73,11 +73,12 @@ def new_network():
         if net_type == 'appliance':
             template = Template.query.filter_by(name=form.net_template.data).first()
             bound_template = template.meraki_id
+            network = Network(net_name, net_type, user_id, bound_template=bound_template)
         else:
             network_copy_source = Network.query.get(int(form.net_to_copy.data))
-            bound_template = network_copy_source.meraki_id  # it is not bound template, actually.
+            source_network = network_copy_source.id  # it is not bound template, actually.
+            network = Network(net_name, net_type, user_id, source_network=source_network)
 
-        network = Network(net_name, net_type, user_id, bound_template=bound_template)
         network.net_tags = ""
         for tag_id in form.net_tag_mselect.data:
             tag = Tag.query.get(int(tag_id))

@@ -308,7 +308,10 @@ def network_table():
 
     network_list = []
     for row, network in enumerate(query_list):
-        template_name = network.template.name if network.bound_template else None
+        if network.type == 'appliance':
+            template_name = network.template.name if network.bound_template else None
+        else:  # network name from which it is copied
+            template_name = network.copied_from.name if network.source_network else None
         network = network.serialize()
         network['rowNum'] = row + 1
         network['committed'] = 'No' if network['committed'] is False else 'Yes'

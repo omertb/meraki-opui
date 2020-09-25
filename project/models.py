@@ -107,20 +107,21 @@ class Network(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     bound_template = db.Column(db.String(64), db.ForeignKey('templates.meraki_id'))
     source_network = db.Column(db.Integer, db.ForeignKey('networks.id'))
-    source_network_rel = db.relationship("Network", remote_side=[id], backref="from_network", lazy=True)
+    source_network_rel = db.relationship("Network", backref=db.backref("copied_from", remote_side=[id]), lazy=True)
     devices = db.relationship("Device", backref="network", lazy=True)
     groups = db.relationship("Group", secondary=ownership_table, back_populates='networks')
     net_tags = db.Column(db.String(256))
     tags = db.relationship("Tag", secondary=network_tag_table, back_populates='networks')
 
     def __init__(self, net_name, net_type, user_id=None, meraki_id=None,
-                 net_tags=None, bound_template=None, committed=False):
+                 net_tags=None, bound_template=None, source_network=None, committed=False):
         self.name = net_name
         self.type = net_type
         self.committed = committed
         self.reg_date = datetime.datetime.now()
         self.user_id = user_id
         self.bound_template = bound_template
+        self.source_network = source_network
         self.net_tags = net_tags
         self.meraki_id = meraki_id
 
