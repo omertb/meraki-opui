@@ -106,6 +106,8 @@ class Network(db.Model):
     reg_date = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     bound_template = db.Column(db.String(64), db.ForeignKey('templates.meraki_id'))
+    source_network = db.Column(db.Integer, db.ForeignKey('networks.id'))
+    networks = db.relationship("Network", backref="from_network", lazy=True)
     devices = db.relationship("Device", backref="network", lazy=True)
     groups = db.relationship("Group", secondary=ownership_table, back_populates='networks')
     net_tags = db.Column(db.String(256))

@@ -53,6 +53,7 @@ def new_network():
     # end of "on page load" block
 
     if request.method == 'POST':
+        net_will_be_copied = False
         error = None
         net_name = form.net_name.data
         # validation on serverside
@@ -73,7 +74,9 @@ def new_network():
             template = Template.query.filter_by(name=form.net_template.data).first()
             bound_template = template.meraki_id
         else:
-            bound_template = None
+            network_copy_source = Network.query.get(int(form.net_to_copy.data))
+            bound_template = network_copy_source.meraki_id  # it is not bound template, actually.
+
         network = Network(net_name, net_type, user_id, bound_template=bound_template)
         network.net_tags = ""
         for tag_id in form.net_tag_mselect.data:
