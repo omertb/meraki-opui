@@ -4,19 +4,51 @@ $('#signInButton').click(function() {
   $('#signInButton').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true">' +
       '</span>Loading...').addClass('disabled');
 });
-
 $(document).ready(function(){
     $("#netTypeSelect").change(function(){
         $(this).find("option:selected").each(function(){
             var optionValue = $(this).attr("value");
             if(optionValue=='appliance'){
+                $("#copyNetworkFormArea").slideUp();
                 $("#templateFormArea").slideDown();
             } else{
                 $("#templateFormArea").slideUp();
-                }
-            });
-        }).change();
+                $("#copyNetworkFormArea").slideDown();
+                updateCopyNetworkSelect(optionValue);
+            }
+        });
+    }).change();
 });
+
+// update "Select Network To Copy" dropdown menu in "New Network" page according to selected network type
+const netJsonUri = 'network.json';
+let net_to_copy_dropdown = document.getElementById("selectNetworkToCopy")
+const request = new XMLHttpRequest();
+
+function updateCopyNetworkSelect(network_type){
+    var optionHTML = '';
+    request.open('GET', netJsonUri, true);
+    request.onload = function (){
+        if (request.status === 200) {
+            const data = JSON.parse(request.responseText);
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].type == network_type) {
+                    optionHTML += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
+                }
+            }
+            net_to_copy_dropdown.removeAttribute("data-live-search");
+            net_to_copy_dropdown.classList.remove("selectpicker");
+            net_to_copy_dropdown.innerHTML = optionHTML;
+            $('#selectNetworkToCopy').addClass('selectpicker');
+            $('#selectNetworkToCopy').attr('data-live-search', 'true');
+            $('#selectNetworkToCopy').selectpicker('refresh');
+        }
+    }
+    request.onerror = function() {
+        console.error('An error occurred fetching the JSON from ' + netJsonUri);
+    };
+    request.send();
+}
 
 var $table = $('#networksTable');
 var $deviceTable = $('#deviceTable');

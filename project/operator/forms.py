@@ -6,11 +6,12 @@ from project.models import Network
 
 
 class NewNetworkForm(FlaskForm):
-    net_name = StringField('Network Name: ', validators=[Length(max=64)])
+    net_name = StringField('Network Name: ', validators=[DataRequired(), Length(max=64)])
     net_template = SelectField('Template: ', choices=[])
     net_type = SelectField('Network Type: ', choices=["appliance", "switch", "wireless"])
-    new_or_existing = SelectField("New", choices=[("new", "New Network"), ("existing", "Existing Network")], )
+    # new_or_existing = SelectField("New", choices=[("new", "New Network"), ("existing", "Existing Network")], )
     net_tag_mselect = SelectMultipleField("Select Tags:", validators=[DataRequired()])
+    net_to_copy = SelectField('Select Network: ')
 
     def set_choices(self):
         tag_list = []
