@@ -352,6 +352,9 @@ def commit_networks():
         networks_to_be_commit = request.get_json()
         for network in networks_to_be_commit:
             db_network = Network.query.filter_by(name=network['name']).first()
+            if db_network.committed:
+                result.append("{} is already committed.".format(db_network.name))
+                continue
             network_dict = {
                 'name': db_network.name,
                 'productTypes': [db_network.type],
@@ -390,6 +393,9 @@ def commit_devices():
         dev_serial_list = []
         for i, device in enumerate(devices_to_be_commit):
             db_device = Device.query.filter_by(serial=device['serial']).first()
+            if db_device.committed:
+                result.append("{} is already committed.".format(db_device.name))
+                continue
             # check if there is a mismatch in network ids of devices
             meraki_net_id_list.append(db_device.network.meraki_id)
             if i > 0:
