@@ -128,16 +128,19 @@ $(document).on("click", "#addDeviceFormButton", function(event){
         dataType: "json",
         contentType: "application/json",
         success: function(data) {
-            var output = '';
-            if(Array.isArray(data)) {
-                for (var i = 0; i < data.length; i++) {
-                    output += "<li>" + data[i] + "</li>";
+            if(data!=="success") {
+                var output = '';
+                if (Array.isArray(data)) {
+                    for (var i = 0; i < data.length; i++) {
+                        output += "<li>" + data[i] + "</li>";
+                    }
+                } else {
+                    output = data;
                 }
-            }else{
-                output = data;
+                deviceFormErrorDiv.innerHTML = output;
+            }else {
+                deviceTableOnNetworkSelect();
             }
-            deviceTableOnNetworkSelect();
-            deviceFormErrorDiv.innerHTML = output;
             // $('#existingNetSelect').val('default');
             // $('#existingNetSelect').selectpicker('refresh');
         }

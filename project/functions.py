@@ -122,6 +122,7 @@ def get_network(network_id):
     response = get_data(uri)
     return response
 
+
 #  WRITE FUNCTIONS
 
 def create_network(network_dict: dict):

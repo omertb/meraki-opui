@@ -358,6 +358,9 @@ def commit_networks():
                 'tags': [tag.name for tag in db_network.tags]
             }
             try:
+                # check if network is to be copied from an existing one
+                if db_network.source_network:
+                    network_dict['copyFromNetworkId'] = db_network.copied_from.meraki_id
                 # commit to cloud
                 create_net_res = create_network(network_dict)
                 # write new network meraki id to db
