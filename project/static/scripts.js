@@ -300,8 +300,9 @@ function updateGroupSelect(data){
     $('#groupSelectMultiple').selectpicker('refresh');
 }
 
-// delete device modal
-var manageGroupResult = document.getElementById("manageGroupResult")
+// delete group modal
+var manageGroupResult = document.getElementById("manageGroupResult");
+var deleteGroupResult = document.getElementById("deleteGroupResult");
 $(document).on("click", "#deleteGroupButton", function(event){
     JSON_Selected = $groupsTable.bootstrapTable('getSelections');
     $.ajax({
@@ -316,16 +317,19 @@ $(document).on("click", "#deleteGroupButton", function(event){
             for (var i = 0; i < data.length; i++){
                 output += "<li>" + data[i] + "</li>";
             }
-            manageGroupResult.innerHTML = output;
+            deleteGroupResult.innerHTML = output;
             $.get("/groups/groups_select", function(data, status){
                 updateGroupSelect(data);
             });
         }
     });
 });
+$(document).on("click", "#deleteGroupModalClose", function(event){
+    deleteGroupResult.innerHTML = "";
+});
 
 // "Reset Group" button on /groups page
-var resetGroupResult = document.getElementById("resetGroupResult")
+var resetGroupResult = document.getElementById("resetGroupResult");
 $(document).on("click", "#resetGroupButton", function(event){
     JSON_Selected = $groupsTable.bootstrapTable('getSelections');
     $.ajax({
