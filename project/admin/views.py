@@ -4,7 +4,7 @@ from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from requests.exceptions import ConnectionError
 from project.functions import get_templates, get_networks, get_devices, get_device, get_network
-from project.admin.forms import GroupMembershipForm, NetworkOwnershipForm
+from project.admin.forms import GroupMembershipForm, GroupForm
 from sqlalchemy.exc import OperationalError, ProgrammingError
 import datetime, time
 from project.decorators import *
@@ -20,6 +20,7 @@ admin_blueprint = Blueprint('admin', __name__, template_folder='templates')
 @is_admin
 def admin_users():
     form = GroupMembershipForm(request.form)
+    form.set_choices()
 
     return render_template('users.html', form=form)
     # load_templates_to_db()
@@ -30,7 +31,7 @@ def admin_users():
 @login_required
 @is_admin
 def admin_groups():
-    form = GroupMembershipForm(request.form)
+    form = GroupForm(request.form)
     form.set_choices()
 
     if request.method == 'POST':
@@ -62,10 +63,7 @@ def groups_select():
 @login_required
 @is_admin
 def admin_networks():
-    form = NetworkOwnershipForm(request.form)
-    form.set_choices()
-
-    return render_template('networks.html', form=form)
+    return render_template('networks.html')
     # load_templates_to_db()
     # load_networks_to_db()
 

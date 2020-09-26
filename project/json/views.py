@@ -304,7 +304,7 @@ def network_table():
     for group in user_groups:
         initial_query_list.extend(group.networks)
 
-    query_list = list(set(initial_query_list))
+    query_list = set(initial_query_list)  # convert list into unique set, which there might be duplicates
 
     network_list = []
     for row, network in enumerate(query_list):

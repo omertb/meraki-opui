@@ -45,6 +45,40 @@
                 {% endif %}
             </div>
 		</div>
+        <div class="col-md-4">
+            <form id="groupMembershipForm" action="" method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="userSelectMultiple">Choose Users: </label><br>
+                            {{ form.select_user(class_="selectpicker my-select", id="userSelectMultiple", data_live_search="true") }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="groupSelectMultiple">Choose Groups: </label><br>
+                            {{ form.select_group(class_="selectpicker my-select", id="groupSelectMultiple", data_live_search="true") }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <button id="membershipButton" class="btn btn-primary btn-block" type="submit">
+                                Add User
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
         <div class="col-md-6">
             <div class="content pt-2">
                 <div id="usersTableToolbar">
@@ -109,9 +143,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-        </div>
-
 	</div>
 </div>
 

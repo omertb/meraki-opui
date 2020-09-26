@@ -26,9 +26,12 @@ class AddDevicesForm(FlaskForm):
 
     def set_choices(self):
         user_networks = Network.query.filter_by(user_id=current_user.id)
-        self.registered_nets.choices = [(network.id, network.name) for network in user_networks]
         user_groups = current_user.groups
+        all_networks = []
         for user_group in user_groups:
             if user_group.networks:
                 group_networks = user_group.networks
-                self.registered_nets.choices.extend([(network.id, network.name) for network in group_networks])
+                all_networks.extend(group_networks)
+        all_networks.extend(user_networks)
+        all_networks = set(all_networks)
+        self.registered_nets.choices = [(network.id, network.name) for network in all_networks]

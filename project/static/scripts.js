@@ -281,7 +281,8 @@ $(document).on("click", "#createGroupButton", function(event){
                 newGroupErrorDiv.innerHTML = "";
                 manageGroupResult.innerHTML = "";
                 $groupsTable.bootstrapTable('refresh');
-                updateGroupSelect(data);
+                // the line below was needed when group_select was in the same page
+                // updateGroupSelect(data);
             }
         }
     });
@@ -318,9 +319,10 @@ $(document).on("click", "#deleteGroupButton", function(event){
                 output += "<li>" + data[i] + "</li>";
             }
             deleteGroupResult.innerHTML = output;
-            $.get("/groups/groups_select", function(data, status){
+            // this block below was needed when group_select was in the same page
+            /*$.get("/groups/groups_select", function(data, status){
                 updateGroupSelect(data);
-            });
+            });*/
         }
     });
 });
