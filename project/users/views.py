@@ -1,9 +1,10 @@
 from flask import flash, redirect, render_template, url_for, request, Blueprint
 from project.users.forms import LoginForm
 from project.models import User, db
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 from ldap import INVALID_CREDENTIALS, SERVER_DOWN
 from sqlalchemy.exc import OperationalError, ProgrammingError
+from project.logging import send_wr_log
 import os
 
 
@@ -23,22 +24,23 @@ def login():
     if request.method == 'POST':
         if form.validate_on_submit():
             # user = User.query.filter_by(username=request.form['username']).first()
-            username = request.form['username']
+            input_username = request.form['username']
             password = request.form['password']
 
             # if user is not None and bcrypt.check_password_hash(user.password, request.form['password']):
-            # if user is not None and bcrypt.check_password_hash(user.password, request.form['password']):
-            username = username.split('@')[0]
+            username = input_username.split('@')[0]
+
+            # making some orderings so as to accept both DOMAIN\USER, USER at login
+            ad_domain = os.environ['USERDNSDOMAIN'].lower().split(".")[0]
+            username = username.split("\\")[-1]
+            ldap_username = ad_domain + "\\" + username
 
             # ldap login
             try:
-                # making some orderings so as to accept both DOMAIN\USER, USER at login
-                ad_domain = os.environ['USERDNSDOMAIN'].lower().split(".")[0]
-                username = username.split("\\")[-1]
-                ldap_username = ad_domain + "\\" + username
-
                 ldap_login_user = User.ldap_login(ldap_username, password)
                 if ldap_login_user:
+                    log_msg = "Authentication Success against LDAP: {}".format(ldap_username)
+                    send_wr_log(log_msg)
                     # verify if the user exists in DB and besides if DB is working!!
                     try:
                         user = User.query.filter_by(username=username).first()
@@ -64,12 +66,18 @@ def login():
                         db.session.add(user)
                         db.session.commit()
                     login_user(user)  # (flask_login) session created
+                    log_msg = "User logged in: {}".format(current_user.username)
+                    send_wr_log(log_msg)
+
                     return redirect(url_for('operator.new_network'))
 
             except INVALID_CREDENTIALS:
                 error = 'Invalid Credentials. Please try again.'
+                log_msg = "Authentication Failure: {}: {}".format(ldap_username, error)
+                send_wr_log(log_msg)
             except SERVER_DOWN:
                 error = 'Authentication Server Unreachable'
+                send_wr_log("Login attempt: {}".format(error))
 
     return render_template('login.html', form=form, error=error, current_user=False)
 
@@ -77,6 +85,8 @@ def login():
 @users_blueprint.route('/logout')
 @login_required  # flask_login
 def logout():
+    log_msg = "User logged out: {}".format(current_user.username)
+    send_wr_log(log_msg)
     logout_user()  # (flask_login) clear session
     flash('You are logged out.')
     return redirect(url_for('users.login'))
