@@ -1,0 +1,6 @@
+migrations
+venv
+.idea
+config.py.back
+project/static/logo.jpg
+__pycache__
