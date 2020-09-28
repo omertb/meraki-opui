@@ -1,4 +1,5 @@
 migrations
+logs
 venv
 .idea
 config.py.back
