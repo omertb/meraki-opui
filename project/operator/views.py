@@ -30,7 +30,7 @@ def add_devices():
         while '' in device_serials_list:
             device_serials_list.remove('')  # remove blank items
         error = save_devices_in_db(device_serials_list, int(net_id))
-        log_msg = "User: {} - Saving devices in DB: {}".format(current_user.name, error)
+        log_msg = "User: {} - Saving devices in DB: {}".format(current_user.username, error)
         send_wr_log(log_msg)
         return error
 
@@ -84,7 +84,7 @@ def new_network():
         if network:
             error = "Network already exists, try another unique name"
             # return render_template('home.html', form=form, error=error)
-            log_msg = "User: {} - Network Name: {} - {}".format(current_user.name, network.name, error)
+            log_msg = "User: {} - Network Name: {} - {}".format(current_user.username, network.name, error)
             send_wr_log(log_msg)
             return jsonify(error)
 
@@ -93,14 +93,14 @@ def new_network():
             bound_template = template.meraki_id
             network = Network(net_name, net_type, user_id, bound_template=bound_template)
             log_msg = "User: {} - Network {} is being saved in DB" \
-                      " with binding to template: {}".format(current_user.name, network.name, template.name)
+                      " with binding to template: {}".format(current_user.username, network.name, template.name)
             send_wr_log(log_msg)
         else:
             network_copy_source = Network.query.get(int(form.net_to_copy.data))
             source_network = network_copy_source.id  # it is not bound template, actually.
             network = Network(net_name, net_type, user_id, source_network=source_network)
             log_msg = "User: {} - Network {} is being saved in DB" \
-                      " being copied from the Network: {}".format(current_user.name, network.name, source_network.name)
+                      " being copied from the Network: {}".format(current_user.username, network.name, source_network.name)
             send_wr_log(log_msg)
 
         network.net_tags = ""
@@ -125,7 +125,7 @@ def new_network():
                 network.tags.append(specific_tag)
         db.session.add(network)
         db.session.commit()
-        log_msg = "User: {} - Network: {} is saved in DB with success".format(current_user.name, network.name)
+        log_msg = "User: {} - Network: {} is saved in DB with success".format(current_user.username, network.name)
         send_wr_log(log_msg)
 
         return jsonify(error)
@@ -152,7 +152,7 @@ def save_devices_in_db(device_serials_list, net_id):
             continue
         device = Device(dev_name, dev_serial, network_id)
         db.session.add(device)
-        log_msg = "User: {} - Device Name: {}, Device Serial: {} is saved in DB".format(current_user.name, dev_name,
+        log_msg = "User: {} - Device Name: {}, Device Serial: {} is saved in DB".format(current_user.username, dev_name,
                                                                                         dev_serial)
         send_wr_log(log_msg)
     db.session.commit()

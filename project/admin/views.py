@@ -48,7 +48,7 @@ def admin_groups():
         new_group = Group(new_group_name)
         db.session.add(new_group)
         db.session.commit()
-        log_msg = "User: {} - Group: {} is created.".format(current_user.name, new_group.name)
+        log_msg = "User: {} - Group: {} is created.".format(current_user.username, new_group.name)
         send_wr_log(log_msg)
         return_data = [(group.id, group.name) for group in Group.query.all()]
         return jsonify(return_data)
@@ -96,14 +96,14 @@ def update_admin_networks_table():
     # db.session.commit()
     # Tag.query.delete()
     # db.session.commit()
-    log_msg = "User: {} - Updating networks table is started.".format(current_user.name)
+    log_msg = "User: {} - Updating networks table is started.".format(current_user.username)
     send_wr_log(log_msg)
     try:
         networks = get_networks()
         templates = get_templates()
     except ConnectionError:
         error = "Meraki Server Bad Response"
-        log_msg = "User: {} - {} while updating networks table.".format(current_user.name, error)
+        log_msg = "User: {} - {} while updating networks table.".format(current_user.username, error)
         send_wr_log(log_msg)
         return error
     for key, value in templates.items():
@@ -120,7 +120,7 @@ def update_admin_networks_table():
             db_network = Network.query.filter_by(meraki_id=network['meraki_id']).first()
         except (ProgrammingError, OperationalError) as e:
             error = str(e)
-            log_msg = "User: {} - {} while updating networks table.".format(current_user.name, error)
+            log_msg = "User: {} - {} while updating networks table.".format(current_user.username, error)
             send_wr_log(log_msg)
             return error
         # update if the network exists
@@ -179,7 +179,7 @@ def update_admin_networks_table():
         db.session.commit()
 
     t2 = time.time()
-    log_msg = "User: {} - Updating networks table is ended in {} seconds.".format(current_user.name, t2 - t1)
+    log_msg = "User: {} - Updating networks table is ended in {} seconds.".format(current_user.username, t2 - t1)
     send_wr_log(log_msg)
     return "success"
 
@@ -196,17 +196,17 @@ def admin_devices():
 @is_admin
 def admin_update_devices_table():
     t1 = time.time()
-    log_msg = "User: {} - Updating devices table is started.".format(current_user.name)
+    log_msg = "User: {} - Updating devices table is started.".format(current_user.username)
     send_wr_log(log_msg)
     try:
         load_devices_to_db()
     except Exception as e:
         error = str(e)
-        log_msg = "User: {} - {} while updating devices table.".format(current_user.name, error)
+        log_msg = "User: {} - {} while updating devices table.".format(current_user.username, error)
         send_wr_log(log_msg)
         return error
     t2 = time.time()
-    log_msg = "User: {} - Updating devices table is ended in {} seconds.".format(current_user.name, t2 - t1)
+    log_msg = "User: {} - Updating devices table is ended in {} seconds.".format(current_user.username, t2 - t1)
     send_wr_log(log_msg)
     return "success"
 
@@ -259,7 +259,7 @@ def load_templates_to_db():
             db.session.commit()
         except ConnectionError:
             error = "Meraki Server Bad Response"
-            log_msg = "User: {} - {} while loading templates into db.".format(current_user.name, error)
+            log_msg = "User: {} - {} while loading templates into db.".format(current_user.username, error)
             send_wr_log(log_msg)
             return error
 
@@ -282,6 +282,6 @@ def load_networks_to_db():
             return "Networks are saved in db"
         except ConnectionError:
             error = "Meraki Server Bad Response"
-            log_msg = "User: {} - {} while loading networks into db.".format(current_user.name, error)
+            log_msg = "User: {} - {} while loading networks into db.".format(current_user.username, error)
             send_wr_log(log_msg)
             return error

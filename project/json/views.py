@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 from project.decorators import *
 from project.functions import create_network, bind_template, claim_network_devices, rename_device_v0
 from requests.exceptions import ConnectionError
+from project.logging import send_wr_log
 
 
 # home blueprint definition
