@@ -46,6 +46,8 @@ def login():
                         user = User.query.filter_by(username=username).first()
                     except (ProgrammingError, OperationalError) as e:
                         error = str(e)
+                        log_msg = "Database error on login: {}".format(error)
+                        send_wr_log(log_msg)
                         return render_template('login.html', form=form, error=error)
 
                     if not user:

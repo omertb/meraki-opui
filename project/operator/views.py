@@ -4,6 +4,8 @@ from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.operator.forms import NewNetworkForm, AddDevicesForm
 from project.decorators import *
+from project.logging import send_wr_log
+from sqlalchemy.exc import OperationalError, ProgrammingError
 import datetime
 from requests.exceptions import ConnectionError
 
@@ -16,7 +18,6 @@ operator_blueprint = Blueprint('operator', __name__, template_folder='templates'
 @login_required
 @is_operator
 def add_devices():
-    print(current_user)
     error = None
     form = AddDevicesForm(request.form)
     form.set_choices()
@@ -25,10 +26,12 @@ def add_devices():
         form_dict = request.get_json()
         net_id = form_dict['network']
         devices = form_dict['devices']
-        device_serials_list = devices.strip().upper().replace(" ", "").split("\n")
+        device_serials_list = devices.strip().upper().replace(" ", "").replace("*", "-").split("\n")
         while '' in device_serials_list:
             device_serials_list.remove('')  # remove blank items
         error = save_devices_in_db(device_serials_list, int(net_id))
+        log_msg = "User: {} - Saving devices in DB: {}".format(current_user.name, error)
+        send_wr_log(log_msg)
         return error
 
     return render_template('add_devices.html', current_user=current_user, form=form, error=error)
@@ -42,7 +45,13 @@ def new_network():
     # beginning of "on page load"
     #####
     templates_names = []
-    templates_db = Template.query.all()
+    try:
+        templates_db = Template.query.all()
+    except (ProgrammingError, OperationalError) as e:
+        error_log = str(e)
+        log_msg = "Database error on (Get) New Network: {}".format(error_log)
+        send_wr_log(log_msg)
+        return jsonify("Database error!")
     for template in templates_db:
         templates_names.append(template.name)
 
@@ -56,6 +65,7 @@ def new_network():
         net_will_be_copied = False
         error = None
         net_name = form.net_name.data
+        net_name = net_name.strip()
         # validation on serverside
         if net_name == "":
             return jsonify("Enter a unique network name!")
@@ -63,21 +73,35 @@ def new_network():
         net_type = form.net_type.data
         user_id = current_user.id
 
-        # ensure that network name does not already exist in db641296
-        network = Network.query.filter_by(name=net_name).first()
+        # ensure that network name does not already exist in db
+        try:
+            network = Network.query.filter_by(name=net_name).first()
+        except (ProgrammingError, OperationalError) as e:
+            error_log = str(e)
+            log_msg = "Database error on (Post) New Network: {}".format(error_log)
+            send_wr_log(log_msg)
+            return jsonify("Database error!")
         if network:
             error = "Network already exists, try another unique name"
             # return render_template('home.html', form=form, error=error)
+            log_msg = "User: {} - Network Name: {} - {}".format(current_user.name, network.name, error)
+            send_wr_log(log_msg)
             return jsonify(error)
 
         if net_type == 'appliance':
             template = Template.query.filter_by(name=form.net_template.data).first()
             bound_template = template.meraki_id
             network = Network(net_name, net_type, user_id, bound_template=bound_template)
+            log_msg = "User: {} - Network {} is being saved in DB" \
+                      " with binding to template: {}".format(current_user.name, network.name, template.name)
+            send_wr_log(log_msg)
         else:
             network_copy_source = Network.query.get(int(form.net_to_copy.data))
             source_network = network_copy_source.id  # it is not bound template, actually.
             network = Network(net_name, net_type, user_id, source_network=source_network)
+            log_msg = "User: {} - Network {} is being saved in DB" \
+                      " being copied from the Network: {}".format(current_user.name, network.name, source_network.name)
+            send_wr_log(log_msg)
 
         network.net_tags = ""
         for tag_id in form.net_tag_mselect.data:
@@ -101,6 +125,8 @@ def new_network():
                 network.tags.append(specific_tag)
         db.session.add(network)
         db.session.commit()
+        log_msg = "User: {} - Network: {} is saved in DB with success".format(current_user.name, network.name)
+        send_wr_log(log_msg)
 
         return jsonify(error)
 
@@ -108,8 +134,14 @@ def new_network():
 
 
 def save_devices_in_db(device_serials_list, net_id):
-    network = Network.query.get(net_id)
     error = []
+    try:
+        network = Network.query.get(net_id)
+    except (ProgrammingError, OperationalError) as e:
+        error_log = str(e)
+        log_msg = "Database error on Add Devices: {}".format(error_log)
+        send_wr_log(log_msg)
+        return jsonify("Database error!")
     for device_serial in device_serials_list:
         dev_name = device_serial.replace("-", "")
         dev_serial = device_serial
@@ -120,6 +152,9 @@ def save_devices_in_db(device_serials_list, net_id):
             continue
         device = Device(dev_name, dev_serial, network_id)
         db.session.add(device)
+        log_msg = "User: {} - Device Name: {}, Device Serial: {} is saved in DB".format(current_user.name, dev_name,
+                                                                                        dev_serial)
+        send_wr_log(log_msg)
     db.session.commit()
     if error:
         return jsonify(error)
