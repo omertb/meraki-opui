@@ -1,5 +1,72 @@
 ## Container Deployment:
-### Database:
+### 1. Production Environment
+> Before continue beginning; ensure that pgsql_data directory and
+>a database called meraki_operator is created inside it. This prerequisite can be met by 
+>following the instructions under _2. Development Environment->Database_.
+
+![Production Schema](./Deployment_Schema.png)
+
+#### Steps to Deploy:
+
+**1.** Clone the git-repo to your local directory.
+```
+$ git clone https://github.com/omertb/meraki-opui.git
+```
+
+**2. Nginx Config:**
+
+a) Create a directory named _public_ and include your customized _500.html_ file in it.
+You can copy the one included in repo. 
+
+b) Create a directory named _ssl_ and include your subdomain certificates in it.
+
+c) Copy the nginx.conf file into your local directory and change the related lines
+(ssl and subdomain) appropriately in the config file.
+
+**3.** Copy the files _Dockerfile_ and _docker-compose.yml_ to current directory.
+```
+$ cp meraki-opui/Dockerfile .
+$ cp meraki-opui/docker-compose.yml .
+```
+
+**4.** Check if your current tree looks like below. If not, review previous steps:
+```
+.
+├── meraki-opui
+├── pgsql_data
+├── public
+├── ssl
+├── docker-compose.dev.yml
+├── docker-compose.yml
+├── Dockerfile
+└── nginx.conf
+
+```
+
+**5.** Start the containers on your host server. (Be sure that ports 80 and 443 are not occupied by another process)
+```
+$ docker-compose up -d
+Starting meranet_my-postgres_1 ... done
+Starting meranet_my-flask-project_1 ... done
+Starting meranet_opui-nginx_1       ... done
+$
+$ docker-compose ps
+           Name                         Command               State                    Ports
+--------------------------------------------------------------------------------------------------------------
+meranet_my-flask-project_1   gunicorn -w 3 -b 0.0.0.0:5 ...   Up      0.0.0.0:32782->5000/tcp
+meranet_my-postgres_1        docker-entrypoint.sh postgres    Up      0.0.0.0:32781->5432/tcp
+meranet_opui-nginx_1         /docker-entrypoint.sh ngin ...   Up      0.0.0.0:443->443/tcp, 0.0.0.0:80->80/tcp
+
+```
+
+> Containers are configured to be restarted in _docker-compose.yml_ file even if the host server is rebooted
+
+### 2. Development Environment
+>Below instructions might seem verbose; but it's just command line equivalent
+of instructions in _Production Environment_ and it doesn't include nginx server.
+
+![Development Schema](./Dev_Deployment_Schema.png)
+#### Database:
 ```
 $ pwd
 /home/user
@@ -24,8 +91,7 @@ $ git clone https://github.com/omertb/meraki-opui.git
 $ docker run -ti --name my-flask-project -v /home/user/meraki-opui:/project python bash
 
 ## python-ldap requirements installation on debian:
-root@689d54ef82ad:/project# apt-get install build-essential python3-dev python2.7-dev \
- libldap2-dev libsasl2-dev slapd ldap-utils tox lcov valgrind
+root@689d54ef82ad:/project# apt-get install -y build-essential python3-dev libldap2-dev libsasl2-dev ldap-utils tox lcov valgrind
 ##
 root@689d54ef82ad:/# cd project
 root@689d54ef82ad:/project# pip install -r requirements.txt

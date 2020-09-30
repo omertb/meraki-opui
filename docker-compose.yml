@@ -1,0 +1,40 @@
+version: "3.7"
+services:
+  my-postgres:
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=CHANGE_ME
+    volumes:
+      - ./pgsql_data:/var/lib/postgresql/data
+    ports:
+      - 5432
+    image: postgres:latest
+
+  my-flask-project:
+    restart: always
+    build: .
+    volumes:
+      - ./meraki-opui:/project
+    environment:
+      - PASSWDSALT=CHANGE_ME
+      - FSECRETKEY=CHANGE_ME
+      - PGCRED=postgres:CHANGE_ME
+      - APIKEY=CHANGE_ME
+      - USERDNSDOMAIN=CHANGE_ME
+    links:
+      - my-postgres
+    ports:
+      - 5000
+
+  opui-nginx:
+    restart: always
+    volumes:
+      - ./ssl:/etc/nginx/ssl
+      - ./public:/public
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    links:
+      - my-flask-project
+    ports:
+      - 80:80
+      - 443:443
+    image: nginx:latest
