@@ -100,7 +100,7 @@ def new_network():
             source_network = network_copy_source.id  # it is not bound template, actually.
             network = Network(net_name, net_type, user_id, source_network=source_network)
             log_msg = "User: {} - Network {} is being saved in DB" \
-                      " being copied from the Network: {}".format(current_user.username, network.name, source_network.name)
+                      " being copied from the Network: {}".format(current_user.username, network.name, network_copy_source.name)
             send_wr_log(log_msg)
 
         network.net_tags = ""
