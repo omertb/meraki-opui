@@ -16,7 +16,6 @@ def send_wr_log(log_message):
         syslogger.setLevel(logging.INFO)
         log_handler = SysLogHandler(address=(LOG_SERVER, 514))
         syslogger.addHandler(log_handler)
-        syslogger.basicConfig(format="%(asctime)s %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p %Z")
         syslogger.info(log_message)
 
     # write to a log file

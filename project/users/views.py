@@ -71,7 +71,13 @@ def login():
                     log_msg = "User logged in: {}".format(current_user.username)
                     send_wr_log(log_msg)
 
-                    return redirect(url_for('operator.new_network'))
+                    if current_user.operator:
+                        return redirect(url_for('operator.new_network'))
+                    elif current_user.admin:
+                        return redirect(url_for('admin.admin_users'))
+                    else:
+                        return render_template('403.html', title='403'), 403
+
 
             except INVALID_CREDENTIALS:
                 error = 'Invalid Credentials. Please try again.'
