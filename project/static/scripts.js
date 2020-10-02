@@ -579,7 +579,33 @@ $(document).on("click", "#rebootSelectedDevsButton", function(event){
     }
 });
 
-$(document).on("click", "#rebootDeviceModalClose", function(event){
+var $adminDevicesTable = $('#adminDevicesTable');
+$(document).on("click", "#rebootSelectedAdminDevsButton", function(event){
+    let reboot_devices_json = [];
+    reboot_devices_json = $adminDevicesTable.bootstrapTable('getSelections');
+    if (reboot_devices_json.length > 0) {
+        $.ajax({
+            url: "/admin/reboot_devices",
+            type: "POST",
+            data: JSON.stringify(reboot_devices_json),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                var output = "<br>";
+                if (Array.isArray(data)) {
+                    for (var i = 0; i < data.length; i++) {
+                        output += "<li>" + data[i] + "</li>";
+                    }
+                } else {
+                    output = data;
+                }
+                rebootDeviceResult.innerHTML = output;
+            }
+        });
+    }
+});
+
+$(document).on("click", "#rebootAdminDevicesModalClose", function(event){
     rebootDeviceResult.innerHTML = "";
 });
 

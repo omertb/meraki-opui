@@ -531,3 +531,24 @@ def reboot_devices():
                 send_wr_log(log_msg)
                 result.append("Meraki response error while rebooting device: {}".format(device['serial']))
         return jsonify(result)
+
+
+@json_blueprint.route('/admin/reboot_devices', methods=['POST'])
+@login_required
+@is_admin
+def reboot_admin_devices():
+    result = []
+    if request.method == 'POST':
+        reboot_devices_json = request.get_json()
+        for device in reboot_devices_json:
+            response = reboot_device(device['serial'])
+            if response == "success":
+                log_msg = "User: {} - Device: {} is rebooted.".format(current_user.username, device['serial'])
+                send_wr_log(log_msg)
+                result.append("Device: {} is rebooted!".format(device['serial']))
+            else:
+                log_msg = "User: {} - Meraki response error while rebooting device: {}.".format(current_user.username,
+                                                                                                device['serial'])
+                send_wr_log(log_msg)
+                result.append("Meraki response error while rebooting device: {}".format(device['serial']))
+        return jsonify(result)
