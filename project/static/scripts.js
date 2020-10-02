@@ -551,6 +551,38 @@ $(document).on("click", "#renameDeviceModalClose", function(event){
     // $usersTable.bootstrapTable('refresh');
 });
 
+// reboot devices modal
+var rebootDeviceResult = document.getElementById("rebootDeviceResult")
+$(document).on("click", "#rebootSelectedDevsButton", function(event){
+    let reboot_devices_json = [];
+    reboot_devices_json = $deviceTable.bootstrapTable('getSelections');
+    if (reboot_devices_json.length > 0) {
+        $.ajax({
+            url: "/operator/reboot_devices",
+            type: "POST",
+            data: JSON.stringify(reboot_devices_json),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                deviceTableOnNetworkSelect();
+                var output = "<br>";
+                if (Array.isArray(data)) {
+                    for (var i = 0; i < data.length; i++) {
+                        output += "<li>" + data[i] + "</li>";
+                    }
+                } else {
+                    output = data;
+                }
+                rebootDeviceResult.innerHTML = output;
+            }
+        });
+    }
+});
+
+$(document).on("click", "#rebootDeviceModalClose", function(event){
+    rebootDeviceResult.innerHTML = "";
+});
+
 // wait animation with wait-modal
 $body = $("body");
 $(document).on({

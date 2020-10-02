@@ -50,6 +50,9 @@ def post_data(uri, data_dict, method="POST", base_url=BASE_URL) -> list:
         print("created")
         response_dict = json.loads(response.text)
         return response_dict
+    elif response.status_code == 202:
+        print("accepted")
+        return "success"
     elif response.status_code == 204:
         print("deleted")
         return "success"
@@ -149,7 +152,7 @@ def claim_network_devices(network_id: str, serials_list: list):
 
 
 def rename_device(serial: str, name: str):
-    uri ="devices/{}".format(serial)
+    uri = "devices/{}".format(serial)
     serial_dict = {}
     serial_dict['serial'] = serial
     serial_dict['name'] = name
@@ -157,8 +160,15 @@ def rename_device(serial: str, name: str):
     return response
 
 
+def reboot_device(serial: str):
+    uri = "devices/{}/reboot".format(serial)
+    payload = None
+    response = post_data(uri, payload)
+    return response
+
+
 def rename_device_v0(network_id: str, serial: str, name: str):
-    uri ="networks/{}/devices/{}".format(network_id, serial)
+    uri = "networks/{}/devices/{}".format(network_id, serial)
     serial_dict = {}
     serial_dict['serial'] = serial
     serial_dict['name'] = name

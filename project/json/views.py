@@ -3,7 +3,7 @@ from project.models import Network, Device, Template, User, Group, Tag
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.decorators import *
-from project.functions import create_network, bind_template, claim_network_devices, rename_device_v0
+from project.functions import create_network, bind_template, claim_network_devices, rename_device_v0, reboot_device
 from requests.exceptions import ConnectionError
 from project.logging import send_wr_log
 
@@ -510,3 +510,24 @@ def rename_devices():
                 result.append("Meraki response error while renaming device: {}".format(device['name']))
         db.session.commit()
     return jsonify(result)
+
+
+@json_blueprint.route('/operator/reboot_devices', methods=['POST'])
+@login_required
+@is_operator
+def reboot_devices():
+    result = []
+    if request.method == 'POST':
+        reboot_devices_json = request.get_json()
+        for device in reboot_devices_json:
+            response = reboot_device(device['serial'])
+            if response == "success":
+                log_msg = "User: {} - Device: {} is rebooted.".format(current_user.username, device['serial'])
+                send_wr_log(log_msg)
+                result.append("Device: {} is rebooted!".format(device['serial']))
+            else:
+                log_msg = "User: {} - Meraki response error while rebooting device: {}.".format(current_user.username,
+                                                                                                device['serial'])
+                send_wr_log(log_msg)
+                result.append("Meraki response error while rebooting device: {}".format(device['serial']))
+        return jsonify(result)
