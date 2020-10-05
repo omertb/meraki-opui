@@ -579,6 +579,10 @@ $(document).on("click", "#rebootSelectedDevsButton", function(event){
     }
 });
 
+$(document).on("click", "#rebootDeviceModalClose", function(event){
+    rebootDeviceResult.innerHTML = "";
+});
+
 var $adminDevicesTable = $('#adminDevicesTable');
 $(document).on("click", "#rebootSelectedAdminDevsButton", function(event){
     let reboot_devices_json = [];

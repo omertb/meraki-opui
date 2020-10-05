@@ -159,6 +159,7 @@ class Device(db.Model):
     devmodel = db.Column(db.String(32))
     reg_date = db.Column(db.DateTime, nullable=False)
     committed = db.Column(db.Boolean, nullable=False)
+    rebooted = db.Column(db.DateTime)
     network_id = db.Column(db.Integer, db.ForeignKey('networks.id'))
 
     def __init__(self, device_name, device_serial, network_id, committed=False):

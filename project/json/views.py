@@ -6,6 +6,7 @@ from project.decorators import *
 from project.functions import create_network, bind_template, claim_network_devices, rename_device_v0, reboot_device
 from requests.exceptions import ConnectionError
 from project.logging import send_wr_log
+import datetime
 
 
 # home blueprint definition
@@ -361,8 +362,10 @@ def device_table():
         i = 1
         network_devices = Device.query.filter_by(network_id=int(network_id))
         for device in network_devices:
+            dev_id = device.id
             device_model = device.devmodel
             device = device.serialize()
+            device['id'] = dev_id
             device['rowNum'] = i
             device['model'] = device_model
             device['committed'] = 'No' if device['committed'] is False else 'Yes'
@@ -432,7 +435,8 @@ def commit_devices():
         meraki_net_id_list = []
         dev_serial_list = []
         for i, device in enumerate(devices_to_be_commit):
-            db_device = Device.query.filter_by(serial=device['serial']).first()
+            # db_device = Device.query.filter_by(serial=device['serial']).first()
+            db_device = Device.query.get(device['id'])
             if db_device.committed:
                 result.append("{} is already committed.".format(db_device.name))
                 continue
@@ -462,7 +466,8 @@ def commit_devices():
 
             # rename devices and get the model name from response and then update the table.
             for device in devices_to_be_commit:
-                db_device = Device.query.filter_by(serial=device['serial']).first()
+                # db_device = Device.query.filter_by(serial=device['serial']).first()
+                db_device = Device.query.get(device['id'])
                 meraki_net_id = db_device.network.meraki_id
                 rename_response = rename_device_v0(meraki_net_id, device['serial'], device['name'])
                 db_device.devmodel = rename_response['model']
@@ -489,7 +494,8 @@ def rename_devices():
         device_name = rename_devices_json["device_name"]
         device_list = rename_devices_json["device_list"]
         for device in device_list:
-            db_device = Device.query.filter_by(serial=device['serial']).first()
+            # db_device = Device.query.filter_by(serial=device['serial']).first()
+            db_device = Device.query.get(device['id'])
             meraki_net_id = db_device.network.meraki_id
             serial = db_device.serial
             try:
@@ -520,6 +526,24 @@ def reboot_devices():
     if request.method == 'POST':
         reboot_devices_json = request.get_json()
         for device in reboot_devices_json:
+            current_time = datetime.datetime.now()
+            db_device = Device.query.get(device['id'])
+
+            # check if device is rebooted in an hour; if so do not allow it to be rebooted
+            if db_device.rebooted:
+                time_since_last_reboot = current_time - db_device.rebooted
+                if time_since_last_reboot.seconds < 3600:
+                    result.append("Device: {} was already rebooted!".format(device['serial']))
+                    continue
+                else:
+                    db_device.rebooted = current_time
+                    db.session.add(db_device)
+                    db.session.commit()
+            else:
+                db_device.rebooted = current_time
+                db.session.add(db_device)
+                db.session.commit()
+
             response = reboot_device(device['serial'])
             if response == "success":
                 log_msg = "User: {} - Device: {} is rebooted.".format(current_user.username, device['serial'])
