@@ -40,6 +40,8 @@ class AddDevicesForm(FlaskForm):
 class CloneSwitchForm(FlaskForm):
     switch_nets = SelectField('Switch Network: ', choices=[])
     source_switch = SelectField('Select Switch:')
+    destination_nets = SelectField('Select Destination Switch:', choices=[])
+    new_switch = SelectField('New Switch:')
 
     def set_choices(self):
         user_networks = current_user.networks
@@ -52,3 +54,4 @@ class CloneSwitchForm(FlaskForm):
         all_networks.extend(user_networks)
         all_networks = set(all_networks)
         self.switch_nets.choices = [(network.id, network.name) for network in all_networks if network.type == 'switch']
+        self.destination_nets.choices = self.switch_nets.choices

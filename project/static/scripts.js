@@ -1,4 +1,4 @@
-// own js codes
+// custom js codes
 
 $('#signInButton').click(function() {
   $('#signInButton').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true">' +
@@ -93,6 +93,8 @@ $(function() {
         $("#devicesTextArea").val('');
     });
 });
+
+
 function deviceTableOnNetworkSelect() {
     //$deviceTable = $('#deviceTable');
     var selectedNetwork = $("#existingNetSelect").val();
@@ -612,6 +614,85 @@ $(document).on("click", "#rebootSelectedAdminDevsButton", function(event){
 $(document).on("click", "#rebootAdminDevicesModalClose", function(event){
     rebootDeviceResult.innerHTML = "";
 });
+
+
+// Select Source Switch Network on Clone Network page
+
+$(document).ready(function() {
+    $("#switchNetSelect").change(function () {
+        $(this).find("option:selected").each(function () {
+            var optionValue = $(this).attr("value");
+            //console.log(optionValue);
+            sourceSwitchSelectOnSwitchNetSelect(optionValue);
+        });
+    }).change();
+});
+
+const devJsonUri = 'device.json';
+let sourceSwitchSelect = document.getElementById("sourceSwitchSelect");
+let newSwitchSelect = document.getElementById("newSwitchSelect");
+const request_src = new XMLHttpRequest();
+const request_dst = new XMLHttpRequest();
+
+function sourceSwitchSelectOnSwitchNetSelect(network){
+    var optionHTML = '';
+    request_src.open('POST', devJsonUri, true);
+    request_src.setRequestHeader('Content-Type', 'application/json');
+    request_src.onload = function (){
+        if (request_src.status === 200) {
+            const data = JSON.parse(request_src.responseText);
+            for (let i = 0; i < data.length; i++) {
+                    optionHTML += '<option value="' + data[i].id + '">' + data[i].serial + '</option>';
+            }
+            sourceSwitchSelect.removeAttribute("data-live-search");
+            sourceSwitchSelect.classList.remove("selectpicker");
+            sourceSwitchSelect.innerHTML = optionHTML;
+            $('#sourceSwitchSelect').addClass('selectpicker');
+            $('#sourceSwitchSelect').attr('data-live-search', 'true');
+            $('#sourceSwitchSelect').selectpicker('refresh');
+        }
+    }
+    request_src.onerror = function(network) {
+        console.error('An error occurred fetching the JSON from ' + devJsonUri);
+    };
+    request_src.send(JSON.stringify(network));
+}
+
+$(document).ready(function() {
+    $("#destinationNetSelect").change(function () {
+        $(this).find("option:selected").each(function () {
+            var optionValue = $(this).attr("value");
+            //console.log(optionValue);
+            destSwitchSelectOnDestNetSelect(optionValue);
+        });
+    }).change();
+});
+
+// const request = new XMLHttpRequest();
+
+function destSwitchSelectOnDestNetSelect(network){
+    var optionHTML = '';
+    request_dst.open('POST', devJsonUri, true);
+    request_dst.setRequestHeader('Content-Type', 'application/json');
+    request_dst.onload = function (){
+        if (request_dst.status === 200) {
+            const data = JSON.parse(request_dst.responseText);
+            for (let i = 0; i < data.length; i++) {
+                    optionHTML += '<option value="' + data[i].id + '">' + data[i].serial + '</option>';
+            }
+            newSwitchSelect.removeAttribute("data-live-search");
+            newSwitchSelect.classList.remove("selectpicker");
+            newSwitchSelect.innerHTML = optionHTML;
+            $('#newSwitchSelect').addClass('selectpicker');
+            $('#newSwitchSelect').attr('data-live-search', 'true');
+            $('#newSwitchSelect').selectpicker('refresh');
+        }
+    }
+    request_dst.onerror = function(network) {
+        console.error('An error occurred fetching the JSON from ' + devJsonUri);
+    };
+    request_dst.send(JSON.stringify(network));
+}
 
 // wait animation with wait-modal
 $body = $("body");
