@@ -35,3 +35,20 @@ class AddDevicesForm(FlaskForm):
         all_networks.extend(user_networks)
         all_networks = set(all_networks)
         self.registered_nets.choices = [(network.id, network.name) for network in all_networks]
+
+
+class CloneSwitchForm(FlaskForm):
+    switch_nets = SelectField('Switch Network: ', choices=[])
+    source_switch = SelectField('Select Switch:')
+
+    def set_choices(self):
+        user_networks = current_user.networks
+        user_groups = current_user.groups
+        all_networks = []
+        for user_group in user_groups:
+            if user_group.networks:
+                group_networks = user_group.networks
+                all_networks.extend(group_networks)
+        all_networks.extend(user_networks)
+        all_networks = set(all_networks)
+        self.switch_nets.choices = [(network.id, network.name) for network in all_networks if network.type == 'switch']

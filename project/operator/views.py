@@ -2,7 +2,7 @@ from project import db
 from project.models import Template, Network, Device, Tag
 from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
-from project.operator.forms import NewNetworkForm, AddDevicesForm
+from project.operator.forms import NewNetworkForm, AddDevicesForm, CloneSwitchForm
 from project.decorators import *
 from project.logging import send_wr_log
 from sqlalchemy.exc import OperationalError, ProgrammingError
@@ -12,6 +12,17 @@ from requests.exceptions import ConnectionError
 
 # home blueprint definition
 operator_blueprint = Blueprint('operator', __name__, template_folder='templates')
+
+
+@operator_blueprint.route('/operator/clone_switch', methods=['GET', 'POST'])
+@login_required
+@is_operator
+def clone_switch():
+    error = None
+    form = CloneSwitchForm(request.form)
+    form.set_choices()
+
+    return render_template('clone_switch.html', current_user=current_user, form=form, error=error)
 
 
 @operator_blueprint.route('/operator/add_devices', methods=['GET', 'POST'])
