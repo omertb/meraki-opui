@@ -117,6 +117,7 @@ function deviceTableOnNetworkSelect() {
         }
     });
 }
+
 var deviceFormErrorDiv = document.getElementById("deviceFormErrorDiv")
 $(document).on("click", "#addDeviceFormButton", function(event){
     event.preventDefault();
@@ -618,29 +619,63 @@ $(document).on("click", "#rebootAdminDevicesModalClose", function(event){
 
 // Select Source Switch Network on Clone Network page
 
-$(document).ready(function() {
-    $("#switchNetSelect").change(function () {
-        $(this).find("option:selected").each(function () {
-            var optionValue = $(this).attr("value");
-            //console.log(optionValue);
-            sourceSwitchSelectOnSwitchNetSelect(optionValue);
-        });
-    }).change();
-});
-
 const devJsonUri = 'device.json';
 let sourceSwitchSelect = document.getElementById("sourceSwitchSelect");
 let newSwitchSelect = document.getElementById("newSwitchSelect");
-const request_src = new XMLHttpRequest();
+//const request_src = new XMLHttpRequest();
 const request_dst = new XMLHttpRequest();
 
-function sourceSwitchSelectOnSwitchNetSelect(network){
+// $(document).ready(function() {
+//     $("#switchNetSelect").change(function () {
+//         $(this).find("option:selected").each(function () {
+//             var optionValue = $(this).attr("value");
+//             //console.log(optionValue);
+//             sourceSwitchSelectOnSwitchNetSelect(optionValue);
+//         });
+//     }).change();
+// });
+//
+// function sourceSwitchSelectOnSwitchNetSelect(network){
+//     var optionHTML = '';
+//     request_src.open('POST', devJsonUri, true);
+//     request_src.setRequestHeader('Content-Type', 'application/json');
+//     request_src.onload = function (){
+//         if (request_src.status === 200) {
+//             const data = JSON.parse(request_src.responseText);
+//             for (let i = 0; i < data.length; i++) {
+//                     optionHTML += '<option value="' + data[i].id + '">' + data[i].serial + '</option>';
+//             }
+//             sourceSwitchSelect.removeAttribute("data-live-search");
+//             sourceSwitchSelect.classList.remove("selectpicker");
+//             sourceSwitchSelect.innerHTML = optionHTML;
+//             $('#sourceSwitchSelect').addClass('selectpicker');
+//             $('#sourceSwitchSelect').attr('data-live-search', 'true');
+//             $('#sourceSwitchSelect').selectpicker('refresh');
+//         }
+//     }
+//     request_src.onerror = function(network) {
+//         console.error('An error occurred fetching the JSON from ' + devJsonUri);
+//     };
+//     request_src.send(JSON.stringify(network));
+// }
+
+$(function() {
+    $("#switchNetSelect").on("change", function () {
+        //e.preventDefault();
+        sourceSwitchSelectOnSwitchNetSelect();
+    });
+});
+
+
+function sourceSwitchSelectOnSwitchNetSelect() {
+    var selectedNetwork = $("#switchNetSelect").val();
     var optionHTML = '';
-    request_src.open('POST', devJsonUri, true);
-    request_src.setRequestHeader('Content-Type', 'application/json');
-    request_src.onload = function (){
-        if (request_src.status === 200) {
-            const data = JSON.parse(request_src.responseText);
+    $.ajax({
+        url: "/operator/device.json",
+        data: JSON.stringify(selectedNetwork),
+        type: 'POST',
+        contentType: "application/json",
+        success: function(data) {
             for (let i = 0; i < data.length; i++) {
                     optionHTML += '<option value="' + data[i].id + '">' + data[i].serial + '</option>';
             }
@@ -649,34 +684,70 @@ function sourceSwitchSelectOnSwitchNetSelect(network){
             sourceSwitchSelect.innerHTML = optionHTML;
             $('#sourceSwitchSelect').addClass('selectpicker');
             $('#sourceSwitchSelect').attr('data-live-search', 'true');
+            sourceSwitchSelect.selectedIndex = "0";
+            console.log(sourceSwitchSelect.options[0].text);
             $('#sourceSwitchSelect').selectpicker('refresh');
+            $('#sourceSwitchSelect').trigger('change');
+        },
+        error: function(error) {
+            console.log(error);
         }
-    }
-    request_src.onerror = function(network) {
-        console.error('An error occurred fetching the JSON from ' + devJsonUri);
-    };
-    request_src.send(JSON.stringify(network));
+    });
 }
 
-$(document).ready(function() {
-    $("#destinationNetSelect").change(function () {
-        $(this).find("option:selected").each(function () {
-            var optionValue = $(this).attr("value");
-            //console.log(optionValue);
-            destSwitchSelectOnDestNetSelect(optionValue);
-        });
-    }).change();
+// $(document).ready(function() {
+//     $("#destinationNetSelect").change(function () {
+//         $(this).find("option:selected").each(function () {
+//             var optionValue = $(this).attr("value");
+//             //console.log(optionValue);
+//             destSwitchSelectOnDestNetSelect(optionValue);
+//         });
+//     }).change();
+// });
+//
+// // const request = new XMLHttpRequest();
+//
+// function destSwitchSelectOnDestNetSelect(network){
+//     var optionHTML = '';
+//     request_dst.open('POST', devJsonUri, true);
+//     request_dst.setRequestHeader('Content-Type', 'application/json');
+//     request_dst.onload = function (){
+//         if (request_dst.status === 200) {
+//             const data = JSON.parse(request_dst.responseText);
+//             for (let i = 0; i < data.length; i++) {
+//                     optionHTML += '<option value="' + data[i].id + '">' + data[i].serial + '</option>';
+//             }
+//             newSwitchSelect.removeAttribute("data-live-search");
+//             newSwitchSelect.classList.remove("selectpicker");
+//             newSwitchSelect.innerHTML = optionHTML;
+//             $('#newSwitchSelect').addClass('selectpicker');
+//             $('#newSwitchSelect').attr('data-live-search', 'true');
+//             $('#newSwitchSelect').selectpicker('refresh');
+//         }
+//     }
+//     request_dst.onerror = function(network) {
+//         console.error('An error occurred fetching the JSON from ' + devJsonUri);
+//     };
+//     request_dst.send(JSON.stringify(network));
+// }
+
+$(function() {
+    $("#destinationNetSelect").on("change", function () {
+        //e.preventDefault();
+        destSwitchSelectOnDestNetSelect();
+    });
 });
 
-// const request = new XMLHttpRequest();
 
-function destSwitchSelectOnDestNetSelect(network){
+function destSwitchSelectOnDestNetSelect() {
+    var selectedNetwork = $("#destinationNetSelect").val();
     var optionHTML = '';
-    request_dst.open('POST', devJsonUri, true);
-    request_dst.setRequestHeader('Content-Type', 'application/json');
-    request_dst.onload = function (){
-        if (request_dst.status === 200) {
-            const data = JSON.parse(request_dst.responseText);
+    $.ajax({
+        url: "/operator/device.json",
+        data: JSON.stringify(selectedNetwork),
+        type: 'POST',
+        contentType: "application/json",
+        success: function(data) {
             for (let i = 0; i < data.length; i++) {
                     optionHTML += '<option value="' + data[i].id + '">' + data[i].serial + '</option>';
             }
@@ -685,13 +756,15 @@ function destSwitchSelectOnDestNetSelect(network){
             newSwitchSelect.innerHTML = optionHTML;
             $('#newSwitchSelect').addClass('selectpicker');
             $('#newSwitchSelect').attr('data-live-search', 'true');
+            newSwitchSelect.selectedIndex = "0";
+            console.log(newSwitchSelect.options[0].text);
             $('#newSwitchSelect').selectpicker('refresh');
+            $('#newSwitchSelect').trigger('change');
+        },
+        error: function(error) {
+            console.log(error);
         }
-    }
-    request_dst.onerror = function(network) {
-        console.error('An error occurred fetching the JSON from ' + devJsonUri);
-    };
-    request_dst.send(JSON.stringify(network));
+    });
 }
 
 // wait animation with wait-modal
