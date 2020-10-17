@@ -3,7 +3,7 @@ from project.models import Network, Device, Template, User, Group, Tag
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.decorators import *
-from project.functions import create_network, bind_template, claim_network_devices, rename_device_v0, reboot_device
+from project.functions import create_network, bind_template, claim_network_devices, rename_device_v0, reboot_device, get_switch_ports
 from requests.exceptions import ConnectionError
 from project.logging import send_wr_log
 import datetime
@@ -372,6 +372,18 @@ def device_table():
             device_list.append(device)
             i += 1
         return jsonify(device_list)
+    else:
+        return "Not Found", 404
+
+
+@json_blueprint.route('/operator/switch_ports.json', methods=['POST'])
+@login_required
+@is_operator
+def switch_ports_table():
+    if request.method == 'POST':
+        device_serial = request.get_json()
+        ports = get_switch_ports(device_serial)
+        return jsonify(ports)
     else:
         return "Not Found", 404
 

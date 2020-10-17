@@ -118,6 +118,24 @@
 		</div>
 
 		<div class="col-md-6">
+            <div class="dev-table-selector">
+                <table
+                        id="switchPortsTable"
+                        class="table table-hover table-sm"
+                        data-search="true"
+                        data-pagination="true"
+                >
+                  <thead class="thead-light">
+                  <tr>
+                      <th scope="col" data-field="portId" data-sortable="true">Port Number</th>
+                      <th scope="col" data-field="type" data-sortable="true">Port Type</th>
+                      <th scope="col" data-field="vlan" data-sortable="true">Vlan</th>
+                      <th scope="col" data-field="name">Description</th>
+                  </tr>
+                  </thead>
+                    <tbody id="switchPortsTableBody"></tbody>
+                </table>
+            </div>
         </div>
 	</div>
 </div>

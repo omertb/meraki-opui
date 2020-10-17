@@ -685,7 +685,6 @@ function sourceSwitchSelectOnSwitchNetSelect() {
             $('#sourceSwitchSelect').addClass('selectpicker');
             $('#sourceSwitchSelect').attr('data-live-search', 'true');
             sourceSwitchSelect.selectedIndex = "0";
-            console.log(sourceSwitchSelect.options[0].text);
             $('#sourceSwitchSelect').selectpicker('refresh');
             $('#sourceSwitchSelect').trigger('change');
         },
@@ -757,9 +756,41 @@ function destSwitchSelectOnDestNetSelect() {
             $('#newSwitchSelect').addClass('selectpicker');
             $('#newSwitchSelect').attr('data-live-search', 'true');
             newSwitchSelect.selectedIndex = "0";
-            console.log(newSwitchSelect.options[0].text);
             $('#newSwitchSelect').selectpicker('refresh');
             $('#newSwitchSelect').trigger('change');
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
+}
+
+// update port table on switch selection
+
+$(function() {
+    $("#sourceSwitchSelect").on("change", function () {
+        switchPortsTableOnSwitchSelect();
+    });
+});
+
+var $switchPortsTable = $('#switchPortsTable');
+
+function switchPortsTableOnSwitchSelect(){
+    // var selectedSwitch = $("#sourceSwitchSelect").val();
+    var selectedSwitch = sourceSwitchSelect.options[sourceSwitchSelect.selectedIndex].text;
+    if (selectedSwitch.length==0) {
+        $switchPortsTable.bootstrapTable("destroy");
+        return
+    }
+    // console.log(JSON_Selected);
+    $.ajax({
+        url: "/operator/switch_ports.json",
+        data: JSON.stringify(selectedSwitch),
+        type: 'POST',
+        contentType: "application/json",
+        success: function(data) {
+            $switchPortsTable.bootstrapTable("destroy");
+            $switchPortsTable.bootstrapTable({data: data}); // device table source
         },
         error: function(error) {
             console.log(error);

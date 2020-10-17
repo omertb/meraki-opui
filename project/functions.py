@@ -126,6 +126,12 @@ def get_network(network_id):
     return response
 
 
+def get_switch_ports(switch_serial):
+    uri = "devices/{}/switch/ports".format(switch_serial)
+    response = get_data(uri)
+    return response
+
+
 #  WRITE FUNCTIONS
 
 def create_network(network_dict: dict):
