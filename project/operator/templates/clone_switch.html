@@ -88,8 +88,7 @@
                     </div>
 
                 </div>
-
-
+            </form>
 
                 <div class="row">
                     <div class="col-md-4">
@@ -97,17 +96,44 @@
                     </div>
 
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <button id="cloneSwitchFormButton" class="btn btn-sm btn-primary btn-block" type="submit">Clone Switch</button>
+                        <button id="cloneSwitchFormButton" class="btn btn-sm btn-outline-primary btn-block" data-toggle="modal" data-target="#cloneSwitchModal">
+                            Clone Switch
+                        </button>
+                        <!-- Modal -->
+                        <div class="modal fade" id="cloneSwitchModal" tabindex="-1" role="dialog" aria-labelledby="cloneSwitchModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div id="modalContent" class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="cloneSwitchModalLabel">Clone Switch Config</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <div class="alert-danger">
+                                           Copying the Source Switch to Selected New Switch!
+                                        </div>
+                                        <div id="switchModelsArea" class="alert-warning"></div>
+                                        <div id="cloneSwitchResult" style="color:red;font-weight:bold;text-align:center">
+                                            Are you sure?
+                                        </div>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="cloneSwitchModalClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button id="cloneSwitchButton" type="button" class="btn btn-primary">Clone</button>
+                                        <div class="wait-modal"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                     <div class="col-md-4">
 
                     </div>
 
                 </div>
-
-            </form>
 
             <div id="switchCloneFormErrorDiv" style="color:red;padding: 5px;">
                 {% if error %}

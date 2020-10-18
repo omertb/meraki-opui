@@ -737,6 +737,7 @@ $(function() {
     });
 });
 
+let newSwitchModel = "";
 
 function destSwitchSelectOnDestNetSelect() {
     var selectedNetwork = $("#destinationNetSelect").val();
@@ -758,6 +759,16 @@ function destSwitchSelectOnDestNetSelect() {
             newSwitchSelect.selectedIndex = "0";
             $('#newSwitchSelect').selectpicker('refresh');
             $('#newSwitchSelect').trigger('change');
+            let selectedSwitch = newSwitchSelect.options[newSwitchSelect.selectedIndex].text;
+            $.ajax({
+                url: "/operator/get_device_model",
+                data: JSON.stringify(selectedSwitch),
+                type: 'POST',
+                contentType: "application/json",
+                success: function(data) {
+                    newSwitchModel = data;
+                }
+            });
         },
         error: function(error) {
             console.log(error);
@@ -773,8 +784,8 @@ $(function() {
     });
 });
 
-var $switchPortsTable = $('#switchPortsTable');
-
+let $switchPortsTable = $('#switchPortsTable');
+let sourceSwitchModel = "";
 function switchPortsTableOnSwitchSelect(){
     // var selectedSwitch = $("#sourceSwitchSelect").val();
     var selectedSwitch = sourceSwitchSelect.options[sourceSwitchSelect.selectedIndex].text;
@@ -796,7 +807,43 @@ function switchPortsTableOnSwitchSelect(){
             console.log(error);
         }
     });
+    $.ajax({
+        url: "/operator/get_device_model",
+        data: JSON.stringify(selectedSwitch),
+        type: 'POST',
+        contentType: "application/json",
+        success: function(data) {
+            sourceSwitchModel = data;
+        }
+    });
 }
+
+let switchModelsHTML = '';
+let switchModelsArea = document.getElementById("switchModelsArea");
+
+
+$("#cloneSwitchModal").on('shown.bs.modal', function(){
+    setModelsInnerHtml();
+    switchModelsArea.innerHTML = switchModelsHTML;
+});
+
+$("#cloneSwitchModal").on('hide.bs.modal', function(){
+    switchModelsHTML = '';
+});
+
+function setModelsInnerHtml() {
+    if (sourceSwitchModel !== "") {
+        switchModelsHTML += 'Source Switch Model: ' + sourceSwitchModel + '<br>';
+    }
+    if (newSwitchModel !== "") {
+        switchModelsHTML += 'New Switch Model: ' + newSwitchModel;
+    }
+}
+
+$(document).on("click", "#cloneSwitchModalClose", function(event) {
+    switchModelsHTML = '';
+    // console.log(switchModelsHTML);
+});
 
 // wait animation with wait-modal
 $body = $("body");

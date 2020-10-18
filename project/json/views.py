@@ -3,7 +3,8 @@ from project.models import Network, Device, Template, User, Group, Tag
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.decorators import *
-from project.functions import create_network, bind_template, claim_network_devices, rename_device_v0, reboot_device, get_switch_ports
+from project.functions import create_network, bind_template,\
+    claim_network_devices, rename_device_v0, reboot_device, get_switch_ports, get_device
 from requests.exceptions import ConnectionError
 from project.logging import send_wr_log
 import datetime
@@ -528,6 +529,21 @@ def rename_devices():
                 result.append("Meraki response error while renaming device: {}".format(device['name']))
         db.session.commit()
     return jsonify(result)
+
+
+@json_blueprint.route('/operator/get_device_model', methods=['POST'])
+@login_required
+@is_operator
+def get_device_model():
+    if request.method == 'POST':
+        device_serial = request.get_json()
+        print(device_serial)
+        device_info = get_device(device_serial)
+        if 'model' in device_info:
+            device_model = device_info['model']
+            return jsonify(device_model)
+        else:
+            return jsonify(device_info)
 
 
 @json_blueprint.route('/operator/reboot_devices', methods=['POST'])
