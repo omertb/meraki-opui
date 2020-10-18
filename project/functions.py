@@ -134,6 +134,17 @@ def get_switch_ports(switch_serial):
 
 #  WRITE FUNCTIONS
 
+
+def clone_switch(source_serial, destination_list):
+    org_id = get_organization_ids()[0]
+    uri = "/organizations/{}/switch/devices/clone".format(org_id)
+    post_data_dict = {}
+    post_data_dict['sourceSerial'] = source_serial
+    post_data_dict['targetSerials'] = destination_list
+    response = post_data(uri, post_data_dict)
+    return response
+
+
 def create_network(network_dict: dict):
     org_id = get_organization_ids()[0]
     uri = "organizations/{}/networks".format(org_id)

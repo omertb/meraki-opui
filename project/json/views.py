@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.decorators import *
 from project.functions import create_network, bind_template,\
-    claim_network_devices, rename_device_v0, reboot_device, get_switch_ports, get_device
+    claim_network_devices, rename_device_v0, reboot_device, get_switch_ports, get_device, clone_switch
 from requests.exceptions import ConnectionError
 from project.logging import send_wr_log
 import datetime
@@ -537,13 +537,25 @@ def rename_devices():
 def get_device_model():
     if request.method == 'POST':
         device_serial = request.get_json()
-        print(device_serial)
         device_info = get_device(device_serial)
         if 'model' in device_info:
             device_model = device_info['model']
             return jsonify(device_model)
         else:
             return jsonify(device_info)
+
+
+@json_blueprint.route('/operator/copy_switch', methods=['POST'])
+@login_required
+@is_operator
+def copy_switch():
+    if request.method == 'POST':
+        switch_dict = request.get_json()
+        print(switch_dict)
+        dest_switch_list = [switch_dict['newSwitch']]
+        #response = clone_switch(switch_dict['sourceSwitch'], dest_switch_list)
+        print(dest_switch_list)
+        return jsonify(switch_dict)
 
 
 @json_blueprint.route('/operator/reboot_devices', methods=['POST'])

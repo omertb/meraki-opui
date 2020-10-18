@@ -840,9 +840,38 @@ function setModelsInnerHtml() {
     }
 }
 
+let cloneSwitchResult = document.getElementById("cloneSwitchResult");
 $(document).on("click", "#cloneSwitchModalClose", function(event) {
     switchModelsHTML = '';
+    cloneSwitchResult.innerHTML = "";
     // console.log(switchModelsHTML);
+});
+
+
+
+$(document).on("click", "#cloneSwitchButton", function(event){
+    let source_dest_switches = {};
+    source_dest_switches.sourceSwitch = $('#sourceSwitchSelect').val();
+    source_dest_switches.newSwitch = $('#newSwitchSelect').val();
+    $.ajax({
+        url: "/operator/copy_switch",
+        type: "POST",
+        data: JSON.stringify(source_dest_switches),
+        dataType: "json",
+        contentType: "application/json",
+        success: function(data) {
+            console.log(data);
+            var output = '<br>';
+            if(Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    output += "<li>" + data[i] + "</li>";
+                }
+            }else {
+                output += data;
+            }
+            cloneSwitchResult.innerHTML = output;
+        }
+    });
 });
 
 // wait animation with wait-modal
