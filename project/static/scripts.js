@@ -618,7 +618,6 @@ $(document).on("click", "#rebootAdminDevicesModalClose", function(event){
 
 
 // Select Source Switch Network on Clone Network page
-
 const devJsonUri = 'device.json';
 let sourceSwitchSelect = document.getElementById("sourceSwitchSelect");
 let newSwitchSelect = document.getElementById("newSwitchSelect");
@@ -659,6 +658,7 @@ const request_dst = new XMLHttpRequest();
 //     request_src.send(JSON.stringify(network));
 // }
 
+// set content of source switch selectfield on source network select
 $(function() {
     $("#switchNetSelect").on("change", function () {
         //e.preventDefault();
@@ -730,6 +730,7 @@ function sourceSwitchSelectOnSwitchNetSelect() {
 //     request_dst.send(JSON.stringify(network));
 // }
 
+// set content of new (destination) switch selectfield on destination network change
 $(function() {
     $("#destinationNetSelect").on("change", function () {
         //e.preventDefault();
@@ -738,7 +739,6 @@ $(function() {
 });
 
 let newSwitchModel = "";
-
 function destSwitchSelectOnDestNetSelect() {
     var selectedNetwork = $("#destinationNetSelect").val();
     var optionHTML = '';
@@ -760,6 +760,7 @@ function destSwitchSelectOnDestNetSelect() {
             $('#newSwitchSelect').selectpicker('refresh');
             $('#newSwitchSelect').trigger('change');
             let selectedSwitch = newSwitchSelect.options[newSwitchSelect.selectedIndex].text;
+            // get new switch model
             $.ajax({
                 url: "/operator/get_device_model",
                 data: JSON.stringify(selectedSwitch),
@@ -777,13 +778,13 @@ function destSwitchSelectOnDestNetSelect() {
 }
 
 // update port table on switch selection
-
 $(function() {
     $("#sourceSwitchSelect").on("change", function () {
         switchPortsTableOnSwitchSelect();
     });
 });
 
+// show switch ports status in the table in Clone Switch page
 let $switchPortsTable = $('#switchPortsTable');
 let sourceSwitchModel = "";
 function switchPortsTableOnSwitchSelect(){
@@ -807,6 +808,7 @@ function switchPortsTableOnSwitchSelect(){
             console.log(error);
         }
     });
+    // get source switch model
     $.ajax({
         url: "/operator/get_device_model",
         data: JSON.stringify(selectedSwitch),
@@ -818,10 +820,9 @@ function switchPortsTableOnSwitchSelect(){
     });
 }
 
+// print switch models in the clone switch modal
 let switchModelsHTML = '';
 let switchModelsArea = document.getElementById("switchModelsArea");
-
-
 $("#cloneSwitchModal").on('shown.bs.modal', function(){
     setModelsInnerHtml();
     switchModelsArea.innerHTML = switchModelsHTML;
@@ -848,11 +849,18 @@ $(document).on("click", "#cloneSwitchModalClose", function(event) {
 });
 
 
-
 $(document).on("click", "#cloneSwitchButton", function(event){
     let source_dest_switches = {};
-    source_dest_switches.sourceSwitch = $('#sourceSwitchSelect').val();
-    source_dest_switches.newSwitch = $('#newSwitchSelect').val();
+    if (sourceSwitchSelect.innerText) {
+        source_dest_switches.sourceSwitch = sourceSwitchSelect.options[sourceSwitchSelect.selectedIndex].text;
+    }else {
+         return cloneSwitchResult.innerHTML = "Select a Source Switch!";
+    }
+    if (newSwitchSelect.innerText) {
+        source_dest_switches.newSwitch = newSwitchSelect.options[newSwitchSelect.selectedIndex].text;
+    }else {
+        return cloneSwitchResult.innerHTML = "Select The New Switch!";
+    }
     $.ajax({
         url: "/operator/copy_switch",
         type: "POST",
@@ -860,7 +868,6 @@ $(document).on("click", "#cloneSwitchButton", function(event){
         dataType: "json",
         contentType: "application/json",
         success: function(data) {
-            console.log(data);
             var output = '<br>';
             if(Array.isArray(data)) {
                 for (var i = 0; i < data.length; i++) {

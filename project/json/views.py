@@ -551,11 +551,14 @@ def get_device_model():
 def copy_switch():
     if request.method == 'POST':
         switch_dict = request.get_json()
-        print(switch_dict)
         dest_switch_list = [switch_dict['newSwitch']]
-        #response = clone_switch(switch_dict['sourceSwitch'], dest_switch_list)
-        print(dest_switch_list)
-        return jsonify(switch_dict)
+        response = clone_switch(switch_dict['sourceSwitch'], dest_switch_list)
+        if 'errors' in response:
+            return jsonify(response['errors'])
+        elif 'sourceSerial' in response:
+            return jsonify("Cloned Successfully!")
+        else:
+            return jsonify("Server Error!")
 
 
 @json_blueprint.route('/operator/reboot_devices', methods=['POST'])
