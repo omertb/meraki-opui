@@ -554,10 +554,20 @@ def copy_switch():
         dest_switch_list = [switch_dict['newSwitch']]
         response = clone_switch(switch_dict['sourceSwitch'], dest_switch_list)
         if 'errors' in response:
+            log_msg = "User: {} - Error while cloning the switch {} to {}: {}." \
+                      "".format(current_user.username, switch_dict['sourceSwitch'],
+                                dest_switch_list, response['errors'])
+            send_wr_log(log_msg)
             return jsonify(response['errors'])
         elif 'sourceSerial' in response:
+            log_msg = "User: {} - Cloned the switch {} to {} successfully." \
+                      "".format(current_user.username, switch_dict['sourceSwitch'], dest_switch_list)
+            send_wr_log(log_msg)
             return jsonify("Cloned Successfully!")
         else:
+            log_msg = "User: {} - Server error while cloning the switch {} to {}: {}." \
+                      "".format(current_user.username, switch_dict['sourceSwitch'], dest_switch_list, response)
+            send_wr_log(log_msg)
             return jsonify("Server Error!")
 
 
