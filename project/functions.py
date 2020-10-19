@@ -126,6 +126,12 @@ def get_network(network_id):
     return response
 
 
+def get_network_devices(network_id):
+    uri = "networks/{}/devices".format(network_id)
+    response = get_data(uri)
+    return response
+
+
 def get_switch_ports(switch_serial):
     uri = "devices/{}/switch/ports".format(switch_serial)
     response = get_data(uri)
@@ -135,12 +141,21 @@ def get_switch_ports(switch_serial):
 #  WRITE FUNCTIONS
 
 
+def update_switch_trusted_dhcp(switch_net_id, mac_addr):
+    uri = "networks/{}/switch/dhcpServerPolicy".format(switch_net_id)
+    post_data_dict = {'defaultPolicy': "block",
+                      'allowedServers': [mac_addr]
+                      }
+    response = post_data(uri, post_data_dict, "PUT")
+    return response
+
+
 def clone_switch(source_serial, destination_list):
     org_id = get_organization_ids()[0]
     uri = "/organizations/{}/switch/devices/clone".format(org_id)
-    post_data_dict = {}
-    post_data_dict['sourceSerial'] = source_serial
-    post_data_dict['targetSerials'] = destination_list
+    post_data_dict = {'sourceSerial': source_serial,
+                      'targetSerials': destination_list
+                      }
     response = post_data(uri, post_data_dict)
     return response
 

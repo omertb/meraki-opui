@@ -3,8 +3,9 @@ from project.models import Network, Device, Template, User, Group, Tag
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from project.decorators import *
-from project.functions import create_network, bind_template,\
-    claim_network_devices, rename_device_v0, reboot_device, get_switch_ports, get_device, clone_switch
+from project.functions import create_network, bind_template, claim_network_devices, rename_device_v0, \
+    reboot_device, get_switch_ports, get_device, clone_switch, get_network_devices, remove_network_device,\
+    update_switch_trusted_dhcp
 from requests.exceptions import ConnectionError
 from project.logging import send_wr_log
 import datetime
@@ -461,6 +462,14 @@ def commit_devices():
             dev_serial_list.append(device['serial'])
 
         try:
+            # there should not exist two appliance device in an appliance network; check and modify:
+            appliance_replaced = ""
+            if db_device.network.type == 'appliance' and dev_serial_list:
+                dev_serial_list = [dev_serial_list[-1]]  # only one appliance is allowed to be committed in a go
+                appliance_replaced = replace_previous_appliance(meraki_net_id_list[0])
+                if appliance_replaced:
+                    result.extend(appliance_replaced)  # logged in the function itself (replace_previous_appliance)
+
             # bind devices to network on cloud
             response = claim_network_devices(meraki_net_id_list[0], dev_serial_list)
             if response == "success":
@@ -470,6 +479,35 @@ def commit_devices():
                                                                          ", ".join(dev_serial_list),
                                                                          db_device.network.name)
                 send_wr_log(log_msg)
+
+                # check if it is an appliance and there exists a related switch network, if so
+                # update trusted dhcp server with the mac address of the appliance
+                if db_device.network.type == 'appliance':
+                    new_device = get_device(dev_serial_list[-1])
+                    appliance_net = Network.query.filter_by(meraki_id=meraki_net_id_list[0]).first()
+                    app_net_name = appliance_net.name
+
+                    # Custom Naming Convention: switch network is named with same prefix
+                    # (seperated by a dash) as that of the appliance network which resides in the same location.
+
+                    prefix = app_net_name.split("-")[0]
+                    switch_name = prefix + "-Switch"
+                    switch_network = Network.query.filter_by(name=switch_name).first()
+                    if switch_network:
+                        try:
+                            update_result = update_switch_trusted_dhcp(switch_network.meraki_id, new_device['mac'])
+                            log_msg = "User: {} - Committed Update Trusted DHCP" \
+                                      " to {} on Switch Network {} with " \
+                                      "result: {}".format(current_user.username, new_device['mac'],
+                                                          switch_name, str(update_result))
+                            send_wr_log(log_msg)
+                        except:
+                            result.append("Meraki Server Error while updating"
+                                          "trusted dhcp on Network {}".format(switch_name))
+                            log_msg = "User: {} - Meraki Server Error while updating " \
+                                      "trusted dhcp on Network {}".format(current_user.username, switch_name)
+                            send_wr_log(log_msg)
+
             else:
                 log_msg = "User: {} - Error for claiming devices: {}: {}".format(current_user.username,
                                                                                  ", ".join(dev_serial_list),
@@ -629,3 +667,29 @@ def reboot_admin_devices():
                 send_wr_log(log_msg)
                 result.append("Meraki response error while rebooting device: {}".format(device['serial']))
         return jsonify(result)
+
+
+def replace_previous_appliance(meraki_net_id):
+    result = []
+    meraki_devices = get_network_devices(meraki_net_id)
+    if meraki_devices:
+        for device in meraki_devices:
+            if '450' in device['model'] or '600' in device['model']:
+                # MX450 and MX600 models are critical devices; so skip removing process
+                continue
+
+            try:
+                remove_result = remove_network_device(meraki_net_id, device['serial'])
+            except:
+                remove_result = False
+                result.append("Meraki Server Error while removing device {}".format(device['serial']))
+
+            if remove_result:
+                db_device = Device.query.filter_by(name=device['name']).first()
+                if db_device:
+                    db_device.committed = False
+                result.append('Device {} is removed from network'.format(device['serial']))
+                log_msg = "User: {} - Device {} is removed from " \
+                          "network id: {}".format(current_user.username, device['serial'], meraki_net_id)
+                send_wr_log(log_msg)
+    return result
