@@ -674,8 +674,8 @@ def replace_previous_appliance(meraki_net_id):
     meraki_devices = get_network_devices(meraki_net_id)
     if meraki_devices:
         for device in meraki_devices:
-            if '450' in device['model'] or '600' in device['model']:
-                # MX450 and MX600 models are critical devices; so skip removing process
+            if '450' in device['model'] or '600' in device['model'] or '250' in device['model']:
+                # MX250, MX450 and MX600 models are critical devices; so skip removing process
                 continue
 
             try:

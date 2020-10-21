@@ -768,6 +768,7 @@ function destSwitchSelectOnDestNetSelect() {
                 contentType: "application/json",
                 success: function(data) {
                     newSwitchModel = data;
+                    console.log(data);
                 }
             });
         },
@@ -781,6 +782,22 @@ function destSwitchSelectOnDestNetSelect() {
 $(function() {
     $("#sourceSwitchSelect").on("change", function () {
         switchPortsTableOnSwitchSelect();
+    });
+});
+
+$(function() {
+    $("#newSwitchSelect").on("change", function () {
+        let selectedSwitch = newSwitchSelect.options[newSwitchSelect.selectedIndex].text;
+        $.ajax({
+                url: "/operator/get_device_model",
+                data: JSON.stringify(selectedSwitch),
+                type: 'POST',
+                contentType: "application/json",
+                success: function(data) {
+                    newSwitchModel = data;
+                    console.log(data);
+                }
+            });
     });
 });
 
