@@ -30,6 +30,7 @@ def get_data(uri) -> list:
         response_list = json.loads(response.text)
         return response_list
     elif response.status_code == 404:
+        print(response.text)
         return response.status_code
     else:
         print("Meraki Server Response: {} | Code: {}".format(response, response.status_code))

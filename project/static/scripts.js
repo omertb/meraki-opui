@@ -232,24 +232,28 @@ $(document).on("click", "#deleteDevicesModalClose", function(event){
 var commitDeviceResult = document.getElementById("commitDeviceResult")
 $(document).on("click", "#commitSelectedDevsButton", function(event){
     JSON_Selected = $deviceTable.bootstrapTable('getSelections');
-    $.ajax({
-        url: "/operator/commit_devices",
-        type: "POST",
-        data: JSON.stringify(JSON_Selected),
-        dataType: "json",
-        contentType: "application/json",
-        success: function(data) {
-            var output = '<br>';
-            if(Array.isArray(data)) {
-                for (var i = 0; i < data.length; i++) {
-                    output += "<li>" + data[i] + "</li>";
+    if (JSON_Selected.length > 0) {
+        $.ajax({
+            url: "/operator/commit_devices",
+            type: "POST",
+            data: JSON.stringify(JSON_Selected),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                var output = '<br>';
+                if (Array.isArray(data)) {
+                    for (var i = 0; i < data.length; i++) {
+                        output += "<li>" + data[i] + "</li>";
+                    }
+                } else {
+                    output += data;
                 }
-            }else {
-                output += data;
+                commitDeviceResult.innerHTML = output;
             }
-            commitDeviceResult.innerHTML = output;
-        }
-    });
+        });
+    } else {
+        commitDeviceResult.innerHTML = "Select any device to commit!";
+    }
 });
 
 $(document).on("click", "#commitDeviceModalClose", function(event){

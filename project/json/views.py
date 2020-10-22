@@ -9,6 +9,7 @@ from project.functions import create_network, bind_template, claim_network_devic
 from requests.exceptions import ConnectionError
 from project.logging import send_wr_log
 import datetime
+import time
 
 
 # home blueprint definition
@@ -461,11 +462,17 @@ def commit_devices():
                     return jsonify("Error, there is mismatch between network ids")
             dev_serial_list.append(device['serial'])
 
+        if devices_to_be_commit and meraki_net_id_list:
+            db_device = Device.query.get(devices_to_be_commit[-1]['id'])
+            # to be used for appliance, only one appliance is allowed to be committed in a go
+        else:
+            return jsonify(result)
+
         try:
             # there should not exist two appliance device in an appliance network; check and modify:
             appliance_replaced = ""
             if db_device.network.type == 'appliance' and dev_serial_list:
-                dev_serial_list = [dev_serial_list[-1]]  # only one appliance is allowed to be committed in a go
+                dev_serial_list = [db_device.serial]
                 appliance_replaced = replace_previous_appliance(meraki_net_id_list[0])
                 if appliance_replaced:
                     result.extend(appliance_replaced)  # logged in the function itself (replace_previous_appliance)
@@ -484,6 +491,15 @@ def commit_devices():
                 # update trusted dhcp server with the mac address of the appliance
                 if db_device.network.type == 'appliance':
                     new_device = get_device(dev_serial_list[-1])
+
+                    # wait some time until the device can be fetched from meraki cloud
+                    for _ in range(5):
+                        if new_device == '404':
+                            time.sleep(1)
+                            new_device = get_device(dev_serial_list[-1])
+                        else:
+                            break
+
                     appliance_net = Network.query.filter_by(meraki_id=meraki_net_id_list[0]).first()
                     app_net_name = appliance_net.name
 
@@ -496,17 +512,22 @@ def commit_devices():
                     if switch_network:
                         try:
                             update_result = update_switch_trusted_dhcp(switch_network.meraki_id, new_device['mac'])
-                            log_msg = "User: {} - Committed Update Trusted DHCP" \
+                            log_msg = "User: {} - Committed Updating Trusted DHCP" \
                                       " to {} on Switch Network {} with " \
                                       "result: {}".format(current_user.username, new_device['mac'],
                                                           switch_name, str(update_result))
                             send_wr_log(log_msg)
+                            result.append('Updated Trusted DHCP on switch network {} as '
+                                          'MAC Address: {}').format(switch_name, new_device['mac'])
                         except:
-                            result.append("Meraki Server Error while updating"
+                            result.append("Meraki Server Error while updating "
                                           "trusted dhcp on Network {}".format(switch_name))
                             log_msg = "User: {} - Meraki Server Error while updating " \
                                       "trusted dhcp on Network {}".format(current_user.username, switch_name)
                             send_wr_log(log_msg)
+                    else:
+                        result.append("Switch network {} is not found! "
+                                      "Set Trusted DHCP Mac Address manually!".format(switch_name))
 
             else:
                 log_msg = "User: {} - Error for claiming devices: {}: {}".format(current_user.username,
