@@ -89,17 +89,10 @@ def update_admin_networks_table():
     :return: 200
     '''
     t1 = time.time()
-    # networks = Network.query.all()
-    # for network in networks:
-    #     network.tags.clear()
-    #     db.session.add(network)
-    # db.session.commit()
-    # Tag.query.delete()
-    # db.session.commit()
-    log_msg = "User: {} - Updating networks table is started.".format(current_user.username)
+    log_msg = "User: {} - Started updating networks table".format(current_user.username)
     send_wr_log(log_msg)
     try:
-        networks = get_networks()
+        meraki_networks = get_networks()
         templates = get_templates()
     except ConnectionError:
         error = "Meraki Server Bad Response"
@@ -115,14 +108,30 @@ def update_admin_networks_table():
         db.session.add(template)
     db.session.commit()  # update templates table
 
-    for network in networks:
-        try:
-            db_network = Network.query.filter_by(meraki_id=network['meraki_id']).first()
-        except (ProgrammingError, OperationalError) as e:
-            error = str(e)
-            log_msg = "User: {} - {} while updating networks table.".format(current_user.username, error)
+    db_networks = Network.query.all()
+    # cleaning non-existent networks from db table
+    for network in db_networks:
+        network_exists = False
+        for m_network in meraki_networks:
+            if m_network['meraki_id'] == network.meraki_id:
+                network_exists = True
+                break
+        if not network_exists:
+            log_msg = "User: {} - Network: {} with {} id does not exist on cloud; " \
+                      "being deleted from db.".format(current_user.username, network.name, network.meraki_id)
             send_wr_log(log_msg)
-            return error
+            network.tags.clear()
+            network.groups.clear()
+            for device in network.devices:
+                log_msg = "User: {} - Deleting device: {} related with network: {} " \
+                          "from DB".format(current_user.username, device.serial, network.name)
+                send_wr_log(log_msg)
+                db.session.delete(device)
+            db.session.delete(network)
+
+    # networks from meraki cloud
+    for network in meraki_networks:
+        db_network = Network.query.filter_by(meraki_id=network['meraki_id']).first()
         # update if the network exists
         if db_network:
             db_network.update(**network)  # update the existing network in db consistent with cloud
@@ -146,7 +155,6 @@ def update_admin_networks_table():
 
     db.session.commit()
     # build group network relation according to tag bindings to both networks and groups
-    db_networks = Network.query.all()
     db_groups = Group.query.all()
     for db_group in db_groups:
         db_grp_tags = db_group.tags
@@ -164,22 +172,22 @@ def update_admin_networks_table():
     db.session.commit()
 
     # cleaning duplicate networks if not existing in cloud
-    sq = Network.query.with_entities(Network.name).group_by(Network.name).having(func.count(Network.name) > 1).subquery()
-    duplicates = Network.query.filter(Network.name == sq.c.name).order_by(Network.name).all()
-    if duplicates:
-        for network in duplicates:
-            result = get_network(network.meraki_id)
-            if result == 404:
-                network.groups.clear()
-                network.tags.clear()
-                if network.devices:
-                    for device in network.devices:
-                        db.session.delete(device)
-                db.session.delete(network)
-        db.session.commit()
+#    sq = Network.query.with_entities(Network.name).group_by(Network.name).having(func.count(Network.name) > 1).subquery()
+#    duplicates = Network.query.filter(Network.name == sq.c.name).order_by(Network.name).all()
+#    if duplicates:
+#        for network in duplicates:
+#            result = get_network(network.meraki_id)
+#            if result == 404:
+#                network.groups.clear()
+#                network.tags.clear()
+#                if network.devices:
+#                    for device in network.devices:
+#                        db.session.delete(device)
+#                db.session.delete(network)
+#        db.session.commit()
 
     t2 = time.time()
-    log_msg = "User: {} - Updating networks table is ended in {} seconds.".format(current_user.username, t2 - t1)
+    log_msg = "User: {} - Updating networks table is completed in {} seconds.".format(current_user.username, t2 - t1)
     send_wr_log(log_msg)
     return "success"
 
@@ -196,7 +204,7 @@ def admin_devices():
 @is_admin
 def admin_update_devices_table():
     t1 = time.time()
-    log_msg = "User: {} - Updating devices table is started.".format(current_user.username)
+    log_msg = "User: {} - Started updating devices table.".format(current_user.username)
     send_wr_log(log_msg)
     try:
         reset_db_devices_table()
@@ -207,7 +215,7 @@ def admin_update_devices_table():
         send_wr_log(log_msg)
         return error
     t2 = time.time()
-    log_msg = "User: {} - Updating devices table is ended in {} seconds.".format(current_user.username, t2 - t1)
+    log_msg = "User: {} - Updating devices table is completed in {} seconds.".format(current_user.username, t2 - t1)
     send_wr_log(log_msg)
     return "success"
 
