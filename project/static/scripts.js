@@ -377,7 +377,6 @@ $(document).on("click", "#membershipButton", function(event){
         dataType: "json",
         contentType: "application/json",
         success: function(data) {
-            $groupsTable.bootstrapTable('refresh');
             var output = '<br>';
             if(Array.isArray(data)) {
                 for (var i = 0; i < data.length; i++) {
@@ -391,6 +390,7 @@ $(document).on("click", "#membershipButton", function(event){
             $('#groupSelectMultiple').selectpicker('refresh');
             $('#userSelectMultiple').selectpicker('refresh');
             manageGroupResult.innerHTML = output;
+            $usersTable.bootstrapTable('refresh');
         }
     });
 });
@@ -421,6 +421,7 @@ $(document).on("click", "#tagGroupButton", function(event){
                 $('#groupSelectMultiple2').selectpicker('refresh');
                 $('#tagSelectMultiple').selectpicker('refresh');
                 manageNetworkResult.innerHTML = output;
+                $groupsTable.bootstrapTable('refresh');
             }
         });
 });
