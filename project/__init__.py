@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+import os
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -26,6 +27,11 @@ app.register_blueprint(admin_blueprint)
 from project.models import User
 
 login_manager.login_view = "users.login"
+
+# Google ReCaptcha Keys:
+app.config['RECAPTCHA_PUBLIC_KEY'] = os.environ['CAPTCHAPUBKEY']
+app.config['RECAPTCHA_PRIVATE_KEY'] = os.environ['CAPTCHAPRIKEY']
+app.config['RECAPTCHA_USE_SSL']= False
 
 
 @login_manager.user_loader

@@ -61,6 +61,14 @@
     </span>
 
   </p>
+        <p>
+            {{ form.recaptcha }}
+            <ul>
+            {% for error in form.recaptcha.errors %}
+                <li style="color:red;">{{ error }}</li>
+            {% endfor %}
+            </ul>
+        </p>
 
   <button id="signInButton" class="btn btn-lg btn-primary btn-block" type="submit">Sign in
   </button>
