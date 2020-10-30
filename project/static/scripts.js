@@ -291,23 +291,24 @@ $(document).on("click", "#createGroupButton", function(event){
                 manageGroupResult.innerHTML = "";
                 $groupsTable.bootstrapTable('refresh');
                 // the line below was needed when group_select was in the same page
-                // updateGroupSelect(data);
+                updateGroupSelect(data);
             }
         }
     });
 });
 
+var group_select2 = document.getElementById("groupSelectMultiple2");
 function updateGroupSelect(data){
     var optionHTML = '';
     for (let grp of data) {
         optionHTML += '<option value="' + grp[0].toString() + '">' + grp[1].toString() + '</option>';
     }
-    group_select.removeAttribute("data-live-search");
-    group_select.classList.remove("selectpicker");
-    group_select.innerHTML = optionHTML;
-    $('#groupSelectMultiple').addClass('selectpicker');
-    $('#groupSelectMultiple').attr('data-live-search', 'true');
-    $('#groupSelectMultiple').selectpicker('refresh');
+    group_select2.removeAttribute("data-live-search");
+    group_select2.classList.remove("selectpicker");
+    group_select2.innerHTML = optionHTML;
+    $('#groupSelectMultiple2').addClass('selectpicker');
+    $('#groupSelectMultiple2').attr('data-live-search', 'true');
+    $('#groupSelectMultiple2').selectpicker('refresh');
 }
 
 // delete group modal
@@ -394,7 +395,7 @@ $(document).on("click", "#membershipButton", function(event){
         }
     });
 });
-var manageNetworkResult = document.getElementById("manageNetworkResult");
+var manageGroupResult = document.getElementById("manageGroupResult");
 $(document).on("click", "#tagGroupButton", function(event){
     event.preventDefault();
     let group_select = $('#groupSelectMultiple2').val();
@@ -420,7 +421,7 @@ $(document).on("click", "#tagGroupButton", function(event){
                 $('#tagSelectMultiple').val('default');
                 $('#groupSelectMultiple2').selectpicker('refresh');
                 $('#tagSelectMultiple').selectpicker('refresh');
-                manageNetworkResult.innerHTML = output;
+                manageGroupResult.innerHTML = output;
                 $groupsTable.bootstrapTable('refresh');
             }
         });
