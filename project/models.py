@@ -160,14 +160,18 @@ class Device(db.Model):
     reg_date = db.Column(db.DateTime, nullable=False)
     committed = db.Column(db.Boolean, nullable=False)
     rebooted = db.Column(db.DateTime)
+    last_seen = db.Column(db.DateTime)
+    status = db.Column(db.String(8))
     network_id = db.Column(db.Integer, db.ForeignKey('networks.id'))
 
-    def __init__(self, device_name, device_serial, network_id, committed=False):
+    def __init__(self, device_name, device_serial, network_id, committed=False, status=None, last_seen=None):
         self.name = device_name
         self.serial = device_serial
         self.reg_date = datetime.datetime.now()
         self.committed = committed
         self.network_id = network_id
+        self.status = status
+        self.last_seen = last_seen
 
     def update(self, device_name, device_serial, network_id, device_model=None, committed=False):
         self.name = device_name

@@ -199,7 +199,8 @@ def admin_update_devices_table():
     log_msg = "User: {} - Updating devices table is started.".format(current_user.username)
     send_wr_log(log_msg)
     try:
-        load_devices_to_db()
+        reset_db_devices_table()
+        # load_devices_to_db()
     except Exception as e:
         error = str(e)
         log_msg = "User: {} - {} while updating devices table.".format(current_user.username, error)
@@ -209,6 +210,42 @@ def admin_update_devices_table():
     log_msg = "User: {} - Updating devices table is ended in {} seconds.".format(current_user.username, t2 - t1)
     send_wr_log(log_msg)
     return "success"
+
+
+def reset_db_devices_table():
+    dev_status_list = get_devices()
+    device_list = []
+    number_of_rows = Device.query.delete()  # delete all table rows
+    print(type(number_of_rows))
+    print(number_of_rows)
+    print("Number of devices deleted from DB: {}".format(number_of_rows))
+
+    for device in dev_status_list:
+        network = Network.query.filter_by(meraki_id=device['networkId']).first()
+        dict_item = {'device_name': device['name'],
+                     'device_serial': device['serial'],
+                     'network_id': network.id,
+                     'committed': True,
+                     'status': device['status'],
+                     'last_seen': device['lastReportedAt']
+                     }
+        device_list.append(Device(**dict_item))
+    db.session.bulk_save_objects(device_list)
+    db.session.commit()
+
+    # another method to bulk insert
+#    for device in dev_status_list:
+#        network = Network.query.filter_by(meraki_id=device['networkId']).first()
+#        dict_item = {'device_name': device['name'],
+#                     'device_serial': device['serial'],
+#                     'network_id': network.id,
+#                     'committed': True,
+#                     'status': device['status'],
+#                     'last_seen': device['lastReportedAt']
+#                     }
+#        device_list.append(dict_item)
+#
+#    db.session.execute(Device.insert(), device_list)
 
 
 def load_devices_to_db():
