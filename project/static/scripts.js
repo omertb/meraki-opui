@@ -390,7 +390,7 @@ $(document).on("click", "#membershipButton", function(event){
             $('#userSelectMultiple').val('default');
             $('#groupSelectMultiple').selectpicker('refresh');
             $('#userSelectMultiple').selectpicker('refresh');
-            manageGroupResult.innerHTML = output;
+            adminUserTableResult.innerHTML = output;
             $usersTable.bootstrapTable('refresh');
         }
     });
