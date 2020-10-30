@@ -155,16 +155,15 @@ def save_devices_in_db(device_serials_list, net_id):
         return jsonify("Database error!")
     for device_serial in device_serials_list:
         dev_name = device_serial.replace("-", "")
-        dev_serial = device_serial
         network_id = network.id
         device = Device.query.filter_by(serial=device_serial).first()
         if device:
-            error.append("Device with serial: {} already exists!".format(dev_serial))
+            error.append("Device with {} serial is already registered in {}".format(device.serial, device.network.name))
             continue
-        device = Device(dev_name, dev_serial, network_id)
+        device = Device(dev_name, device_serial, network_id)
         db.session.add(device)
         log_msg = "User: {} - Device Name: {}, Device Serial: {} is saved in DB".format(current_user.username, dev_name,
-                                                                                        dev_serial)
+                                                                                        device_serial)
         send_wr_log(log_msg)
     db.session.commit()
     if error:
