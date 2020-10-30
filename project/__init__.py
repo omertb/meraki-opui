@@ -4,6 +4,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 import os
 
+
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager()
@@ -13,25 +14,28 @@ app.config.from_object('config.DevelopmentConfig')
 # create the sqlalchemy object
 db = SQLAlchemy(app)
 
+
 # import blueprints
 from project.users.views import users_blueprint
 from project.operator.views import operator_blueprint
 from project.json.views import json_blueprint
 from project.admin.views import admin_blueprint
+from project.models import User
+
 
 app.register_blueprint(users_blueprint)
 app.register_blueprint(operator_blueprint)
 app.register_blueprint(json_blueprint)
 app.register_blueprint(admin_blueprint)
 
-from project.models import User
+# session header options:
+#app.config.update(
+#    SESSION_COOKIE_SECURE=False,
+#    SESSION_COOKIE_HTTPONLY=True,
+#    SESSION_COOKIE_SAMESITE='Lax',
+#)
 
 login_manager.login_view = "users.login"
-
-# Google ReCaptcha Keys:
-app.config['RECAPTCHA_PUBLIC_KEY'] = os.environ['CAPTCHAPUBKEY']
-app.config['RECAPTCHA_PRIVATE_KEY'] = os.environ['CAPTCHAPRIKEY']
-app.config['RECAPTCHA_USE_SSL']= False
 
 
 @login_manager.user_loader
