@@ -253,7 +253,9 @@ def devices_table():
                   'serial': row.serial,
                   'device_model': row.devmodel,
                   'committed': "Yes" if row.committed else "No",
-                  'network_name': row.network.name
+                  'network_name': row.network.name,
+                  'status': row.status,
+                  'last_seen': row.last_seen
                   }
         devices_list.append(device)
     return jsonify(devices_list)
