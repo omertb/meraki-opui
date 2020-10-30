@@ -89,6 +89,7 @@ $(document).on("submit", "#networkDeviceForm", function(event){
 $(function() {
     $("#existingNetSelect").on("change", function () {
         //e.preventDefault();
+        deviceFormErrorDiv.innerHTML = "";
         deviceTableOnNetworkSelect();
         $("#devicesTextArea").val('');
     });
@@ -121,6 +122,7 @@ function deviceTableOnNetworkSelect() {
 var deviceFormErrorDiv = document.getElementById("deviceFormErrorDiv")
 $(document).on("click", "#addDeviceFormButton", function(event){
     event.preventDefault();
+    deviceFormErrorDiv.innerHTML = "";
     let network_select = $("#existingNetSelect").val();
     let devices = $("#devicesTextArea").val();
     let network_device_dict = JSON.stringify({network:network_select, devices:devices});

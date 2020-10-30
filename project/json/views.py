@@ -495,7 +495,7 @@ def commit_devices():
                     # wait some time until the device can be fetched from meraki cloud
                     for _ in range(5):
                         if new_device == '404':
-                            time.sleep(1)
+                            time.sleep(2)
                             new_device = get_device(dev_serial_list[-1])
                         else:
                             break
