@@ -416,6 +416,8 @@ def commit_networks():
                     network_dict['copyFromNetworkId'] = db_network.copied_from.meraki_id
                 # commit to cloud
                 create_net_res = create_network(network_dict)
+                # api call rate limit
+                time.sleep(0.1)
                 log_msg = "User: {} - Network: {} is created on Meraki Cloud.".format(current_user.username,
                                                                                       db_network.name)
                 send_wr_log(log_msg)
@@ -547,6 +549,8 @@ def commit_devices():
                 db_device.devmodel = rename_response['model']
                 db_device.committed = True
                 db.session.add(db_device)
+                # api call rate limit
+                time.sleep(0.2)
             db.session.commit()
 
         except ConnectionError:
@@ -588,6 +592,8 @@ def rename_devices():
                 db_device.devmodel = rename_response['model']
                 db.session.add(db_device)
                 send_wr_log(log_msg)
+                # rate limit
+                time.sleep(0.2)
 
             except ConnectionError:
                 log_msg = "User: {} - Meraki response error while renaming device: {}.".format(current_user.username,
@@ -662,19 +668,21 @@ def reboot_devices():
                 log_msg = "User: {} - Not authorized to reboot device: {}.".format(current_user.username, device['serial'])
                 send_wr_log(log_msg)
                 break
-            db_device.rebooted = current_time
-            db.session.add(db_device)
-            db.session.commit()
 
             if response == "success":
                 log_msg = "User: {} - Device: {} is rebooted.".format(current_user.username, device['serial'])
                 send_wr_log(log_msg)
                 result.append("Device: {} is rebooted!".format(device['serial']))
+                db_device.rebooted = current_time
+                db.session.add(db_device)
+                db.session.commit()
             else:
                 log_msg = "User: {} - Meraki response error while rebooting device: {}.".format(current_user.username,
                                                                                                 device['serial'])
                 send_wr_log(log_msg)
                 result.append("Meraki response error while rebooting device: {}".format(device['serial']))
+            # api call rate limit
+            time.sleep(0.2)
         return jsonify(result)
 
 
@@ -691,6 +699,8 @@ def reboot_admin_devices():
                 log_msg = "User: {} - Device: {} is rebooted.".format(current_user.username, device['serial'])
                 send_wr_log(log_msg)
                 result.append("Device: {} is rebooted!".format(device['serial']))
+                # api call rate limit
+                time.sleep(0.2)
             else:
                 log_msg = "User: {} - Meraki response error while rebooting device: {}" \
                           " - {}".format(current_user.username, device['serial'], response)
