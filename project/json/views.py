@@ -574,6 +574,12 @@ def rename_devices():
             serial = db_device.serial
             try:
                 rename_response = rename_device_v0(meraki_net_id, serial, device_name)
+                if "Forbidden" in rename_response:
+                    log_msg = "User: {} - Not authorized to rename device: {}".format(current_user.username,
+                                                                                      db_device.serial)
+                    result.append("Not authorized!")
+                    send_wr_log(log_msg)
+                    break
                 result.append("{} with model {} is renamed to {}".format(db_device.name, rename_response['model'],
                                                                          device_name))
                 log_msg = "User: {} - Device: {} is renamed as {}".format(current_user.username, db_device.name,
@@ -653,6 +659,8 @@ def reboot_devices():
             response = reboot_device(device['serial'])
             if 'Forbidden' in response:
                 result.append("Not authorized to reboot!")
+                log_msg = "User: {} - Not authorized to reboot device: {}.".format(current_user.username, device['serial'])
+                send_wr_log(log_msg)
                 break
             db_device.rebooted = current_time
             db.session.add(db_device)
