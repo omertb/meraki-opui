@@ -649,16 +649,15 @@ def reboot_devices():
                 if time_since_last_reboot.seconds < 3600:
                     result.append("Device: {} was already rebooted!".format(device['serial']))
                     continue
-                else:
-                    db_device.rebooted = current_time
-                    db.session.add(db_device)
-                    db.session.commit()
-            else:
-                db_device.rebooted = current_time
-                db.session.add(db_device)
-                db.session.commit()
 
             response = reboot_device(device['serial'])
+            if 'Forbidden' in response:
+                result.append("Not authorized to reboot!")
+                break
+            db_device.rebooted = current_time
+            db.session.add(db_device)
+            db.session.commit()
+
             if response == "success":
                 log_msg = "User: {} - Device: {} is rebooted.".format(current_user.username, device['serial'])
                 send_wr_log(log_msg)
@@ -685,10 +684,11 @@ def reboot_admin_devices():
                 send_wr_log(log_msg)
                 result.append("Device: {} is rebooted!".format(device['serial']))
             else:
-                log_msg = "User: {} - Meraki response error while rebooting device: {}.".format(current_user.username,
-                                                                                                device['serial'])
+                log_msg = "User: {} - Meraki response error while rebooting device: {}" \
+                          " - {}".format(current_user.username, device['serial'], response)
                 send_wr_log(log_msg)
-                result.append("Meraki response error while rebooting device: {}".format(device['serial']))
+                result.append("Meraki response error while rebooting device: {} - {}".format(device['serial'], response))
+                break
         return jsonify(result)
 
 

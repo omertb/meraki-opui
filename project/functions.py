@@ -61,6 +61,8 @@ def post_data(uri, data_dict, method="POST", base_url=BASE_URL) -> list:
         return json.loads(response.text)
     elif response.status_code == 401:
         return json.loads(response.text)
+    elif response.status_code == 403:
+        return "Forbidden"
     else:
         print("Meraki Server Response: {} | Code: {}".format(response.text, response.status_code))
         raise requests.exceptions.ConnectionError
