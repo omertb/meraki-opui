@@ -6,7 +6,7 @@
 
 ### Utilized Components:
 - Python Flask, Postgresql on the server side.
-- Bootstrap HTML, CSS and JS libraries and custom js functions on the server side.
+- Bootstrap HTML, CSS and JS libraries and custom js functions on the client side.
 
 ### Functions:
 - Admin panel for authorizing users against networks and tags.
