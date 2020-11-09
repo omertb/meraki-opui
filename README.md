@@ -1,3 +1,31 @@
+## GUI for Basic Operations on Meraki Networks
+### Purpose
+> The project benefits a full authorized api key on the server side; providing restricted
+> and user authorized operations on the client side, such as adding new devices, renaming, rebooting, and
+> pre-defined configurations etc. being developed as new needs come up in due course.
+
+### Utilized Components:
+- Python Flask, Postgresql on the server side.
+- Bootstrap HTML, CSS and JS libraries and custom js functions on the server side.
+
+### Functions:
+- Admin panel for authorizing users against networks and tags.
+
+![Admin Panel](./admin_panel.png)
+
+- Adding new networks copying from existing templates and networks with tags.
+- Committing from server db to meraki cloud.
+- Prevention of deleting anything if committed to Meraki.
+
+![Operator New Network](./new_network.png)
+
+- Adding devices to existing networks.
+- Rebooting or renaming any device with time restriction on code.
+- Copying switch config from existing one to a new one.
+
+![Operator Add Devices](./add_devices.png)
+
+
 ## Container Deployment:
 ### 1. Production Environment
 > Before continue beginning; ensure that pgsql_data directory and
