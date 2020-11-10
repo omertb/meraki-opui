@@ -57,6 +57,9 @@
             <form id="userAddDeviceForm" action="" method="post">
                 <div class="row">
                     <div class="col-md-6">
+                        <div class="row">
+                                <h4 style="color: darkslateblue;">Source </h4>
+                        </div>
                           <div class="form-group">
                             <label for="switchNetSelect">Select a Source Network: </label>
                               {{ form.switch_nets(class_="form-control selectpicker my-select", id="switchNetSelect", data_live_search="true") }}
@@ -64,27 +67,30 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="sourceSwitchSelect">Select a Source Switch: </label>
-                              {{ form.source_switch(class_="form-control selectpicker my-select", id="sourceSwitchSelect", data_live_search="true") }}
+                        <div class="row">
+                        <h4 style="color: darkslateblue;">Destination</h4>
                         </div>
+                            <div class="form-group">
+                                <label for="destinationNetSelect">Select the Switch Network: </label>
+                                  {{ form.destination_nets(class_="form-control selectpicker my-select", id="destinationNetSelect", data_live_search="true") }}
+                            </div>
                     </div>
                 </div>
 
                 <div class="row">
 
                     <div class="col-md-6">
-                          <div class="form-group">
-                            <label for="destinationNetSelect">Select the Switch Network: </label>
-                              {{ form.destination_nets(class_="form-control selectpicker my-select", id="destinationNetSelect", data_live_search="true") }}
-                          </div>
+                            <div class="form-group">
+                                <label for="sourceSwitchSelect">Select a Source Switch: </label>
+                                  {{ form.source_switch(class_="form-control selectpicker my-select", id="sourceSwitchSelect", data_live_search="true") }}
+                            </div>
                     </div>
 
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="newSwitchSelect">Select the New Switch: </label>
-                              {{ form.new_switch(class_="form-control selectpicker my-select", id="newSwitchSelect", data_live_search="true") }}
-                        </div>
+                            <div class="form-group">
+                                <label for="newSwitchSelect">Select the New Switch: </label>
+                                  {{ form.new_switch(class_="form-control selectpicker my-select", id="newSwitchSelect", data_live_search="true") }}
+                            </div>
                     </div>
 
                 </div>
@@ -96,6 +102,7 @@
                     </div>
 
                     <div class="col-md-4">
+                        <h4 style="text-align: center; font-size: 48px; color: darkslateblue;">&#10144;</h4>
                         <button id="cloneSwitchFormButton" class="btn btn-sm btn-outline-primary btn-block" data-toggle="modal" data-target="#cloneSwitchModal">
                             Clone Switch
                         </button>
@@ -146,11 +153,15 @@
 
 		<div class="col-md-6">
             <div class="dev-table-selector">
+                <div id="switchPortsToolbar">
+                    <h4>Current Ports for Selected Source</h4>
+                </div>
                 <table
                         id="switchPortsTable"
                         class="table table-hover table-sm"
                         data-search="true"
                         data-pagination="true"
+                        data-toolbar="#switchPortsToolbar"
                 >
                   <thead class="thead-light">
                   <tr>
