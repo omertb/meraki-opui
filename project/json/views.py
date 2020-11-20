@@ -45,7 +45,6 @@ def users_table():
 def negate_user_operator_access():
     if request.method == 'POST':
         users_to_be_negated = request.get_json()
-        print(users_to_be_negated)
         for user in users_to_be_negated:
             if user['name'] == current_user.username:
                 return jsonify("Cannot modify current user")

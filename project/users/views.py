@@ -24,8 +24,8 @@ def login():
     if request.method == 'POST':
         if form.validate_on_submit():
             # user = User.query.filter_by(username=request.form['username']).first()
-            input_username = request.form['username']
-            password = request.form['password']
+            input_username = request.form['username'][:128]
+            password = request.form['password'][:256]
 
             # if user is not None and bcrypt.check_password_hash(user.password, request.form['password']):
             username = input_username.split('@')[0]
@@ -67,7 +67,8 @@ def login():
                             user = User(username, password, email, name, surname, admin=True, operator=True)
                         db.session.add(user)
                         db.session.commit()
-                    login_user(user)  # (flask_login) session created
+                    remember_me = False
+                    login_user(user, remember_me)  # (flask_login) session created
                     log_msg = "User logged in: {}".format(current_user.username)
                     send_wr_log(log_msg)
 

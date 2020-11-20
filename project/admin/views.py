@@ -224,9 +224,6 @@ def reset_db_devices_table():
     dev_status_list = get_devices()
     device_list = []
     number_of_rows = Device.query.delete()  # delete all table rows
-    print(type(number_of_rows))
-    print(number_of_rows)
-    print("Number of devices deleted from DB: {}".format(number_of_rows))
 
     for device in dev_status_list:
         network = Network.query.filter_by(meraki_id=device['networkId']).first()
