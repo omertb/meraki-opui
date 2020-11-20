@@ -7,7 +7,7 @@ from flask_login import LoginManager
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager()
-# login_manager.session_protection = "strong"
+login_manager.session_protection = "strong"
 login_manager.init_app(app)
 # config
 app.config.from_object('config.DevelopmentConfig')
