@@ -35,6 +35,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
+    alt_id = db.Column(db.String(64), unique=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
     name = db.Column(db.String(50), nullable=False)
     surname = db.Column(db.String(50), nullable=False)
@@ -66,7 +67,7 @@ class User(db.Model):
         return False
 
     def get_id(self):
-        return str(self.id)
+        return str(self.alt_id)
 
     @staticmethod
     def ldap_login(email, password):

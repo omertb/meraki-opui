@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template, url_for, request, Blueprint
+from flask import flash, redirect, render_template, url_for, request, Blueprint, session
 from project.users.forms import LoginForm
 from project.models import User, db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -6,9 +6,17 @@ from ldap import INVALID_CREDENTIALS, SERVER_DOWN
 from sqlalchemy.exc import OperationalError, ProgrammingError
 from project.logging import send_wr_log
 import os
+import time
+import hashlib
 
 
 users_blueprint = Blueprint('users', __name__, template_folder='templates')
+
+
+def get_random_alt_id():
+    login_time = int(time.time())
+    random_unicode = str(login_time).encode('utf-8')
+    return hashlib.sha3_256(random_unicode).hexdigest()
 
 
 @users_blueprint.route('/', methods=['GET'])
@@ -67,6 +75,10 @@ def login():
                             user = User(username, password, email, name, surname, admin=True, operator=True)
                         db.session.add(user)
                         db.session.commit()
+                    if not user.alt_id:
+                        user.alt_id = get_random_alt_id()
+                        db.session.add(user)
+                        db.session.commit()
                     login_user(user, remember=False)  # (flask_login) session created
                     log_msg = "User logged in: {}".format(current_user.username)
                     send_wr_log(log_msg)
@@ -77,7 +89,6 @@ def login():
                         return redirect(url_for('admin.admin_users'))
                     else:
                         return render_template('403.html', title='403'), 403
-
 
             except INVALID_CREDENTIALS:
                 error = 'Invalid Credentials. Please try again.'
@@ -95,7 +106,13 @@ def login():
 def logout():
     log_msg = "User logged out: {}".format(current_user.username)
     send_wr_log(log_msg)
-    logout_user()  # (flask_login) clear session
+    # change user alt id for login_required behaviour
+    user = current_user
+    user.alt_id = get_random_alt_id()
+    db.session.add(user)
+    db.session.commit()
+    # (flask_login) clear session
+    logout_user()
     flash('You are logged out.')
     return redirect(url_for('users.login'))
 
