@@ -2,12 +2,12 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
-import os
 
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager()
+# login_manager.session_protection = "strong"
 login_manager.init_app(app)
 # config
 app.config.from_object('config.DevelopmentConfig')

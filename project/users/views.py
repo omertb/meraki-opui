@@ -67,8 +67,7 @@ def login():
                             user = User(username, password, email, name, surname, admin=True, operator=True)
                         db.session.add(user)
                         db.session.commit()
-                    remember_me = False
-                    login_user(user, remember_me)  # (flask_login) session created
+                    login_user(user, remember=False)  # (flask_login) session created
                     log_msg = "User logged in: {}".format(current_user.username)
                     send_wr_log(log_msg)
 
