@@ -48,6 +48,8 @@
 		</div>
         <div class="col-md-4 pt-2">
             <form id="createGroupForm" action="" method="post">
+                <meta name="csrf-token" content="{{ csrf_token() }}">
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -63,7 +65,7 @@
                     </div>
                 </div>
             </form>
-            <div id="newGroupErrorDiv" style="color:red;padding: 5px;">
+            <div id="newGroupErrorDiv" style="color: darkred; font-size: 12px; padding: 5px;">
                     {% if error %}
                     <p class="error"><strong>Error:</strong> {{ error }}</p>
                     {% endif %}
@@ -74,13 +76,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="groupSelectMultiple2">Choose Groups: </label><br>
-                            {{ form.select_group(class_="selectpicker my-select", id="groupSelectMultiple2", data_live_search="true") }}
+                            {{ choice_form.select_group(class_="selectpicker my-select", id="groupSelectMultiple2", data_live_search="true") }}
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="tagSelectMultiple">Choose Tags: </label><br>
-                            {{ form.select_tag(class_="selectpicker my-select", id="tagSelectMultiple", data_live_search="true") }}
+                            {{ choice_form.select_tag(class_="selectpicker my-select", id="tagSelectMultiple", data_live_search="true") }}
                         </div>
                     </div>
                 </div>

@@ -4,7 +4,7 @@ from flask import render_template, Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from requests.exceptions import ConnectionError
 from project.functions import get_templates, get_networks, get_devices, get_device, get_network
-from project.admin.forms import GroupMembershipForm, GroupForm
+from project.admin.forms import GroupMembershipForm, GroupForm, ChoiceForm
 from sqlalchemy.exc import OperationalError, ProgrammingError
 import datetime, time
 from project.decorators import *
@@ -33,27 +33,34 @@ def admin_users():
 @is_admin
 def admin_groups():
     form = GroupForm(request.form)
-    form.set_choices()
+    #form.set_choices()
+    choice_form = ChoiceForm(request.form)
+    choice_form.set_choices()
 
     if request.method == 'POST':
-        error = None
-        new_group_name = request.data.decode("utf-8")
-        new_group_name = new_group_name.strip()
-        if len(new_group_name) < 4:
-            error = "Group name must be 4 characters long at least!"
-            return jsonify(error)
-        if Group.query.filter_by(name=new_group_name).first():
-            error = "Exists!"
-            return jsonify(error)
-        new_group = Group(new_group_name)
-        db.session.add(new_group)
-        db.session.commit()
-        log_msg = "User: {} - Group: {} is created.".format(current_user.username, new_group.name)
-        send_wr_log(log_msg)
-        return_data = [(group.id, group.name) for group in Group.query.all()]
-        return jsonify(return_data)
+        if form.validate_on_submit():
+            error = None
+            #new_group_name = request.data.decode("utf-8")
+            #new_group_name = new_group_name.strip()
+            new_group_name = form.new_group_name.data.strip()
+            if len(new_group_name) < 4:
+                error = "Group name must be 4 characters long at least!"
+                return jsonify(error)
+            if Group.query.filter_by(name=new_group_name).first():
+                error = "Exists!"
+                return jsonify(error)
+            new_group = Group(new_group_name)
+            db.session.add(new_group)
+            db.session.commit()
+            log_msg = "User: {} - Group: {} is created.".format(current_user.username, new_group.name)
+            send_wr_log(log_msg)
+            return_data = [(group.id, group.name) for group in Group.query.all()]
+            return jsonify(return_data)
+        else:
+            print(form.errors['new_group_name'])
+            return jsonify(form.errors['new_group_name']), 400
 
-    return render_template('groups.html', form=form)
+    return render_template('groups.html', form=form, choice_form=choice_form)
     # load_templates_to_db()
     # load_networks_to_db()
 

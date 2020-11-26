@@ -271,31 +271,86 @@ var newGroupErrorDiv = document.getElementById("newGroupErrorDiv")
 var $groupsTable = $('#groupsTable')
 var group_select = document.getElementById("groupSelectMultiple")
 
-$(document).on("click", "#createGroupButton", function(event){
-    var new_group_name = $('#newGroupInput').val();
+$(document).on("submit", "#createGroupForm", function(event){
     event.preventDefault();
-    $.ajax({
-        url: "/groups",
-        type: "POST",
-        data: new_group_name,
-        dataType: "json",
-        contentType: 'application/json; charset=utf-8',
-        cache: false,
-        processData: false,
-        success: function(data) {
-            if(data === "Exists!") {
-                var output = "Group already exists!";
-                newGroupErrorDiv.innerHTML = output;
-            }else{
-                newGroupErrorDiv.innerHTML = "";
-                manageGroupResult.innerHTML = "";
-                $groupsTable.bootstrapTable('refresh');
-                // the line below was needed when group_select was in the same page
-                updateGroupSelect(data);
+    var errorOutput = "";
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
+    $.ajax(
+        {
+            url: "/groups",
+            type: "POST",
+            data: new FormData(this),
+            dataType: "json",
+            contentType: false,
+            cache: false,
+            processData: false,
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            },
+            success: function(data) {
+                if(data === "Exists!") {
+                    var output = "Group already exists!";
+                    newGroupErrorDiv.innerHTML = output;
+                }else{
+                    newGroupErrorDiv.innerHTML = "";
+                    manageGroupResult.innerHTML = "";
+                    $groupsTable.bootstrapTable('refresh');
+                    // the line below was needed when group_select was in the same page
+                    updateGroupSelect(data);
+                }
+            },
+            error: function(data) {
+                for (var i = 0; i < data.responseJSON.length; i++){
+                    errorOutput += "<li>" + data.responseJSON[i] + "</li>";
+                }
+                newGroupErrorDiv.innerHTML = errorOutput;
             }
         }
-    });
+    );
 });
+
+/*
+$(document).on("click", "#createGroupButton", function(event){
+    var formData = { 'new_group_name' : $('#newGroupInput').val() };
+    event.preventDefault();
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
+    $.ajax(
+        {
+            url: "/groups",
+            type: "POST",
+            data: formData,
+            dataType: "json",
+            contentType: 'application/json',
+            encode: true,
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            },
+            success: function(data) {
+                if(data === "Exists!") {
+                    var output = "Group already exists!";
+                    newGroupErrorDiv.innerHTML = output;
+                }else{
+                    newGroupErrorDiv.innerHTML = "";
+                    manageGroupResult.innerHTML = "";
+                    $groupsTable.bootstrapTable('refresh');
+                    // the line below was needed when group_select was in the same page
+                    updateGroupSelect(data);
+                }
+                console.log("SUCC!!");
+            },
+            error: function(errorOutput) {
+                console.log(errorOutput);
+                newGroupErrorDiv.innerHTML = errorOutput;
+            }
+        }
+    );
+});
+
+ */
 
 var group_select2 = document.getElementById("groupSelectMultiple2");
 function updateGroupSelect(data){

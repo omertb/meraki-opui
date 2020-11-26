@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectMultipleField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Regexp
 from project.models import Group, User, Network, Tag
 from flask import escape
 
@@ -17,7 +17,12 @@ class GroupMembershipForm(FlaskForm):
 
 class GroupForm(FlaskForm):
     # select_network = SelectMultipleField('Select Networks: ', validators=[DataRequired()])
-    new_group_name = StringField('New Group Name: ', validators=[DataRequired(), Length(min=4, max=32)])
+    new_group_name = StringField('New Group Name: ', validators=[DataRequired(), Length(min=4, max=16),
+                                                                 Regexp('^[A-Za-z0-9_\.]+$',
+                                                                        message="Invalid characters in group name!")])
+
+
+class ChoiceForm(FlaskForm):
     select_group = SelectMultipleField('Select Groups: ', validators=[DataRequired()])
     select_tag = SelectMultipleField('Select Tags: ', validators=[DataRequired()])
 
