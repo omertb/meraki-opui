@@ -3,6 +3,7 @@ from wtforms import StringField, SelectField, TextAreaField, SelectMultipleField
 from wtforms.validators import DataRequired, Length
 from flask_login import current_user
 from project.models import Network
+from flask import escape
 
 
 class NewNetworkForm(FlaskForm):
@@ -17,7 +18,7 @@ class NewNetworkForm(FlaskForm):
         tag_list = []
         for group in current_user.groups:
             tag_list.extend(group.tags)
-        self.net_tag_mselect.choices = [(tag.id, tag.name) for tag in tag_list]
+        self.net_tag_mselect.choices = [(tag.id, escape(tag.name)) for tag in tag_list]
 
 
 class AddDevicesForm(FlaskForm):
@@ -34,7 +35,7 @@ class AddDevicesForm(FlaskForm):
                 all_networks.extend(group_networks)
         all_networks.extend(user_networks)
         all_networks = set(all_networks)
-        self.registered_nets.choices = [(network.id, network.name) for network in all_networks]
+        self.registered_nets.choices = [(network.id, escape(network.name)) for network in all_networks]
 
 
 class CloneSwitchForm(FlaskForm):
@@ -53,5 +54,5 @@ class CloneSwitchForm(FlaskForm):
                 all_networks.extend(group_networks)
         all_networks.extend(user_networks)
         all_networks = set(all_networks)
-        self.switch_nets.choices = [(network.id, network.name) for network in all_networks if network.type == 'switch']
+        self.switch_nets.choices = [(network.id, escape(network.name)) for network in all_networks if network.type == 'switch']
         self.destination_nets.choices = self.switch_nets.choices
