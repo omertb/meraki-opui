@@ -231,7 +231,7 @@ def networks_table():
     networks = Network.query.all()
     networks_list = []
     for i, row in enumerate(networks):
-        network = {'name': row.name,
+        network = {'name': escape(row.name),
                    'groups': [group.name for group in row.groups],
                    'tags': row.net_tags,
                    'rowNum': i + 1
@@ -248,7 +248,7 @@ def devices_table():
     devices_list = []
     for i, row in enumerate(devices):
         device = {'rowNum': i + 1,
-                  'name': row.name,
+                  'name': escape(row.name),
                   'serial': row.serial,
                   'device_model': row.devmodel,
                   'committed': "Yes" if row.committed else "No",
