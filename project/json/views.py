@@ -1,6 +1,6 @@
 from project import db
 from project.models import Network, Device, Template, User, Group, Tag
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, escape
 from flask_login import login_required, current_user
 from project.decorators import *
 from project.functions import create_network, bind_template, claim_network_devices, rename_device_v0, \
@@ -121,7 +121,7 @@ def groups_table():
     groups_list = []
     for i, row in enumerate(groups):
         group = {'rowNum': i + 1,
-                 'name': row.name,
+                 'name': escape(row.name),
                  'users': [user.username for user in row.users],
                  'tags': [tag.name for tag in row.tags]
                  }
@@ -349,6 +349,7 @@ def network_table():
             template_name = network.copied_from.name if network.source_network else None
         network = network.serialize()
         network['rowNum'] = row + 1
+        network['name'] = escape(network['name'])
         network['committed'] = 'No' if network['committed'] is False else 'Yes'
         network['bound_template'] = template_name
         network_list.append(network)
@@ -370,6 +371,7 @@ def device_table():
             device_model = device.devmodel
             device = device.serialize()
             device['id'] = dev_id
+            device['name'] = escape(device['name'])
             device['rowNum'] = i
             device['model'] = device_model
             device['committed'] = 'No' if device['committed'] is False else 'Yes'
