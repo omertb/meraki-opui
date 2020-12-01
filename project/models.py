@@ -1,6 +1,7 @@
 from project import db
 from project import bcrypt
 import ldap, datetime, os
+from project.functions import includes_crlf
 
 
 LDAP_SERVER = os.environ['USERDNSDOMAIN']
@@ -71,6 +72,10 @@ class User(db.Model):
 
     @staticmethod
     def ldap_login(email, password):
+        if includes_crlf(email):
+            return False
+        if includes_crlf(password):
+            return False
         ld = ldap.initialize("ldap://{}:{}".format(LDAP_SERVER, LDAP_PORT))
         return ld.simple_bind_s(email, password)
 

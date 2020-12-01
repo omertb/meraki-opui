@@ -1,4 +1,4 @@
-import json, requests, os
+import json, requests, os, re
 
 
 APIKEY = os.environ['APIKEY']
@@ -225,3 +225,14 @@ def delete_network(network_id: str):
     uri = "/networks/{}".format(network_id)
     response = post_data(uri, "", method="DELETE")
     return response
+
+
+# validate inputs with regex
+def validate_input(user_input):
+    result = re.match(r"^[A-Za-z0-9_-]{1,64}$", user_input)
+    return bool(result)
+
+
+def includes_crlf(user_input):
+    result = re.match(r".*[\n\r]+.*", user_input)
+    return bool(result)
