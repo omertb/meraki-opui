@@ -1,7 +1,8 @@
-from functools import wraps
+from functools import wraps, update_wrapper
 from project import app
 from flask import render_template, abort, make_response
 from flask_login import current_user, logout_user
+import datetime
 
 
 @app.errorhandler(403)
@@ -39,3 +40,16 @@ def no_http_cache(view):
         return response
 
     return no_cache_view
+
+
+def nocache(view):
+    @wraps(view)
+    def no_cache(*args, **kwargs):
+        response = make_response(view(*args, **kwargs))
+        response.headers['Last-Modified'] = datetime.now()
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '-1'
+        return response
+
+    return update_wrapper(no_cache, view)

@@ -32,7 +32,7 @@ def admin_users():
 @login_required
 @is_admin
 def admin_groups():
-    form = GroupForm(request.form, csrf_enabled=False)
+    form = GroupForm(request.form, meta={'csrf': False})
     #form.set_choices()
     choice_form = ChoiceForm(request.form)
     choice_form.set_choices()
