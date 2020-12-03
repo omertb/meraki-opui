@@ -32,7 +32,7 @@ def admin_users():
 @login_required
 @is_admin
 def admin_groups():
-    form = GroupForm(request.form)
+    form = GroupForm(request.form, csrf_enabled=False)
     #form.set_choices()
     choice_form = ChoiceForm(request.form)
     choice_form.set_choices()
@@ -57,7 +57,6 @@ def admin_groups():
             return_data = [(group.id, group.name) for group in Group.query.all()]
             return jsonify(return_data)
         else:
-            print(form.errors['new_group_name'])
             return jsonify(form.errors['new_group_name']), 400
 
     return render_template('groups.html', form=form, choice_form=choice_form)

@@ -831,7 +831,7 @@ function destSwitchSelectOnDestNetSelect() {
                 contentType: "application/json",
                 success: function(data) {
                     newSwitchModel = data;
-                    console.log(data);
+                    //console.log(data);
                 }
             });
         },
@@ -858,7 +858,7 @@ $(function() {
                 contentType: "application/json",
                 success: function(data) {
                     newSwitchModel = data;
-                    console.log(data);
+                    //console.log(data);
                 }
             });
     });
