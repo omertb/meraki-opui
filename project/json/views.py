@@ -226,8 +226,8 @@ def tag_group():
         return jsonify(result)
 
 
-@nocache
 @json_blueprint.route('/networks/networks.json', methods=['GET'])
+@no_http_cache
 @login_required
 @is_admin
 def networks_table():
@@ -243,8 +243,8 @@ def networks_table():
     return jsonify(networks_list)
 
 
-@nocache
 @json_blueprint.route('/devices/devices.json', methods=['GET'])
+@no_http_cache
 @login_required
 @is_admin
 def devices_table():
@@ -332,8 +332,8 @@ def delete_networks():
         return jsonify(result)
 
 
-@nocache
 @json_blueprint.route('/operator/network.json', methods=['GET'])
+@no_http_cache
 @login_required
 @is_operator
 def network_table():
@@ -362,8 +362,8 @@ def network_table():
     # return jsonify([network.serialize() for network in user_networks.all()])
 
 
-@nocache
 @json_blueprint.route('/operator/device.json', methods=['POST'])
+@no_http_cache
 @login_required
 @is_operator
 def device_table():
@@ -388,8 +388,8 @@ def device_table():
         return "Not Found", 404
 
 
-@nocache
 @json_blueprint.route('/operator/switch_ports.json', methods=['POST'])
+@no_http_cache
 @login_required
 @is_operator
 def switch_ports_table():
