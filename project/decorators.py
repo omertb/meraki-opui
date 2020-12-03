@@ -2,7 +2,7 @@ from functools import wraps, update_wrapper
 from project import app
 from flask import render_template, abort, make_response
 from flask_login import current_user, logout_user
-import datetime
+from datetime import datetime
 
 
 @app.errorhandler(403)
