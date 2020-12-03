@@ -274,7 +274,7 @@ var group_select = document.getElementById("groupSelectMultiple")
 $(document).on("submit", "#createGroupForm", function(event){
     event.preventDefault();
     var errorOutput = "";
-    var csrftoken = $('meta[name=csrf-token]').attr('content');
+    //var csrftoken = $('meta[name=csrf-token]').attr('content');
     $.ajax(
         {
             url: "/groups",
@@ -284,11 +284,11 @@ $(document).on("submit", "#createGroupForm", function(event){
             contentType: false,
             cache: false,
             processData: false,
-            beforeSend: function(xhr, settings) {
-                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
-                }
-            },
+            //beforeSend: function(xhr, settings) {
+            //    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+            //        xhr.setRequestHeader("X-CSRFToken", csrftoken)
+            //    }
+            //},
             success: function(data) {
                 if(data === "Exists!") {
                     var output = "Group already exists!";
