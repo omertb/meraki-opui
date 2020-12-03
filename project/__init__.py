@@ -12,6 +12,7 @@ login_manager.session_protection = "strong"
 login_manager.init_app(app)
 # config
 app.config.from_object('config.DevelopmentConfig')
+#app.config.from_object('config.ProductionConfig')
 # create the sqlalchemy object
 db = SQLAlchemy(app)
 # <meta name="csrf-token" content="{{ csrf_token() }}"> in jinja template

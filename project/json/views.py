@@ -22,8 +22,8 @@ to do:
 '''
 
 
-@nocache
 @json_blueprint.route('/users/users.json', methods=['GET'])
+@nocache
 @login_required
 @is_admin
 def users_table():
@@ -114,8 +114,8 @@ def reset_membership():
     return jsonify(result)
 
 
-@nocache
 @json_blueprint.route('/groups/groups.json', methods=['GET'])
+@nocache
 @login_required
 @is_admin
 def groups_table():
