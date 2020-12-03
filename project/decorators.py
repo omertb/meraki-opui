@@ -1,6 +1,6 @@
 from functools import wraps
 from project import app
-from flask import render_template, abort
+from flask import render_template, abort, make_response
 from flask_login import current_user, logout_user
 
 
@@ -29,3 +29,13 @@ def is_admin(func):
         return func(*args, **kwargs)
 
     return decorated_function
+
+
+def no_http_cache(view):
+    @wraps(view)
+    def no_cache_view(*args, **kwargs):
+        response = make_response(view(*args, **kwargs))
+        response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private, max-age=0')
+        return response
+
+    return no_cache_view
