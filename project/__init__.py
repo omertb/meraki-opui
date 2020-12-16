@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from werkzeug.middleware.proxy_fix import ProxyFix
 #from flask_wtf.csrf import CSRFProtect
 
 
@@ -13,6 +14,7 @@ login_manager.init_app(app)
 # config
 app.config.from_object('config.DevelopmentConfig')
 #app.config.from_object('config.ProductionConfig')
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 # create the sqlalchemy object
 db = SQLAlchemy(app)
 # <meta name="csrf-token" content="{{ csrf_token() }}"> in jinja template
