@@ -28,7 +28,7 @@
 
 ## Container Deployment:
 ### 1. Production Environment
-> Before continue beginning; ensure that pgsql_data directory and
+> Before getting started; ensure that pgsql_data directory and
 >a database called meraki_operator is created inside it. This prerequisite can be met by 
 >following the instructions under _2. Development Environment->Database_.
 
